@@ -63,10 +63,10 @@ public class ServerProperties {
 	/** Where we store the properties. */
 	private Properties properties;
 	
-//	private final String foldername = System.getProperty("user.home") + LD4SConstants.SYSTEM_SEPARATOR
-	private final String foldername = Thread.currentThread().getContextClassLoader()
-	.getResource(".").getPath()+ LD4SConstants.SYSTEM_SEPARATOR
-	+".ld4s";
+	private final String foldername = System.getProperty("user.home") + LD4SConstants.SYSTEM_SEPARATOR;
+//	private final String foldername = Thread.currentThread().getContextClassLoader()
+//	.getResource(".").getPath()+ LD4SConstants.SYSTEM_SEPARATOR
+//	+".ld4s";
 
 	/**
 	 * Creates a new ServerProperties instance. Prints an error to the console if problems occur on
