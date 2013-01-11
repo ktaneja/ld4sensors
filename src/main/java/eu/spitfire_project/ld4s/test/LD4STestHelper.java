@@ -43,7 +43,7 @@ public class LD4STestHelper {
 	
 	protected String location_name = "Patras";
 	
-	protected String location_coords = "38.24444_21.73444";
+	protected String location_coords = "38.291_21.7961";
 	
 	protected Person author = new Person(
 //			"Ioannis", "Chatzigiannakis", null, null, null, null, null);

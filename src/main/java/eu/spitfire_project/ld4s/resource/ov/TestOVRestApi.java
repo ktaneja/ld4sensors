@@ -19,6 +19,13 @@ import org.restlet.resource.ClientResource;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
 import eu.spitfire_project.ld4s.test.LD4STestHelper;
 
+/**
+ * Test all the HTTP requests supported by the REST API
+ * for the exposed resource OV (ObservationValue), submitting
+ * a JSON payload that follows the best-practise
+ * @author Myriam Leggieri <iammyr@email.com>
+ *
+ */
 public class TestOVRestApi extends LD4STestHelper {
 	/** Resource ID necessary to store locally. */
 	protected String resourceId = "x12y";
@@ -29,8 +36,8 @@ public class TestOVRestApi extends LD4STestHelper {
 	/** Resource URI necessary in case of remote resource hosting server. */
 	protected String remote_uri = "http://www.example.org/ov/remotex12y";
 
-	/** Milliseconds shift from the base time as a resource creation time point. */
-	protected String resource_time = "22846";
+	/** */
+	private String source = "http://localhost:8182/ld4s/device/test1";
 
 	/** Observed values. */
 	protected String[] values = new String[]{"12.4", "21.9", "88.7", "24.5"};
@@ -51,7 +58,10 @@ public class TestOVRestApi extends LD4STestHelper {
 //	protected OV ov = null;
 
 /**
- * {"start_range":"","resource_time":1347615696000,"end_range":"","context":"","uri":"http://urn:wisebed:ctitestbed:0x712"}
+ * best-practise compliant json payload for OV (intrinsic):
+ * values
+ * start_range
+ * end_range
  */
 	private void initJson(boolean isRemote, boolean isEnriched){
 		this.json = new JSONObject();
@@ -61,25 +71,19 @@ public class TestOVRestApi extends LD4STestHelper {
 			}else{
 				json.append("uri", null);
 			}
-			if (isEnriched){
-				json.append("context", filters);	
-			}else{
-				json.append("context", null);
-			}
-//			json.append("uri", "http://urn:wisebed:ctitestbed:0x712");
-			json.append("resource_time", resource_time);
-//			json.append("resource_time", "1347615696000");
-			json.append("base_time", base_datetime);
+//			if (isEnriched){
+//				json.append("context", filters);	
+//			}else{
+//				json.append("context", null);
+//			}
 			json.append("start_range", start_range);
-//			json.append("start_range", "");
 			json.append("end_range", end_range);
-			//json.append("end_range", "");
-			//json.append("context", "");
 			JSONArray vals = new JSONArray();
 			for (int i=0; i<values.length ;i++){
 				vals.put(values[i]);
 			}
 			json.append("values", vals);
+			json.append("source", source);
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -98,8 +102,6 @@ public class TestOVRestApi extends LD4STestHelper {
 		}else{
 			form.set("context", null);
 		}
-		form.set("base_datetime", base_datetime);
-		form.set("resource_time", resource_time);
 		form.set("start_range", start_range);
 		form.set("end_range", end_range);
 		for (int i=0; i<values.length ;i++){
@@ -269,7 +271,7 @@ public class TestOVRestApi extends LD4STestHelper {
 	 *
 	 * @throws Exception If problems occur.
 	 */
-	@Test
+//	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
 		ClientResource cr = new ClientResource(local_uri+resourceId);

@@ -88,6 +88,16 @@ public class LD4SOVResource extends LD4SDataResource {
 				}
 			}			
 		}
+		String item = ov.getSource();
+		if (item != null){
+			if (item.startsWith("http://")){
+				resource.addProperty(SptVocab.OUTOF, 
+						rdfData.createResource(item));	
+			}else{
+				resource.addProperty(SptVocab.OUTOF, 
+						rdfData.createTypedLiteral(item));
+			}			
+		}
 		resource = crossResourcesAnnotation(ov, resource);
 		return resource;
 	}

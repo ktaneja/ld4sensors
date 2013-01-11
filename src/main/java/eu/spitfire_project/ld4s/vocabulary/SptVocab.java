@@ -98,6 +98,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
       .createObjectProperty(NS+"temporal");
 	  public static final ObjectProperty OUT = m_model
       .createObjectProperty(NS+"out");
+	  public static final ObjectProperty OUTOF = m_model
+      .createObjectProperty(NS+"outOf");
 	  public static final ObjectProperty OBSERVED_PROPERTY = m_model
       .createObjectProperty(NS+"obs");
 	  public static final ObjectProperty UOM = m_model

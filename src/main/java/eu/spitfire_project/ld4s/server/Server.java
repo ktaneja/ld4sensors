@@ -81,7 +81,8 @@ public class Server extends Application{
 	public static Server newInstance(ServerProperties properties) throws Exception {
 		Server server = new Server();
 		server.properties = properties;
-		server.hostName = ServerProperties.SERVER + ":" + ServerProperties.PORT + "/" 
+		server.hostName = ServerProperties.SERVER + ":" + ServerProperties.PORT + "/"
+//		server.hostName = "http://spitfire-project.eu" + ":" + ServerProperties.PORT + "/"
 		+ ServerProperties.CONTEXT_ROOT + "/";
 
 		server.component = new Component();
@@ -135,7 +136,9 @@ public class Server extends Application{
 			 // OTHER
 			    router.attach("/resource/{other}", OtherResource.class);
 			    router.attach("/resource/{other}/", OtherResource.class);
-			    router.attach("/resource/{other}/{id}", OtherResource.class);				
+			    router.attach("/resource/{other}/{id}", OtherResource.class);
+				// GRAPHs
+				router.attach("/graph/{other}", OtherResource.class);
 				
 			    
 			    router.attach("/ping", PingResource.class);
@@ -272,8 +275,6 @@ public class Server extends Application{
 				//=============================================================
 				
 				
-				// GRAPHs
-				router.attach("/graph/{other}", OtherResource.class);
 		
 		
 

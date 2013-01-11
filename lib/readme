@@ -1,0 +1,2 @@
+In the lib folder go libraries that can't be provided by maven from a public maven reposiotry. The org.restlet.ext.json.jar
+is in the lib, as I couldn't include it properly with maven.

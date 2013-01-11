@@ -48,6 +48,10 @@ public class ServerProperties {
 	public static final String TEST_INSTALL_KEY = "ld4s.test.install";
 	/** The test installation key. */
 	public static final String TEST_HOSTNAME_KEY = "ld4s.test.hostname";
+	/** The hostname of the remote rdf store server where the triples are stored. */
+	public static final String RDF_STORE_HOSTNAME = "ld4s.rdfstore.hostname";
+	/** The port of the rdf store server, where the sensor data and annotations are stored. */
+	public static final String RDF_STORE_PORT = "ld4s.rdfstore.port";
 	/** The path of the RDF schema. */
 	// public static final String SCHEMA_FULLPATH_KEY = "ld4s.schema.path";
 
@@ -63,8 +67,10 @@ public class ServerProperties {
 	/** Where we store the properties. */
 	private Properties properties;
 	
-	private final String foldername = System.getProperty("user.home") + LD4SConstants.SYSTEM_SEPARATOR
-	+".ld4s";
+	private final String foldername = System.getProperty("user.home") + LD4SConstants.SYSTEM_SEPARATOR;
+//	private final String foldername = Thread.currentThread().getContextClassLoader()
+//	.getResource(".").getPath()+ LD4SConstants.SYSTEM_SEPARATOR
+//	+".ld4s";
 
 	/**
 	 * Creates a new ServerProperties instance. Prints an error to the console if problems occur on
@@ -89,7 +95,6 @@ public class ServerProperties {
 	 * @throws Exception if errors occur.
 	 */
 	private void initializeProperties() throws Exception {
-		String userDir = System.getProperty("user.dir");
 		String propFile = getFoldername()+LD4SConstants.SYSTEM_SEPARATOR
 		+"ld4s.properties";
 		this.properties = new Properties();
@@ -98,10 +103,12 @@ public class ServerProperties {
 		properties.setProperty(PORT_KEY, String.valueOf(PORT));
 		properties.setProperty(CONTEXT_ROOT_KEY, CONTEXT_ROOT);
 		properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
-		properties.setProperty(RDF_DIR_KEY, userDir + "/rdf");
+		properties.setProperty(RDF_DIR_KEY, getFoldername()+LD4SConstants.SYSTEM_SEPARATOR + "rdf");
 		properties.setProperty(TEST_PORT_KEY, "9875");
 		properties.setProperty(TEST_HOSTNAME_KEY, "localhost");
 		properties.setProperty(FRONTSIDECACHE_ENABLED, "true");
+		properties.setProperty(RDF_STORE_HOSTNAME, "localhost");
+		properties.setProperty(RDF_STORE_PORT, "3030");
 		//	    properties.setProperty(CACHE_ENABLED, "true");
 		//	    properties.setProperty(CACHE_MAX_LIFE, "365");
 		//	    properties.setProperty(CACHE_CAPACITY, "500000");
@@ -110,6 +117,7 @@ public class ServerProperties {
 		try {
 			stream = new FileInputStream(propFile);
 			System.out.println("Loading LD4Sensors properties from: " + propFile);
+			this.properties = new Properties();
 			properties.load(stream);
 		}
 		catch (IOException e) {

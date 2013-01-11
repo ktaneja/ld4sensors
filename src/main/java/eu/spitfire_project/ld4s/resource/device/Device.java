@@ -105,6 +105,9 @@ public class Device extends LD4SObject  implements Serializable{
 		if (json.has("observation_values")){
 			this.setValues(json.getJSONArray("observation_values"));
 		}
+		if (json.has("tsproperties")){
+			this.setTsproperties(json.getJSONArray("tsproperties"));
+		}
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
 		}
@@ -148,9 +151,17 @@ public class Device extends LD4SObject  implements Serializable{
 	}
 
 	public void setValues(JSONArray jvalues) throws JSONException {
+		try{
+			jvalues = jvalues.getJSONArray(0);
+		}catch(JSONException e){
+			
+		}
+		if (this.base_ov_name == null){
+			this.base_ov_name = "";
+		}
 		String[] values = new String[jvalues.length()];
 		for (int i=0; i< jvalues.length(); i++){
-			values[i] = jvalues.get(i).toString();
+			values[i] = this.base_ov_name+jvalues.getString(i);
 		}
 		setValues(values);
 	}
@@ -234,6 +245,18 @@ public class Device extends LD4SObject  implements Serializable{
 		return base_ov_name;
 	}
 
+	public void setTsproperties(JSONArray objarr) throws JSONException {
+		objarr = objarr.getJSONArray(0);
+		String[] tpproperties = null;
+		if (objarr != null){
+			tpproperties = new String[objarr.length()];
+			for (int i=0; i<objarr.length() ;i++){
+				tpproperties[i] = objarr.getString(i);
+			}
+			setTsproperties(tpproperties);
+		}
+	}
+	
 	public void setTsproperties(String[] tsproperties) {
 		this.tsproperties = tsproperties;
 	}
@@ -247,10 +270,14 @@ public class Device extends LD4SObject  implements Serializable{
 		this.setAcceptedTypes(new OntClass[]{
 				SptSnVocab.ACTUATOR, SptSnVocab.TRANSDUCER,
 				SptSnVocab.ACCELEROMETER,
+				SptSnVocab.TEMPERATURE_SENSOR,
+				SptSnVocab.NOISE_SENSOR,
 				SptSnVocab.GPS,
 				SptSnVocab.HUMIDITY_SENSOR,
 				SptSnVocab.LIGHT_SENSOR,
 				SptSnVocab.MOTION_SENSOR,
+				SptSnVocab.PRESSURE_SENSOR,
+				SptSnVocab.TRANSDUCER,
 				SsnVocab.SENSING_DEVICE
 		});
 	}

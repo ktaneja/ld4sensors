@@ -24,15 +24,32 @@
             <version>4.10</version>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>jena-core</artifactId>
             <version>2.7.1</version>
             <scope>system</scope>
-
             <systemPath>${project.basedir}/lib/jena-core-2.7.1.jar</systemPath>
+        </dependency> -->
+		<dependency>
+        	<groupId>org.apache.jena</groupId>
+        	<artifactId>jena-core</artifactId>
+        	<version>2.7.1</version>
         </dependency>
-
+        
+        <!-- <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>example</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/org.json.jar</systemPath>
+        </dependency> -->
+        <dependency>
+        	<groupId>org.json</groupId>
+        	<artifactId>json</artifactId>
+        	<version>20090211</version>
+        </dependency>
+        
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>json-jena</artifactId>
@@ -40,76 +57,75 @@
         </dependency>
         
         <dependency>
-            <groupId>org.apache.commons.codec</groupId>
+            <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.5</version>
         </dependency>
         
 		<dependency>
-            <groupId>org.apache.http.auth</groupId>
+            <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.1.2</version>
+            <version>4.2.2</version>
         </dependency>
+		
 		<dependency>
-            <groupId>org.apache.http.conn</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.1.2</version>
-        </dependency>
-		<dependency>
-            <groupId>org.apache.http.client</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.1.2</version>
-        </dependency>
-		<dependency>
-            <groupId>org.apache.http.cookie</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.1.2</version>
-        </dependency>
-		<dependency>
-            <groupId>org.apache.http.annotation</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.1.2</version>
-        </dependency>
-		<dependency>
-            <groupId>org.apache.http</groupId>
+            <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.1.3</version>
+            <version>4.2.2</version>
         </dependency>
         
-		<dependency>
-            <groupId>org.restlet.ext.json</groupId>
-            <artifactId>restlet-json</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-
-        <dependency>
+		
+        
+		 <dependency>
             <groupId>org.restlet.jse</groupId>
             <artifactId>org.restlet</artifactId>
             <version>2.0.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>example</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/org.json.jar</systemPath>
+        
+		<dependency>
+            <groupId>org.restlet</groupId>
+            <artifactId>org.restlet.ext.json</artifactId>
+            <version>1.1.0</version>
         </dependency>
+        
+		<dependency>
+            <groupId>org.restlet</groupId>
+            <artifactId>org.restlet.example</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        
+        <!-- <dependency>  
+   			<groupId>org.restlet</groupId>  
+   			<artifactId>org.restlet.ext.json</artifactId>  
+  			<version>1.1.10</version>  
+		</dependency> -->
 
-        <dependency>
+        <!-- <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
             <version>2.9.1</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/jena-arq-2.9.1.jar</systemPath>
-        </dependency>
+        </dependency> -->
         <dependency>
+        	<groupId>org.apache.jena</groupId>
+        	<artifactId>jena-arq</artifactId>
+        	<version>2.9.1</version>
+        </dependency>
+        
+        <!-- <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>tdb</artifactId>
             <version>0.9.1</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/jena-tdb-0.9.1.jar</systemPath>
+        </dependency> -->
+        <dependency>
+        	<groupId>org.apache.jena</groupId>
+        	<artifactId>jena-tdb</artifactId>
+        	<version>0.9.1</version>
         </dependency>
+        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -118,7 +134,7 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.12</version>
+            <version>1.2.16</version>
         </dependency>
 
         <dependency>
@@ -164,8 +180,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>

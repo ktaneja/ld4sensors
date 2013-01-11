@@ -55,7 +55,8 @@ public class UomApi extends SearchRouter {
 			if (elem != null){			
 				match = null;
 				choice = 0;
-				while (match == null || (searched.compareToIgnoreCase(match)!=0 && !searched.startsWith(match))
+				while (match == null || 
+						(searched != null && searched.compareToIgnoreCase(match)!=0 && !searched.startsWith(match))
 						&& choice < 6){
 					switch (choice){
 					case 0:
@@ -87,7 +88,7 @@ public class UomApi extends SearchRouter {
 					}
 
 					if (match != null && match.trim().compareTo("") != 0
-							&& (searched.compareToIgnoreCase(match)==0 || searched.startsWith(match))){
+							&& searched != null && (searched.compareToIgnoreCase(match)==0 || searched.startsWith(match))){
 						ret = new Uom();
 						switch (choice){
 						case 0:
@@ -197,7 +198,7 @@ public class UomApi extends SearchRouter {
 					}
 				}
 			}
-		}else if (thing.length() <= 2){
+		}else if (thing != null && thing.length() <= 2){
 			thing += getDBPEDIA_DISAMBIGUATION_SUFFIX();
 		}
 		context.setThing(addterms+context.getThing()+ " unit");

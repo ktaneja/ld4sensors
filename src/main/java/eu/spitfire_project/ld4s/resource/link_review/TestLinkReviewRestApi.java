@@ -123,12 +123,13 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	 */
 	@Test
 	public void testPut() throws Exception {
-		System.out.println("Test Put - java object payload");
 		initJson(false, false); 
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
+		System.out.println("Test Put - java object payload - " +
+				json);
 		Representation response = cr.put(json); 
 		System.out.println(response.getText());
 		Status status = cr.getStatus();

@@ -82,20 +82,17 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 			}else{
 				json.append("uri", null);
 			}
-			if (isEnriched){
-				json.append("context", filters);	
-			}else{
-				json.append("context", null);
-			}
+//			if (isEnriched){
+//				json.append("context", filters);	
+//			}else{
+//				json.append("context", null);
+//			}
 			json.append("start_range", start_range);
 			json.append("platform_id", platform_id);
 			json.append("end_range", end_range);
 			
 			
-			JSONObject jsonobj = new JSONObject();
-			jsonobj.append("firstname", publisher_name);
-			jsonobj.append("surname", publisher_surname);
-			json.append("author", jsonobj);
+			json.append("author", getAuthor(author));
 			
 			JSONArray vals = new JSONArray();
 			for (int i=0; i<owners.length ;i++){
@@ -103,6 +100,8 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 			}
 			json.append("owners", vals);
 			vals = new JSONArray();
+//			locations = new String[]{" # madrid", "near # 12.009_24.500"
+//			, "near # 19.489_23.52", "in # spain"}
 			for (int i=0; i<locations.length ;i++){
 				vals.put(locations[i]);
 			}
@@ -192,6 +191,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 				//user_password);
 		//cr.setChallengeResponse(authentication);
 		Representation response = cr.put(json); 
+		System.out.println("payload="+json);
 		System.out.println(response.getText());
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());
@@ -298,7 +298,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	 *
 	 * @throws Exception If problems occur.
 	 */
-	@Test
+//	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
 		ClientResource cr = new ClientResource(local_uri+resourceId);

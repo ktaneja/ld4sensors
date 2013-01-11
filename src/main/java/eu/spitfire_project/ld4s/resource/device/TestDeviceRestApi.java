@@ -53,7 +53,10 @@ public class TestDeviceRestApi extends LD4STestHelper {
 	/** Unit of Measurement. */
 	protected String uom = 
 //		"section";
-		"centigrade";
+//		"mbar";
+//		"centigrade";
+//		"unit";
+		"tesla";
 	
 	/** Observed Value IDs. */
 	protected String[] values = new String[]{"a12b", "x12y", "c23d", "e45f"};
@@ -78,60 +81,45 @@ public class TestDeviceRestApi extends LD4STestHelper {
 
 
 	private void initJson(boolean isRemote, boolean isEnriched){
-		this.json = new JSONObject();
+//		String js = "{\"author\":[{\"surname\":\"Chatzigiannakis\"},{\"firstname\":\"Ioannis\"}],\"uom\":[\"centigrade\"],\"base_ov_name\":[\"\"],\"observed_property\":[\"temperature\"],\"ts_properties\":[\"[\\\"\\\"]\"],\"base_name\":[\"\"],\"uri\":\"http://uberdust.cti.gr/rest/testbed/1/node/urn:wisebed:ctitestbed:0x712/capability/urn:wisebed:node:capability:temperature/rdf/rdf+xml\",\"base_datetime\":[\"2012-10-01 16:47:20.0\"],\"observation_values\":[\"http://uberdust.cti.gr/rest/testbed/1/node/urn:wisebed:ctitestbed:0x712/capability/urn:wisebed:node:capability:temperature/rdf/rdf+xml/limit/1\"],\"location-coords\":[\"38.2909_21.7958\"]}";
 		try {
+			this.json = new JSONObject();
+		
 			if (isRemote){
 				json.append("uri", remote_uri);
 			}else{
 				json.append("uri", null);
 			}
-			if (isEnriched){
-				json.append("context", filters);	
-			}else{
-				json.append("context", null);
-			}
+//			if (isEnriched){
+//				json.append("context", filters);	
+//			}else{
+//				json.append("context", null);
+//			}
 			json.append("base_datetime", base_datetime);
 			json.append("base_name", base_name);
 			json.append("base_ov_name", base_ov_name);
 			json.append("observed_property", observed_property);
-			json.append("foi", foi);
+//			json.append("foi", foi);
 			json.append("uom", uom);
 			json.append("type", type);
-			JSONObject obj = new JSONObject();
-			if (author.getFirstname() != null){
-				obj.append("firstname", author.getFirstname());
-			}
-			if (author.getSurname() != null){
-				obj.append("surname", author.getSurname());
-			}
-			if (author.getEmail() != null){
-				obj.append("email", author.getEmail());
-			}
-			if (author.getHomepage() != null){
-				obj.append("homepage", author.getHomepage());
-			}
-			if (author.getNickname() != null){
-				obj.append("nickname", author.getNickname());
-			}
-			if (author.getWeblog() != null){
-				obj.append("weblog", author.getWeblog());
-			}
-			json.append("author", obj);
+			
+			json.append("author", getAuthor(author));
 			JSONArray vals = new JSONArray();
 			for (int i=0; i<values.length ;i++){
 				vals.put(values[i]);
 			}
+			json.append("observation_values", vals);
 			vals = new JSONArray();
 			for (int i=0; i<tsprops.length ;i++){
 				vals.put(tsprops[i]);
 			}
 			json.append("tsproperties", vals);
-			vals = new JSONArray();
-			for (int i=0; i<locations.length ;i++){
-				vals.put(locations[i]);
-			}
-			json.append("locations", vals);
-			json.append("location-name", location_name);
+//			vals = new JSONArray();
+//			for (int i=0; i<locations.length ;i++){
+//				vals.put(locations[i]);
+//			}
+//			json.append("locations", vals);
+//			json.append("location-name", location_name);
 			json.append("location-coords", location_coords);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
@@ -324,7 +312,7 @@ public class TestDeviceRestApi extends LD4STestHelper {
 	 *
 	 * @throws Exception If problems occur.
 	 */
-	@Test
+//	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
 		ClientResource cr = new ClientResource(local_uri+resourceId);

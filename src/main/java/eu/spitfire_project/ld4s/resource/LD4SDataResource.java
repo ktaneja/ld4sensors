@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,12 +28,14 @@ import org.restlet.security.User;
 import org.restlet.service.MetadataService;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -44,11 +47,15 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.shared.Lock;
+import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateAction;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.DCTerms;
@@ -67,7 +74,9 @@ import eu.spitfire_project.ld4s.lod_cloud.SearchRouter;
 import eu.spitfire_project.ld4s.lod_cloud.UomApi;
 import eu.spitfire_project.ld4s.lod_cloud.WeatherApi;
 import eu.spitfire_project.ld4s.resource.link.Link;
+import eu.spitfire_project.ld4s.resource.ov.TestOVRestApi;
 import eu.spitfire_project.ld4s.server.Server;
+import eu.spitfire_project.ld4s.test.LD4STestHelper;
 import eu.spitfire_project.ld4s.vocabulary.CorelfVocab;
 import eu.spitfire_project.ld4s.vocabulary.FoafVocab;
 import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
@@ -497,6 +506,60 @@ public abstract class LD4SDataResource extends ServerResource{
 		dataset.close() ;
 	}
 
+	public static void main(String[] args){
+		TestOVRestApi obj = new TestOVRestApi();
+		
+//		LD4SDataResource obj = new LD4SPlatformResource();
+//		String directory = "C:\\eclipse\\workspace\\LD4S\\bin\\.ld4s\\tdb\\LD4SDataset1";
+//		
+		for (int i=0; i<10000; i++){
+			try {
+				LD4STestHelper.setupServer();
+				obj.testPut();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("iteration number "+i);
+//			File dirf = new File (directory);
+//			if (!dirf.exists()){
+//				dirf.mkdirs();
+//			}
+//			obj.dataset = TDBFactory.createDataset(directory) ;
+//			TDB.sync(obj.dataset ) ;
+//			Model rdfData = ModelFactory.createDefaultModel();
+//			String namedModel = "general";
+////			obj.dataset.begin(ReadWrite.WRITE) ;
+//			
+//			try {
+//				
+//				if (!obj.dataset.containsNamedModel(namedModel)){
+//					rdfData.enterCriticalSection(Lock.WRITE);
+//					try{
+//						obj.dataset.addNamedModel(namedModel, rdfData);
+//					}finally{
+//						rdfData.leaveCriticalSection();
+//					}
+//				}else{
+//					Model model = obj.dataset.getNamedModel(namedModel) ;
+//					model.enterCriticalSection(Lock.WRITE);
+//					try{
+//						model.add(rdfData);
+//					}finally{
+//						model.leaveCriticalSection();
+//					}
+//				} 
+//				obj.dataset.commit() ;
+//				// Or call .abort()
+//			}catch(Exception e){
+//				e.printStackTrace();
+//				
+//			}  finally { 
+//				obj.dataset.end() ;
+//				obj.closeTDB();
+//			}
+		}
+	}
 	/**
 	 * Store the given model in the triple db
 	 * @param rdfData model to be stored
@@ -509,38 +572,64 @@ public abstract class LD4SDataResource extends ServerResource{
 		rdfData = rdfData.removeAll(null, null, rdfData.createLiteral("null"));
 		//special handler for resources (out of the scope of the 
 		//requested ones
-		initTDB();
-		this.dataset.begin(ReadWrite.WRITE) ;		
+		
+		
+		Model genericmodel = ModelFactory.createDefaultModel();
+		genericmodel = handleGenericResources(rdfData, genericmodel);
+		rdfData.remove(genericmodel);
+		
+		FusekiAccess f = FusekiAccess.getInstance();
 		try {
-			Model genericmodel = ModelFactory.createDefaultModel();
-			genericmodel = handleGenericResources(rdfData, genericmodel);
-			rdfData.remove(genericmodel);
-			if (!dataset.containsNamedModel(generalNamedModel)){
-				dataset.addNamedModel(generalNamedModel, genericmodel);
-			}else{
-				Model model = dataset.getNamedModel(generalNamedModel) ;
-				model.add(genericmodel);
-			}
-			if (!dataset.containsNamedModel(namedModel)){
-				dataset.addNamedModel(namedModel, rdfData);
-			}else{
-				Model model = dataset.getNamedModel(namedModel) ;
-				model.add(rdfData);
-			} 
-			dataset.commit() ;
-			// Or call .abort()
-		}catch(Exception e){
+			f.insert(namedModel, rdfData);
+		} catch (URISyntaxException | IOException e) {
 			e.printStackTrace();
-			ret = false;
-		}  finally { 
-			dataset.end() ;
-			closeTDB();
 		}
-//		testSparqlPrint(namedModel);
+		
 		return ret; 
 
 	}
+	
+	private static String nTripleizeModelForQuery(Model rdfData, String graphIRI){
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+		try {
+			baos.write("{ ".getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		rdfData.write(baos,"N-TRIPLE",graphIRI);
+		try {
+			baos.write("}".getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		String result = baos.toString();
+//		System.out.println("with graph "+ result);
+		return result;
+	}
+	
+	private static String nTripleizeModelForDeleteQuery(Model rdfData, String graphIRI) {
 
+		StmtIterator stmtIterator = rdfData.listStatements();
+
+		StringBuilder statementsStringForQuery = new StringBuilder();
+		statementsStringForQuery.append("{ ");
+		while (stmtIterator.hasNext()) {
+			Statement statement = stmtIterator.next();
+			Triple trp = statement.asTriple();
+			String subj = trp.getSubject().toString(true);
+			String pred = trp.getPredicate().toString(true);
+			statementsStringForQuery.append("<" + subj + "> <" + pred
+					+ "> ?o . \n");
+		}
+		statementsStringForQuery.append("}");
+
+		return statementsStringForQuery.toString();
+	}
+	
 
 
 	/**
@@ -625,10 +714,11 @@ public abstract class LD4SDataResource extends ServerResource{
 		OntClass[] at = null;
 		OntClass preftype = null;;
 		if (item != null && item.trim().compareTo("")!=0){
+			item = item.replaceAll(" ", "").toLowerCase();
 			at = ov.getAcceptedTypes();
 			if (at != null){
 				for (int ind=0; ind<at.length&&preftype==null ;ind++){
-					if (at[ind].getURI().toLowerCase().contains(item.toLowerCase())){
+					if (at[ind].getURI().toLowerCase().contains(item)){
 						preftype = at[ind];
 					}
 				}
@@ -1095,26 +1185,27 @@ public abstract class LD4SDataResource extends ServerResource{
 		}
 		Model ret = ModelFactory.createDefaultModel();
 		ret.createResource(uri);
-		initTDB();
-		this.dataset.begin(ReadWrite.READ) ;
-		try {
-			if (!dataset.containsNamedModel(namedModel)){
-				return null;
-			}
-			Model model = dataset.getNamedModel(namedModel) ;
-			StmtIterator retit = model.listStatements(model.createResource(uri), null, (RDFNode)null);
-			while (retit.hasNext()){
-				ret.add(retit.next());
-			} 
-			dataset.commit() ;
-			// Or call .abort()
-		}catch(Exception e){
-			e.printStackTrace();
-		}  finally { 
-			dataset.end() ;
-			closeTDB();
+		
+		String q = "select ?s ?p ?o " +
+//				"FROM named <http://localhost:8182/ld4s/graph/platform>"+
+				"where {" +
+				"GRAPH<"+ namedModel + ">" +
+				"{<"+ uri +"> ?p ?o . ?s ?p ?o}}";
+		String sparqlQueryURL = FusekiAccess.getSPARQLQueryURL();
+		QueryExecution qe = QueryExecutionFactory.sparqlService(sparqlQueryURL,q);
+		ResultSet results = qe.execSelect();
+		while(results.hasNext()){
+			QuerySolution qs = results.next();
+			Resource subj = ret.createResource(qs.get("s").toString());
+			Property pred = ret.createProperty(qs.get("p").toString());
+			Resource obj = ret.createResource(qs.get("o").toString());
+			Statement st = ret.createStatement(subj, pred, obj);
+			ret.add(st);
 		}
-//		testSparqlPrint(namedModel);
+		
+		
+		
+		testSparqlPrint(namedModel);
 		return ret;
 	}
 
@@ -1208,35 +1299,22 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @return success
 	 */
 	protected boolean delete(Model rdfData, String namedModel){
+		String statementsString = nTripleizeModelForQuery(rdfData,namedModel);
+		String q0 = "delete data " +
+				"{graph <"+ namedModel + ">" +
+				"{"+
+				statementsString+
+				"}"+
+				"}";
+		System.out.println("the concateneated query: "+q0);
+		
+		UpdateRequest ureq = UpdateFactory.create(q0);
+		String endpointAddress = FusekiAccess.getSPARQLUpdateURL();//"http://localhost:3030/opa/update";
+		UpdateProcessRemote upr = new UpdateProcessRemote(ureq, endpointAddress);
+		upr.execute();
+		
+		
 		boolean ret = true;
-		initTDB();
-		this.dataset.begin(ReadWrite.WRITE) ;
-
-		try {
-			if (!dataset.containsNamedModel(namedModel)){
-				return true;
-			}
-			Model model = dataset.getNamedModel(namedModel) ;
-			StmtIterator iter = rdfData.listStatements();
-			Statement stmt = null;
-			Resource  subject = null;
-			Property  predicate = null;
-			while (iter.hasNext()) {
-				stmt = iter.nextStatement();  // get next statement
-				subject   = stmt.getSubject();     // get the subject
-				predicate = stmt.getPredicate();   // get the predicate
-				model.removeAll(subject, predicate, null);
-			}
-			dataset.commit() ;
-			// Or call .abort()
-		}catch(Exception e){
-			e.printStackTrace();
-			ret = false;
-		}  finally { 
-			dataset.end() ;
-			closeTDB();
-		}
-//		testSparqlPrint(namedModel);
 		return ret;
 	}
 
@@ -1247,31 +1325,63 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @return success
 	 */
 	protected boolean update(Model rdfData, String namedModel){
-		delete(rdfData, namedModel);
-		return store(rdfData, namedModel);
+
+		
+		String deletePart = nTripleizeModelForDeleteQuery(rdfData, namedModel);
+		String updatePart = nTripleizeModelForQuery(rdfData, namedModel);
+		String actualQuery = "with <"+namedModel+"> \nDELETE "+deletePart+"\nINSERT "+updatePart+ "\nWHERE {?s ?p ?o}";
+		System.out.println(actualQuery);
+//		delete(rdfData, namedModel);
+//		store(rdfData, namedModel);
+		UpdateRequest ureq = UpdateFactory.create(actualQuery);
+		String endpointAddress = FusekiAccess.getSPARQLUpdateURL();//"http://localhost:3030/opa/update";
+		UpdateProcessRemote upr = new UpdateProcessRemote(ureq, endpointAddress);
+		upr.execute();
+		
+		return true;
 	}
+	
 
 	protected boolean delete(String uri, String namedModel){
 		boolean ret = true;
-		initTDB();
-		this.dataset.begin(ReadWrite.WRITE) ;
-
-		try {
-			if (!dataset.containsNamedModel(namedModel)){
-				return true;
-			}
-			Model model = dataset.getNamedModel(namedModel);
-			model.removeAll(model.createResource(uri), null, null);
-			dataset.commit() ;
-			// Or call .abort()
-		}catch(Exception e){
-			e.printStackTrace();
-			ret = false;
-		}  finally { 
-			dataset.end() ;
-			closeTDB();
-		}
-//		testSparqlPrint(namedModel);
+		
+		String q0 = "with <" +
+				 namedModel +
+				"> DELETE{?s ?p ?o} "+
+				"where {<"+uri+"> ?p ?o . ?s ?p ?o }";
+		
+		UpdateRequest ureq = UpdateFactory.create(q0);
+		String endpointAddress = FusekiAccess.getSPARQLUpdateURL();
+//				"http://localhost:3030/opa/update";
+		UpdateProcessRemote upr = new UpdateProcessRemote(ureq, endpointAddress);
+		upr.execute();
+		
+		
+//		initTDB();
+//		this.dataset.begin(ReadWrite.WRITE) ;
+//
+//		try {
+//			if (!dataset.containsNamedModel(namedModel)){
+//				return true;
+//			}
+//			Model model = dataset.getNamedModel(namedModel);
+//			model.removeAll(model.createResource(uri), null, null);
+//			dataset.commit() ;
+//			// Or call .abort()
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			ret = false;
+//		}  finally { 
+//			dataset.end() ;
+//			closeTDB();
+//		}
+////		testSparqlPrint(namedModel);
+		
+//		with <http://example/addresses>
+//			DELETE 
+//			{ <http://example/book3>  <http://purl.org/dc/elements/1.1/>  ?a} 
+//			where
+//			{ <http://example/book3>  <http://purl.org/dc/elements/1.1/>  ?a} 
 		return ret;
 	}
 }

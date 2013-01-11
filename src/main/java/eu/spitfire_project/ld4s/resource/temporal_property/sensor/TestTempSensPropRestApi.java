@@ -84,8 +84,8 @@ public class TestTempSensPropRestApi extends LD4STestHelper {
 			}
 			json.append("net_role", net_role);
 			json.append("foi", foi);
-//			json.append("location-name", location);
-			json.append("location-coords", location_coords);
+			json.append("location-name", location);
+//			json.append("location-coords", location_coords);
 			json.append("observed_property", observed_property);
 			json.append("start_range", start_range);
 			json.append("end_range", end_range);
@@ -94,6 +94,7 @@ public class TestTempSensPropRestApi extends LD4STestHelper {
 				vals.put(net_links[i]);
 			}
 			json.append("net_links", vals);
+			json.append("author", getAuthor(author));
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
@@ -153,6 +154,7 @@ public class TestTempSensPropRestApi extends LD4STestHelper {
 				//user_password);
 		//cr.setChallengeResponse(authentication);
 		Representation response = cr.put(json); 
+		System.out.println("payload="+json);
 		System.out.println(response.getText());
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());
@@ -259,7 +261,7 @@ public class TestTempSensPropRestApi extends LD4STestHelper {
 	 *
 	 * @throws Exception If problems occur.
 	 */
-	@Test
+//	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
 		ClientResource cr = new ClientResource(local_uri+resourceId);

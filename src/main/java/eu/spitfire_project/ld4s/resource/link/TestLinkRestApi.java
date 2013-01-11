@@ -24,10 +24,10 @@ public class TestLinkRestApi extends LD4STestHelper {
 	protected String resourceId = "a12b";
 	
 	/**From link. */
-	protected String from = "http://www.example.com/from";
+	protected String from = "http://www.example.com/from/test1.rdf";
 	
 	/**To link. */
-	protected String to = "http://www.example.com/to";
+	protected String to = "http://www.example.com/to/test2.rdf";
 	
 	/**Link Title. */
 	protected String title = "Sample Data Link";
@@ -67,11 +67,11 @@ public class TestLinkRestApi extends LD4STestHelper {
 			}else{
 				json.append("uri", null);
 			}
-			if (isEnriched){
-				json.append("context", filters);	
-			}else{
-				json.append("context", null);
-			}
+//			if (isEnriched){
+//				json.append("context", filters);	
+//			}else{
+//				json.append("context", null);
+//			}
 			json.append("updated", this.base_datetime);
 			json.append("title", title);
 			json.append("from", from);
@@ -129,12 +129,13 @@ public class TestLinkRestApi extends LD4STestHelper {
 	 */
 	@Test
 	public void testPut() throws Exception {
-		System.out.println("Test Put - java object payload");
 		initJson(false, false); 
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
+		System.out.println("Test Put - java object payload - " +
+				json);
 		Representation response = cr.put(json); 
 		System.out.println(response.getText());
 		Status status = cr.getStatus();

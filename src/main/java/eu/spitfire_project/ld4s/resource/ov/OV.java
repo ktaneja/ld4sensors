@@ -49,6 +49,9 @@ public class OV extends LD4SObject  implements Serializable{
 
 	/** Observed values. */
 	private String[] values = null;
+	
+	/** Source generating this observation. */
+	private String source = null;
 
 
 
@@ -76,6 +79,10 @@ public class OV extends LD4SObject  implements Serializable{
 		}
 		if (json.has("values")){
 			this.setValues(json.getJSONArray("values"));
+		}
+		if (json.has("source")){
+			this.setSource(LD4SDataResource.removeBrackets(
+					json.getString("source")));
 		}
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
@@ -167,5 +174,13 @@ public class OV extends LD4SObject  implements Serializable{
 	@Override
 	protected void initDefaultType() {
 		this.defaultType = SptVocab.OV;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getSource() {
+		return source;
 	}
 }

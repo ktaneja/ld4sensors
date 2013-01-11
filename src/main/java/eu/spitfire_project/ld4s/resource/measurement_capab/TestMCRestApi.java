@@ -74,17 +74,16 @@ public class TestMCRestApi extends LD4STestHelper {
 			}else{
 				json.append("uri", null);
 			}
-			if (isEnriched){
-				json.append("context", filters);	
-			}else{
-				json.append("context", null);
-			}
+//			if (isEnriched){
+//				json.append("context", filters);	
+//			}else{
+//				json.append("context", null);
+//			}
 			JSONArray vals = new JSONArray();
 			for (int i=0; i<measurement_props.length ;i++){
 				vals.put(measurement_props[i]);
 			}
 			json.append("measurement_properties", vals);
-			json.append("foi", foi);
 			json.append("observed_property", observed_property);
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
@@ -138,12 +137,13 @@ public class TestMCRestApi extends LD4STestHelper {
 	 */
 	@Test
 	public void testPut() throws Exception {
-		System.out.println("Test Put - java object payload");
 		initJson(false, false); 
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
+		System.out.println("Test Put - java object payload - " +
+				json);
 		Representation response = cr.put(json); 
 		System.out.println(response.getText());
 		Status status = cr.getStatus();
@@ -251,7 +251,7 @@ public class TestMCRestApi extends LD4STestHelper {
 	 *
 	 * @throws Exception If problems occur.
 	 */
-	@Test
+//	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
 		ClientResource cr = new ClientResource(local_uri+resourceId);

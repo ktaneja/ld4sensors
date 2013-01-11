@@ -87,11 +87,11 @@ public class TestMPRestApi extends LD4STestHelper {
 			}else{
 				json.append("uri", null);
 			}
-			if (isEnriched){
-				json.append("context", filters);	
-			}else{
-				json.append("context", null);
-			}
+//			if (isEnriched){
+//				json.append("context", filters);	
+//			}else{
+//				json.append("context", null);
+//			}
 			json.append("conditions", initConditions());
 			json.append("predicate", predicate0);
 			json.append("value", value0);
@@ -175,12 +175,13 @@ public class TestMPRestApi extends LD4STestHelper {
 	 */
 	@Test
 	public void testPut() throws Exception {
-		System.out.println("Test Put - java object payload");
 		initJson(false, false); 
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
+		System.out.println("Test Put - java object payload - " +
+				json);
 		Representation response = cr.put(json); 
 		System.out.println(response.getText());
 		Status status = cr.getStatus();
@@ -288,7 +289,7 @@ public class TestMPRestApi extends LD4STestHelper {
 	 *
 	 * @throws Exception If problems occur.
 	 */
-	@Test
+//	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
 		ClientResource cr = new ClientResource(local_uri+resourceId);

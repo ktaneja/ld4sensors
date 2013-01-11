@@ -286,33 +286,33 @@ public abstract class LD4SObject{
 		if (objarr == null || objarr.length() == 0){
 			return;
 		}
-		Person author = new Person();
+		Person pers = new Person();
 		JSONObject obj = objarr.getJSONObject(0);
 		if (obj.has("firstname")){
-			author.setFirstname(LD4SDataResource.removeBrackets(
+			pers.setFirstname(LD4SDataResource.removeBrackets(
 					obj.getString("firstname")));
 		}
 		if (obj.has("surname")){
-			author.setSurname(LD4SDataResource.removeBrackets(
+			pers.setSurname(LD4SDataResource.removeBrackets(
 					obj.getString("surname")));
 		}
 		if (obj.has("email")){
-			author.setEmail(LD4SDataResource.removeBrackets(
+			pers.setEmail(LD4SDataResource.removeBrackets(
 					obj.getString("email")));
 		}
 		if (obj.has("weblog")){
-			author.setWeblog(LD4SDataResource.removeBrackets(
+			pers.setWeblog(LD4SDataResource.removeBrackets(
 					obj.getString("weblog")));
 		}
 		if (obj.has("homepage")){
-			author.setHomepage(LD4SDataResource.removeBrackets(
+			pers.setHomepage(LD4SDataResource.removeBrackets(
 					obj.getString("homepage")));
 		}
 		if (obj.has("nickname")){
-			author.setNickname(LD4SDataResource.removeBrackets(
+			pers.setNickname(LD4SDataResource.removeBrackets(
 					obj.getString("nickname")));
 		}
-		setAuthor(author);
+		setAuthor(pers);
 	}
 	
 	public Person getAuthor() {
