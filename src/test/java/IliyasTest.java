@@ -1,5 +1,6 @@
 import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mortbay.util.URIUtil;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -24,7 +26,8 @@ import eu.spitfire_project.ld4s.test.LD4STestHelper;
 
 public class IliyasTest {
 	/** Resource ID necessary to store locally. */
-	protected String resourceId = "a12bZCreole2";
+	protected String resourceId = "ebeshligoZdravo?sep=\"http://localhost:8182/ld4s/platform/\"";
+	int indexOfQuery = resourceId.indexOf("?");
 //	protected String resourceId = "rainbowSensorAB";
 	
 	/** Platform type. */
@@ -54,10 +57,10 @@ public class IliyasTest {
 			"http://uberdust.cti.gr/rest/testbed/1/kml", "http://maps.google.com/maps?q=http://uberdust.cti.gr/rest/testbed/1/kml"};
 	
 	/** Status page URI. */
-	protected String status = "http://www.example.org/testbed/status/"+resourceId;
+	protected String status = "http://www.example.org/testbed/status/"+resourceId.substring(0,indexOfQuery);
 	
 	/** Historical Archive. */
-	protected String archive = "http://www.example.org/testbed/"+resourceId+"/archive";
+	protected String archive = "http://www.example.org/testbed/"+resourceId.substring(0,indexOfQuery)+"/archive";
 
 	/** User-defined criteria for linking. */
 	protected String filters = "d=crossdomain%20OR%20geography" +
@@ -75,6 +78,7 @@ public class IliyasTest {
 	protected String[] locations = new String[]{" # madrid", "near # 12.009_24.500"
 			, "near # 19.489_23.52", "in # spain"};
 	
+	protected String sparql_endpoint_uri_update = "";
 	/**
 	 * @param args
 	 * @throws Exception 
@@ -85,8 +89,8 @@ public class IliyasTest {
 		System.out.println("SDSDSD " +System.getProperty(ServerProperties.RDF_STORE_HOSTNAME));
 //		it.testLDPostRemoteResource();
 //		it.testGet();
-		it.testPut();
-//		it.testLDPostLocalResource();
+//		it.testPut();
+		it.testLDPostLocalResource();
 //		it.testLDPostLocalResource();
 //		it.testDelete();
 	}
@@ -128,7 +132,7 @@ public class IliyasTest {
 	@Test
 	public void testLDPostLocalResource() throws Exception {
 		System.out.println("Test POST local and with external links - Java object payload");
-		initJson(false, true);
+		initJson(false, true, sparql_endpoint_uri_update);
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -193,7 +197,7 @@ public class IliyasTest {
 	@Test
 	public void testLDPostRemoteResource() throws Exception {
 		System.out.println("Test POST remote and with external links - Java object payload");
-		initJson(true, true);
+		initJson(true, true, sparql_endpoint_uri_update);
 		ClientResource cr = new ClientResource(local_uri);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -214,7 +218,9 @@ public class IliyasTest {
 	@Test
 	public void testPut() throws Exception {
 		System.out.println("Test Put - java object payload");
-		initJson(false, false); 
+		String st = URIUtil.encodePath(sparql_endpoint_uri_update);
+		System.out.println("SASAS"+st);
+		initJson(false, false, st); 
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -237,7 +243,7 @@ public class IliyasTest {
 //			"Ioannis", "Chatzigiannakis", null, null, null, null, null);
 			"Manfred", "Hauswirth", null, null, null, null, null);
 	
-	private void initJson(boolean isRemote, boolean isEnriched){
+	private void initJson(boolean isRemote, boolean isEnriched, String sparql_endpoint_uri){
 		this.json = new JSONObject();
 		try {
 			if (isRemote){
@@ -266,6 +272,7 @@ public class IliyasTest {
 				vals.put(feeds[i]);
 			}
 			json.append("feeds", vals);
+			json.append("sparql-endpoint-uri", sparql_endpoint_uri);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}

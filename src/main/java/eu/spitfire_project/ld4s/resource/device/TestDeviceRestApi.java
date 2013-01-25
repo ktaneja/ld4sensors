@@ -432,4 +432,10 @@ public class TestDeviceRestApi extends LD4STestHelper {
 				+ "sent : "+json
 				+local_uri+"==============\n"+rdf);
 	}
+	
+	public static void main(String[] args) throws Exception {
+		setupServer();
+		TestDeviceRestApi t = new TestDeviceRestApi();
+		t.testGet();
+	}
 }

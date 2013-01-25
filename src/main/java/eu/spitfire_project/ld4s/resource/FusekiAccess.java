@@ -22,6 +22,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.openjena.riot.Lang;
 import org.openjena.riot.WebContent;
 
@@ -137,7 +138,7 @@ public final class FusekiAccess {
 	public boolean insert(String graphIRI, Model model)
 			throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = getURI(graphIRI).build();
-		// URI uri = new URI("http://localhost:3030/opa/upload");
+//		 URI uri = new URI("http://localhost:3030/opa/update");
 		HttpPost httpPost = new HttpPost(uri);
 		StatusLine status = execute((HttpUriRequest) addBody((httpPost),
 				graphIRI, model));
@@ -174,9 +175,9 @@ public final class FusekiAccess {
 			response = httpclient.execute(req);
 			return response.getStatusLine();
 		} finally {
-//			if (response != null) {
-//				EntityUtils.consume(response.getEntity());
-//			}
+			if (response != null) {
+				EntityUtils.consume(response.getEntity());
+			}
 		}
 	}
 	private URIBuilder getURI(String graphIRI) throws URISyntaxException {

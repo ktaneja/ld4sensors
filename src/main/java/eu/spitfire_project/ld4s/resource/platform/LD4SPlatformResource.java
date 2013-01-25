@@ -10,7 +10,7 @@ import eu.spitfire_project.ld4s.vocabulary.CorelfVocab;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 
 /**
- * Construct an oobservation value resource.
+ * Construct an observation value resource.
  *
  * @author Myriam Leggieri.
  *
@@ -40,7 +40,7 @@ public class LD4SPlatformResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
+		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
 		return resource;
 	}
 
@@ -122,7 +122,7 @@ public class LD4SPlatformResource extends LD4SDataResource {
 				}
 			}			
 		}
-		resource = crossResourcesAnnotation(ov, resource);
+		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
 		return resource;
 	}
 

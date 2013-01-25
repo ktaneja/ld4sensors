@@ -45,7 +45,7 @@ public class LD4SMPResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
+		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
 		return resource;
 	}
 
@@ -94,7 +94,7 @@ public class LD4SMPResource extends LD4SDataResource {
 				resource.addProperty(SptVocab.UOM, 
 						rdfData.createResource(item));	
 			}else{
-				resource = addUom(resource, item);
+				resource = addUom(resource, item, ov.getSparql_endpoint_uri());
 			}
 		}
 		try{
@@ -135,7 +135,7 @@ public class LD4SMPResource extends LD4SDataResource {
 							conditions[ind].predicate);
 				}
 				if (conditions[ind].uom != null){
-					bnode_resource = addUom(bnode_resource, conditions[ind].uom);
+					bnode_resource = addUom(bnode_resource, conditions[ind].uom, ov.getSparql_endpoint_uri());
 				}
 				try{
 					if (conditions[ind].value != null){
@@ -157,7 +157,7 @@ public class LD4SMPResource extends LD4SDataResource {
 				}
 			}
 		}
-		resource = crossResourcesAnnotation(ov, resource);
+		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
 		return resource;
 	}
 

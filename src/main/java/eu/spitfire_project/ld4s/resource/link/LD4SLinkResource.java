@@ -33,7 +33,7 @@ public class LD4SLinkResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
+		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
 		return resource;
 	}
 	

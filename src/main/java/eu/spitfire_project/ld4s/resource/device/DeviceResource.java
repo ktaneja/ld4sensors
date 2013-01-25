@@ -50,13 +50,13 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 			if (query != -1){
 				uristr = this.uristr.substring(0,query-1);
 			}
-			rdfData = retrieve(this.uristr, this.namedModel);
+			rdfData = retrieve(this.uristr, this.namedModel, ov.getSparql_endpoint_uri());
 			//how it is: for now, if links are requested, then search for new ones 
 			//and filter out all the stored ones.
 			if (!this.context.isEmpty()){
 				//how it should be: add the already existing links iff their context 
 				//matches with the requested one search for new links
-				rdfData = addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context).getModel();
+				rdfData = addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context, ov.getSparql_endpoint_uri()).getModel();
 			}
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}
@@ -160,7 +160,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 			}		
 			// create a new resource in the database
-			if (store(rdfData, this.namedModel)){
+			if (store(rdfData, this.namedModel, ov.getSparql_endpoint_uri())){
 				setStatus(Status.SUCCESS_CREATED);
 				ret = serializeAccordingToReqMediaType(rdfData);
 			}else{
@@ -223,7 +223,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		}
 
 		// create a new resource in the database
-		if (store(rdfData, this.namedModel)){
+		if (store(rdfData, this.namedModel, ov.getSparql_endpoint_uri())){
 			setStatus(Status.SUCCESS_CREATED);	 
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}else{
@@ -292,7 +292,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 			// create a new resource in the database only if the preferred resource hosting server is
 			// the LD4S one
 			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
-				if (update(rdfData, this.namedModel)){
+				if (update(rdfData, this.namedModel, ov.getSparql_endpoint_uri())){
 					setStatus(Status.SUCCESS_OK);	 
 					ret = serializeAccordingToReqMediaType(rdfData);
 				}else{
@@ -338,7 +338,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 			// create a new resource in the database only if the preferred resource hosting server is
 			// the LD4S one
 			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
-				if (update(rdfData, this.namedModel)){
+				if (update(rdfData, this.namedModel, ov.getSparql_endpoint_uri())){
 					setStatus(Status.SUCCESS_OK);	 
 					ret = serializeAccordingToReqMediaType(rdfData);
 				}else{
@@ -378,7 +378,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		}
 		logger.fine(resourceName + " LD4S: Now deleting "+this.uristr);		
 		// create a new resource in the database
-		if (delete(this.uristr, this.namedModel)){
+		if (delete(this.uristr, this.namedModel, ov.getSparql_endpoint_uri())){
 			setStatus(Status.SUCCESS_OK);	 
 		}else{
 			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to delete from the Trple DB");

@@ -31,7 +31,7 @@ public class OtherResource extends LD4SDataResource {
 			//get all the resource information from the Triple DB
 			logger.fine(resourceName + " LD4S: Requesting data");
 			logRequest(resourceName, resourceId);
-			rdfData = retrieve(uristr, namedModel);
+			rdfData = retrieve(uristr, namedModel,sparqlEndpoitUri);
 			if (rdfData.isEmpty()){
 				setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}else{

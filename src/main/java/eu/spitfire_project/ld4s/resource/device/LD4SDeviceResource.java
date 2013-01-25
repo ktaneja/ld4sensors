@@ -40,7 +40,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
+		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
 		return resource;
 	}
 
@@ -106,7 +106,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 						rdfData.createResource(item));	
 			}else{
 				resource = 
-					addObservedProperty(resource, item, SptVocab.OBSERVED_PROPERTY, ov.getFoi());
+					addObservedProperty(resource, item, SptVocab.OBSERVED_PROPERTY, ov.getFoi(), ov.getSparql_endpoint_uri());
 			}
 		}	
 		item = ov.getUnit_of_measurement();
@@ -115,7 +115,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 				resource.addProperty(SptVocab.UOM, 
 						rdfData.createResource(item));	
 			}else{
-				resource = addUom(resource, item);
+				resource = addUom(resource, item, ov.getSparql_endpoint_uri());
 			}
 		}
 		String[] tprops = ov.getTsproperties();
@@ -143,7 +143,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 				}
 			}			
 		}
-		resource = crossResourcesAnnotation(ov, resource);
+		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
 		return resource;
 	}
 

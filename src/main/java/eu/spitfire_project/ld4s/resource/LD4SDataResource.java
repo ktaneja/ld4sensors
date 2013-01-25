@@ -141,6 +141,8 @@ public abstract class LD4SDataResource extends ServerResource{
 	/** Name of the Named Graph where all the instances of each Service resource are stored. */
 	protected String namedModel = null;
 
+	protected String sparqlEndpoitUri = null;
+	
 	private String generalNamedModel = null;
 
 	protected static HashMap<String, String> resource2namedGraph = null;
@@ -189,7 +191,19 @@ public abstract class LD4SDataResource extends ServerResource{
 		}
 		this.resourceId = ((String) getRequest().getAttributes().get("resource_id"));
 		this.timestamp = (String) getRequest().getAttributes().get("timestamp");
-		this.uristr = this.getRequest().getResourceRef().toString();
+		this.sparqlEndpoitUri = (String)getRequest().getResourceRef().getQueryAsForm().getFirstValue("sep");
+		try{
+		System.out.println("vdvdvdsdsdsdasdasdas "+getRequest().getResourceRef().getQueryAsForm().getFirstValue("sep"));
+		}catch(Exception e){
+			System.err.println("Mamito ti 6e eba "+e);
+		}
+		String uriStrWhole = this.getRequest().getResourceRef().toString();
+		int indexOfQueryStart = uriStrWhole.indexOf("?");
+		if(indexOfQueryStart>0){
+		this.uristr = uriStrWhole.substring(0, indexOfQueryStart);
+		} else {
+			this.uristr = uriStrWhole;
+		}
 		this.generalNamedModel = this.ld4sServer.getHostName()+"graph/general";
 		this.namedModel = getNamedModel(this.uristr);
 		if (this.namedModel == null){
@@ -565,7 +579,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @param rdfData model to be stored
 	 * @return success
 	 */
-	protected boolean store(Model rdfData, String namedModel){
+	protected boolean store(Model rdfData, String namedModel, String sparqlEndpointUri){
 		boolean ret = true;
 		//remove invalid entries from the model to be stored
 		rdfData = rdfData.removeAll(null, null, rdfData.createLiteral(""));
@@ -577,7 +591,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		Model genericmodel = ModelFactory.createDefaultModel();
 		genericmodel = handleGenericResources(rdfData, genericmodel);
 		rdfData.remove(genericmodel);
-		
+		System.out.println("<<>><><><><><><><><<<><><<><><> " +sparqlEndpointUri);
 		FusekiAccess f = FusekiAccess.getInstance();
 		try {
 			f.insert(namedModel, rdfData);
@@ -643,7 +657,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @throws Exception
 	 */
 	public Resource addLinkedData(Resource resource,
-			Domain searchType, Context context) throws Exception {
+			Domain searchType, Context context, String sparqlEndpointUri) throws Exception {
 		SearchRouter searchobj = null;
 		switch(searchType){
 		case ALL:
@@ -676,7 +690,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		}
 		Model model = searchobj.start();
 		if (model != null){
-			store(model, namedModel);
+			store(model, namedModel, sparqlEndpoitUri);
 		}
 		return resource;
 	}
@@ -707,7 +721,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	}
 
 
-	protected Resource crossResourcesAnnotation(LD4SObject ov, Resource resource) throws Exception{
+	protected Resource crossResourcesAnnotation(LD4SObject ov, Resource resource, String sparqlEndpointUri) throws Exception{
 		String 
 		//check whether the specified subtype is a valid one,
 		item = ov.getType();
@@ -742,7 +756,7 @@ public abstract class LD4SDataResource extends ServerResource{
 						"http://www.ontologydesignpatterns.org/ont/dul/DUL.owl/hasLocation"), 
 						resource.getModel().createResource(item));	
 		}else {
-			resource = addLocation(resource, item, item1);
+			resource = addLocation(resource, item, item1, sparqlEndpointUri);
 			
 		}
 		item = ov.getResource_time();
@@ -780,21 +794,21 @@ public abstract class LD4SDataResource extends ServerResource{
 		Resource publisher_resource = null;
 		if (this.user.getIdentifier() != null){
 			person = new Person(user.getFirstName(), user.getLastName(), user.getName(), user.getEmail(), null, null, null);
-			publisher_resource = addPerson(resource, person, DC.publisher);
+			publisher_resource = addPerson(resource, person, DC.publisher, sparqlEndpointUri);
 		}
 		person = ov.getAuthor();
 		if (person != null){
 			if (publisher_resource != null){
-				addPerson(publisher_resource, person, ProvVocab.ACTED_ON_BEHALF_OF);
+				addPerson(publisher_resource, person, ProvVocab.ACTED_ON_BEHALF_OF, sparqlEndpointUri);
 			}
-			addPerson(resource, person, ProvVocab.WAS_GENERATED_BY);
+			addPerson(resource, person, ProvVocab.WAS_GENERATED_BY, sparqlEndpointUri);
 		}
 		return resource;
 	}
 
 
 
-	protected Resource addWeatherForecast(Resource resource) throws Exception{
+	protected Resource addWeatherForecast(Resource resource, String sparqlEndpointUri) throws Exception{
 		String id = null;		
 		Date[] dates = this.context.getTime_range(); 
 		String[] location_coords = this.context.getLocation_coords();
@@ -820,12 +834,12 @@ public abstract class LD4SDataResource extends ServerResource{
 		con.setTime_range(dates);
 		con.setLocation(location);
 		con.setLocation_coords(location_coords);
-		item_resource = addLinkedData(item_resource, Domain.WEATHER, con);
+		item_resource = addLinkedData(item_resource, Domain.WEATHER, con, sparqlEndpointUri);
 		resource.addProperty(SptVocab.WEATHER_FORECAST, item_resource);
 		return resource;
 	}
 
-	protected Resource addLocation(Resource resource, String location_name, String[] location_coords){
+	protected Resource addLocation(Resource resource, String location_name, String[] location_coords, String sparqlEndpointUri){
 		String item_uri = null;
 		if (location_name != null){
 			item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/location", location_name);
@@ -846,7 +860,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		con.setLocation(location_name);
 		con.setLocation_coords(location_coords);
 		try {
-			item_resource = addLinkedData(item_resource, Domain.LOCATION, con);
+			item_resource = addLinkedData(item_resource, Domain.LOCATION, con, sparqlEndpointUri);
 			if (item_resource != null){
 				resource.addProperty(
 						resource.getModel().createProperty(
@@ -897,15 +911,15 @@ public abstract class LD4SDataResource extends ServerResource{
 		////	}
 	}
 
-	protected Resource addFoi(Resource resource, String foi) throws Exception{
+	protected Resource addFoi(Resource resource, String foi, String sparqlEndpointUri) throws Exception{
 		if (foi.contains("weather")){
-			resource = addWeatherForecast(resource);
+			resource = addWeatherForecast(resource, sparqlEndpointUri);
 		}else{
 			String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/property", foi);
 			Resource item_resource = resource.getModel().createResource(item_uri);
 			Context con = new Context(this.ld4sServer.getHostName());
 			con.setThing(foi);
-			item_resource = addLinkedData(item_resource, Domain.FEATURE, con);
+			item_resource = addLinkedData(item_resource, Domain.FEATURE, con, sparqlEndpointUri);
 			if (item_resource != null){
 				resource.addProperty(SsnVocab.FEATURE_OF_INTEREST, item_resource);
 			}
@@ -915,7 +929,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	}
 
 	protected Resource addObservedProperty (Resource resource, String observed_property,
-			Property prop, String foi)
+			Property prop, String foi, String sparqlEndpointUri)
 	throws Exception{
 		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/property", observed_property);
 		Resource item_resource = resource.getModel().createResource(item_uri);
@@ -924,19 +938,19 @@ public abstract class LD4SDataResource extends ServerResource{
 		con.setAdditionalTerms(new String[][]{
 				{"", foi}
 		});
-		item_resource = addLinkedData(item_resource, Domain.FEATURE, con);
+		item_resource = addLinkedData(item_resource, Domain.FEATURE, con, sparqlEndpointUri);
 		if (item_resource != null){
 			resource.addProperty(prop, item_resource);
 		}
 		return resource;
 	}
 
-	protected Resource addUom(Resource resource, String uom) throws Exception{
+	protected Resource addUom(Resource resource, String uom, String sparqlEndpointUri) throws Exception{
 		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/uom", uom);
 		Resource item_resource = resource.getModel().createResource(item_uri);
 		Context con = new Context(this.ld4sServer.getHostName());
 		con.setThing(uom);
-		item_resource = addLinkedData(item_resource, Domain.UNIT, con);
+		item_resource = addLinkedData(item_resource, Domain.UNIT, con, sparqlEndpointUri);
 		if (item_resource != null){
 			resource.addProperty(SptVocab.UOM, item_resource);
 		}
@@ -1021,7 +1035,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @return resource representing the person
 	 * @throws Exception
 	 */
-	protected Resource addPerson(Resource resource, Person item, Property prop) throws Exception{
+	protected Resource addPerson(Resource resource, Person item, Property prop, String sparqlEndpointUri) throws Exception{
 		String id = null;		
 		if (item.getEmail() != null && item.getEmail().trim().compareTo("") != 0){
 			id = URLEncoder.encode(item.getEmail(), "utf-8");
@@ -1041,7 +1055,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		Resource item_resource = resource.getModel().createResource(item_uri);
 		Context con = new Context(this.ld4sServer.getHostName());
 		con.setPerson(item);
-		item_resource = addLinkedData(item_resource, Domain.PEOPLE, con);
+		item_resource = addLinkedData(item_resource, Domain.PEOPLE, con, sparqlEndpointUri);
 		if (item_resource != null){
 			resource.addProperty(prop, item_resource);
 		}
@@ -1176,7 +1190,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		//			     proc.execute() ;
 	}
 
-	protected Model retrieve (String uri, String namedModel){
+	protected Model retrieve (String uri, String namedModel, String sparqlEndpointUri){
 		if (uri == null){
 			return null;
 		}
@@ -1324,7 +1338,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @param rdfData model containing the subj-pred couples to be updated in their values
 	 * @return success
 	 */
-	protected boolean update(Model rdfData, String namedModel){
+	protected boolean update(Model rdfData, String namedModel, String sparqlEndpointUri){
 
 		
 		String deletePart = nTripleizeModelForDeleteQuery(rdfData, namedModel);
@@ -1342,14 +1356,18 @@ public abstract class LD4SDataResource extends ServerResource{
 	}
 	
 
-	protected boolean delete(String uri, String namedModel){
+	protected boolean delete(String uri, String namedModel, String sparqlEndpointUri){
 		boolean ret = true;
 		
 		String q0 = "with <" +
 				 namedModel +
-				"> DELETE{?s ?p ?o} "+
-				"where {<"+uri+"> ?p ?o . ?s ?p ?o }";
-		
+				"> DELETE{<"+uri+"> ?p ?o} "+
+				"where {?s ?p ?o .}";
+//		String q0 = "with <" +
+//				 namedModel +
+//				"> DELETE{?s ?p ?o} "+
+//				"where {<"+uri+"> ?p ?o . ?s ?p ?o }";
+		System.out.println(q0);
 		UpdateRequest ureq = UpdateFactory.create(q0);
 		String endpointAddress = FusekiAccess.getSPARQLUpdateURL();
 //				"http://localhost:3030/opa/update";

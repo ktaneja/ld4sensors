@@ -65,6 +65,9 @@ public abstract class LD4SObject{
 	
 	/** Milliseconds shift from the base time as a reading collection time point. */
 	private String time = null;
+	
+	/** The address of the SPARQL endpoint where the annotated sensor RDF data is stored. */
+	protected String sparql_endpoint_uri = null;
 
 	protected abstract void initDefaultType(); 
 	protected abstract void initAcceptedTypes(); 
@@ -129,6 +132,9 @@ public abstract class LD4SObject{
 		if (json.has("locations")){
 			this.setSpace(json.getJSONArray("locations"));
 		}
+		if (json.has("sparql-endpoint-uri")){
+			this.setSparql_endpoint_uri(json.getString("sparql-endpoint-uri"));
+		}
 		initAcceptedTypes();
 		initDefaultType();
 	}
@@ -159,6 +165,8 @@ public abstract class LD4SObject{
 		//spaces relation # <lat,long | name> 
 		this.setSpace(
 				form.getValuesArray("locations"));
+		this.setSparql_endpoint_uri(
+				form.getFirstValue("sparql-endpoint-uri"));
 		initAcceptedTypes();
 		initDefaultType();
 	}
@@ -365,5 +373,11 @@ public abstract class LD4SObject{
 	public String[] getCoords() {
 		return coords;
 	}
-
+	public String getSparql_endpoint_uri() {
+		return sparql_endpoint_uri;
+	}
+	public void setSparql_endpoint_uri(String sparql_endpoint_uri) {
+		this.sparql_endpoint_uri = sparql_endpoint_uri;
+	}
+	
 }
