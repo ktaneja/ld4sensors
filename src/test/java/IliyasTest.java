@@ -26,7 +26,7 @@ import eu.spitfire_project.ld4s.test.LD4STestHelper;
 
 public class IliyasTest {
 	/** Resource ID necessary to store locally. */
-	protected String resourceId = "ebeshligoZdravo?sep=\"http://localhost:8182/ld4s/platform/\"";
+	protected String resourceId = "ebeshligoVDupetoOOp";//?sep=http://localhost:3030/opa/data";
 	int indexOfQuery = resourceId.indexOf("?");
 //	protected String resourceId = "rainbowSensorAB";
 	
@@ -57,10 +57,10 @@ public class IliyasTest {
 			"http://uberdust.cti.gr/rest/testbed/1/kml", "http://maps.google.com/maps?q=http://uberdust.cti.gr/rest/testbed/1/kml"};
 	
 	/** Status page URI. */
-	protected String status = "http://www.example.org/testbed/status/"+resourceId.substring(0,indexOfQuery);
+	protected String status = "http://www.example.org/testbed/status/"+resourceId/*.substring(0,indexOfQuery)*/;
 	
 	/** Historical Archive. */
-	protected String archive = "http://www.example.org/testbed/"+resourceId.substring(0,indexOfQuery)+"/archive";
+	protected String archive = "http://www.example.org/testbed/"+resourceId+"/archive";
 
 	/** User-defined criteria for linking. */
 	protected String filters = "d=crossdomain%20OR%20geography" +
@@ -88,9 +88,9 @@ public class IliyasTest {
 		IliyasTest it = new IliyasTest();
 		System.out.println("SDSDSD " +System.getProperty(ServerProperties.RDF_STORE_HOSTNAME));
 //		it.testLDPostRemoteResource();
-//		it.testGet();
+		it.testGet();
 //		it.testPut();
-		it.testLDPostLocalResource();
+//		it.testLDPostLocalResource();
 //		it.testLDPostLocalResource();
 //		it.testDelete();
 	}
@@ -303,6 +303,8 @@ public class IliyasTest {
 	
 	public void testGet() throws Exception {
 		System.out.println("Test Get");
+		resourceId = resourceId+"?sep=http://localhost:3030/opa/query";
+//		http://localhost:3030/opa/query
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);

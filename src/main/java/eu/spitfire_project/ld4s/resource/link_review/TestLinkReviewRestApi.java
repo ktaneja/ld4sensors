@@ -124,6 +124,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	@Test
 	public void testPut() throws Exception {
 		initJson(false, false); 
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_UPDATE;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -149,6 +150,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	public void testFormPut() throws Exception {
 		System.out.println("Test Put - form payload");
 		initForm(false, false); 
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_UPDATE;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -172,6 +174,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	public void testJSONPut() throws Exception {
 		System.out.println("Test Put - JSON payload");
 		initJson(false, false); 
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_UPDATE;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -194,6 +197,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	@Test
 	public void testGet() throws Exception {
 		System.out.println("Test Get");
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_QUERY;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -217,7 +221,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 //	@Test
 	public void testLDGet() throws Exception {
 		System.out.println("Test Get with query string appended");
-		ClientResource cr = new ClientResource(local_uri+resourceId+"?"+filters);
+		ClientResource cr = new ClientResource(local_uri+resourceId+"?"+filters+"&sep="+SPARQL_ENDPOINT_URI_QUERY);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -240,6 +244,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 //	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_UPDATE;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -262,7 +267,8 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	public void testFormPostLocalResource() throws Exception {
 		System.out.println("Test POST local and with no external links - Form payload");
 		initForm(false, false);
-		System.out.println(form.toString());		 
+		System.out.println(form.toString());		
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_QUERY;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -283,6 +289,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	public void testLDPostLocalResource() throws Exception {
 		System.out.println("Test POST local and with external links - Java object payload");
 		initJson(false, false);
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_QUERY;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -304,8 +311,8 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	public void testJSONPostRemoteResource() throws Exception {
 		System.out.println("Test POST remote and with no external links - JSON payload");
 		initJson(true, false);
-		System.out.println(json.toString());		 
-		ClientResource cr = new ClientResource(local_uri);
+		System.out.println(json.toString());
+		ClientResource cr = new ClientResource(local_uri+"?sep="+SPARQL_ENDPOINT_URI_UPDATE);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -326,7 +333,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	public void testLDPostRemoteResource() throws Exception {
 		System.out.println("Test POST remote and with external links - Java object payload");
 		initJson(true, false);
-		ClientResource cr = new ClientResource(local_uri);
+		ClientResource cr = new ClientResource(local_uri+"?sep="+SPARQL_ENDPOINT_URI_UPDATE);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);

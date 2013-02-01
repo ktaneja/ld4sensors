@@ -41,7 +41,7 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
+		resource = addLinkedData(resource, Domain.ALL, this.context, this.sparqlEndpoitUri);
 		return resource;
 	}
 
@@ -129,7 +129,7 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 							rdfData.createResource(p.getUri()));
 				}else{
 					resource = 
-						addPerson(resource, p, SptVocab.OWNED_BY, ov.getSparql_endpoint_uri());
+						addPerson(resource, p, SptVocab.OWNED_BY, this.sparqlEndpoitUri);
 				}
 			}
 		}
@@ -163,11 +163,11 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 			if (persons != null){
 				for (int ind=0; ind<persons.length ;ind++){
 					resource = 
-						addPerson(resource, persons[ind], SptVocab.WORN_BY, ov.getSparql_endpoint_uri());
+						addPerson(resource, persons[ind], SptVocab.WORN_BY, this.sparqlEndpoitUri);
 				}
 			}
 		}
-		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
+		resource = crossResourcesAnnotation(ov, resource, this.sparqlEndpoitUri);
 		return resource;
 	}
 

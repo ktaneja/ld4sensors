@@ -136,6 +136,7 @@ public class TestOVRestApi extends LD4STestHelper {
 	public void testPut() throws Exception {
 		System.out.println("Test Put - java object payload");
 		initJson(false, false); 
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_UPDATE;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -168,6 +169,7 @@ public class TestOVRestApi extends LD4STestHelper {
 	public void testFormPut() throws Exception {
 		System.out.println("Test Put - form payload");
 		initForm(false, false); 
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_UPDATE;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
@@ -191,6 +193,7 @@ public class TestOVRestApi extends LD4STestHelper {
 	public void testJSONPut() throws Exception {
 		System.out.println("Test Put - JSON payload");
 		initJson(false, false); 
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_UPDATE;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 //		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 //				//user_password);
@@ -220,6 +223,8 @@ public class TestOVRestApi extends LD4STestHelper {
 	@Test
 	public void testGet() throws Exception {
 		System.out.println("Test Get");
+		
+		resourceId = resourceId+"?sep="+SPARQL_ENDPOINT_URI_QUERY;
 		ClientResource cr = new ClientResource(local_uri+resourceId);
 //		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 //				//user_password);
@@ -247,7 +252,7 @@ public class TestOVRestApi extends LD4STestHelper {
 	@Test
 	public void testLDGet() throws Exception {
 		System.out.println("Test Get with query string appended");
-		ClientResource cr = new ClientResource(local_uri+resourceId+"?"+filters);
+		ClientResource cr = new ClientResource(local_uri+resourceId+"?"+filters + "&sep="+SPARQL_ENDPOINT_URI_QUERY );
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);

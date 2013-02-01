@@ -40,7 +40,7 @@ public class LD4SOVResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
+		resource = addLinkedData(resource, Domain.ALL, this.context, this.sparqlEndpoitUri);
 		return resource;
 	}
 	
@@ -98,7 +98,7 @@ public class LD4SOVResource extends LD4SDataResource {
 						rdfData.createTypedLiteral(item));
 			}			
 		}
-		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
+		resource = crossResourcesAnnotation(ov, resource, this.sparqlEndpoitUri);
 		return resource;
 	}
 

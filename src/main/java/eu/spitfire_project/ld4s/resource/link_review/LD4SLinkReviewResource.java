@@ -38,7 +38,7 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
+		resource = addLinkedData(resource, Domain.ALL, this.context, this.sparqlEndpoitUri);
 		return resource;
 	}
 	
@@ -87,7 +87,7 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 				
 				
 				//for the link this rating is referred to
-				Model forlink = retrieve(item, this.namedModel, ov.getSparql_endpoint_uri());
+				Model forlink = retrieve(item, this.namedModel, this.sparqlEndpoitUri);
 				Resource subj = null;
 				double rates = 0.0;
 				StmtIterator stmtit = null;
@@ -135,7 +135,7 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 			}
 		}
 		//add other properties; esp. the author and the datetime
-		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
+		resource = crossResourcesAnnotation(ov, resource, this.sparqlEndpoitUri);
 		
 		return resource!=null?resource:rdfData.createResource();
 	}

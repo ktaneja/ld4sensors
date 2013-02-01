@@ -40,7 +40,7 @@ public class LD4STempSensPropResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
+		resource = addLinkedData(resource, Domain.ALL, this.context, this.sparqlEndpoitUri);
 		return resource;
 	}
 	
@@ -83,7 +83,7 @@ public class LD4STempSensPropResource extends LD4SDataResource {
 				resource.addProperty(SsnVocab.FEATURE_OF_INTEREST, 
 						rdfData.createResource(item));	
 			}else{
-				resource = addFoi(resource, item, ov.getSparql_endpoint_uri());
+				resource = addFoi(resource, item, this.sparqlEndpoitUri);
 			}
 		}		
 		item = ov.getSensor_id();
@@ -119,7 +119,7 @@ public class LD4STempSensPropResource extends LD4SDataResource {
 				}
 			}			
 		}
-		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
+		resource = crossResourcesAnnotation(ov, resource, this.sparqlEndpoitUri);
 		return resource;
 	}
 

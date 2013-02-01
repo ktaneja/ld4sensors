@@ -594,7 +594,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		System.out.println("<<>><><><><><><><><<<><><<><><> " +sparqlEndpointUri);
 		FusekiAccess f = FusekiAccess.getInstance();
 		try {
-			f.insert(namedModel, rdfData);
+			f.insert(namedModel, rdfData, sparqlEndpointUri);
 		} catch (URISyntaxException | IOException e) {
 			e.printStackTrace();
 		}
@@ -1205,8 +1205,8 @@ public abstract class LD4SDataResource extends ServerResource{
 				"where {" +
 				"GRAPH<"+ namedModel + ">" +
 				"{<"+ uri +"> ?p ?o . ?s ?p ?o}}";
-		String sparqlQueryURL = FusekiAccess.getSPARQLQueryURL();
-		QueryExecution qe = QueryExecutionFactory.sparqlService(sparqlQueryURL,q);
+//		String sparqlQueryURL = FusekiAccess.getSPARQLQueryURL();
+		QueryExecution qe = QueryExecutionFactory.sparqlService(sparqlEndpointUri,q);
 		ResultSet results = qe.execSelect();
 		while(results.hasNext()){
 			QuerySolution qs = results.next();

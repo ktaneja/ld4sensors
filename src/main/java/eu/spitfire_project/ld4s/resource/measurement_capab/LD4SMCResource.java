@@ -39,7 +39,7 @@ public class LD4SMCResource extends LD4SDataResource {
 		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context, ov.getSparql_endpoint_uri());
+		resource = addLinkedData(resource, Domain.ALL, this.context, this.sparqlEndpoitUri);
 		return resource;
 	}
 	
@@ -84,7 +84,7 @@ public class LD4SMCResource extends LD4SDataResource {
 						rdfData.createResource(item));	
 			}else{
 				resource = 
-					addObservedProperty(resource, item, SsnVocab.FOR_PROPERTY, ov.getFoi(), ov.getSparql_endpoint_uri());
+					addObservedProperty(resource, item, SsnVocab.FOR_PROPERTY, ov.getFoi(), this.sparqlEndpoitUri);
 			}
 		}	
 		String[] props = ov.getMeasurement_prop_uris();
@@ -96,7 +96,7 @@ public class LD4SMCResource extends LD4SDataResource {
 				}
 			}
 		}
-		resource = crossResourcesAnnotation(ov, resource, ov.getSparql_endpoint_uri());
+		resource = crossResourcesAnnotation(ov, resource, this.sparqlEndpoitUri);
 		return resource;
 	}
 	

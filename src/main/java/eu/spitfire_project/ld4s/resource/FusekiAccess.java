@@ -66,7 +66,7 @@ public final class FusekiAccess {
 		
 //		f.insert("http://localhost:3030/opa/upload", model);
 		FusekiAccess f = FusekiAccess.getInstance();
-		f.insert("http://localhost:3030/opa/uploadBla", model);
+		f.insert("http://localhost:3030/opa/uploadBla", model, "http://localhost:3030/opa/data");
 	}
 	public static void gangNamStyle() throws ClientProtocolException, IOException{
 		HttpClient client = new DefaultHttpClient();
@@ -126,27 +126,27 @@ public final class FusekiAccess {
 		return req;
 	}
 	
-	public boolean create(String graphIRI, Model model) throws URISyntaxException,
+	public boolean create(String graphIRI, Model model, String sparqlEnpointUri) throws URISyntaxException,
 			ClientProtocolException, IOException {
-		URI uri = getURI(graphIRI).build();
+		URI uri = getURI(graphIRI, sparqlEnpointUri).build();
 //		URI uri = new URI("http://localhost:3030/opa/upload");
 		HttpPut httpPut = new HttpPut(uri);
 		StatusLine status = execute((HttpUriRequest) addBody((httpPut), graphIRI, model));
 		return (status.getStatusCode()>=200 && status.getStatusCode() < 300);
 	}
 	
-	public boolean insert(String graphIRI, Model model)
+	public boolean insert(String graphIRI, Model model, String sparqlEndpointUri)
 			throws URISyntaxException, ClientProtocolException, IOException {
-		URI uri = getURI(graphIRI).build();
+		URI uri = getURI(graphIRI, sparqlEndpointUri).build();
 //		 URI uri = new URI("http://localhost:3030/opa/update");
 		HttpPost httpPost = new HttpPost(uri);
 		StatusLine status = execute((HttpUriRequest) addBody((httpPost),
 				graphIRI, model));
 		return (status.getStatusCode() >= 200 && status.getStatusCode() < 300);
 	}
-	public boolean delete(String graphIRI, Model model)
+	public boolean delete(String graphIRI, Model model, String sparqlEnpdointUri)
 			throws URISyntaxException, ClientProtocolException, IOException {
-		URI uri = getURI(graphIRI).build();
+		URI uri = getURI(graphIRI, sparqlEnpdointUri).build();
 		// URI uri = new URI("http://localhost:3030/opa/upload");
 		HttpPost httpPost = new HttpPost(uri);
 		StatusLine status = execute((HttpUriRequest) addBody((httpPost),
@@ -180,8 +180,11 @@ public final class FusekiAccess {
 			}
 		}
 	}
-	private URIBuilder getURI(String graphIRI) throws URISyntaxException {
-		URIBuilder ub = getServerURI();
+	private URIBuilder getURI(String graphIRI, String sparqlEndpointURI) throws URISyntaxException {
+//		sparqlEndpointURI = sparqlEndpointURI.replace("\"","");
+		URIBuilder ub = new URIBuilder(
+				sparqlEndpointURI);
+//		URIBuilder ub = getServerURI();
 //		ub.setScheme("http");
 //		ub.setHost("localhost:3030/opa/upload");
 //		http://localhost:3030/opa/update

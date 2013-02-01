@@ -45,6 +45,10 @@ public class LD4STestHelper {
 	
 	protected String location_coords = "38.291_21.7961";
 	
+	protected String SPARQL_ENDPOINT_URI_UPDATE = "http://localhost:3030/opa/update";
+	protected String SPARQL_ENDPOINT_URI_QUERY = "http://localhost:3030/opa/query";
+//	protected String SPARQL_ENDPOINT_URI_QUERY = "http://localhost:3030/opa/query";
+	
 	protected Person author = new Person(
 //			"Ioannis", "Chatzigiannakis", null, null, null, null, null);
 			"Manfred", "Hauswirth", null, null, null, null, null);
