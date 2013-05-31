@@ -103,8 +103,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 				resource.addProperty(SptVocab.OBSERVED_PROPERTY, 
 						rdfData.createResource(item));	
 			}else{
-				resource = 
-					addObservedProperty(resource, item, SptVocab.OBSERVED_PROPERTY);
+				//resource = addObservedProperty(resource, item, SptVocab.OBSERVED_PROPERTY);
 			}
 		}	
 		item = ov.getUnit_of_measurement();

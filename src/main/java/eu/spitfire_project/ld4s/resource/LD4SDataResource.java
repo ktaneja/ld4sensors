@@ -824,9 +824,12 @@ public abstract class LD4SDataResource extends ServerResource{
 		return resource;
 	}
 
-	protected Resource addObservedProperty (Resource resource, String observed_property,
-			Property prop, String foi)
-	throws Exception{
+	/**protected Resource addObservedProperty (
+com.hp.hpl.jena.rdf.model.Resource resource, 
+			java.lang.String observed_property,
+			com.hp.hpl.jena.rdf.model.Property prop, 
+			java.lang.String foi)
+throws java.lang.Exception{
 		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/property", observed_property);
 		Resource item_resource = resource.getModel().createResource(item_uri);
 		Context con = new Context(this.ld4sServer.getHostName());
@@ -839,7 +842,7 @@ public abstract class LD4SDataResource extends ServerResource{
 			resource.addProperty(prop, item_resource);
 		}
 		return resource;
-	}
+	}*/
 
 	protected Resource addUom(Resource resource, String uom) throws Exception{
 		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/uom", uom);

@@ -83,8 +83,7 @@ public class LD4SMCResource extends LD4SDataResource {
 				resource.addProperty(SsnVocab.FOR_PROPERTY, 
 						rdfData.createResource(item));	
 			}else{
-				resource = 
-					addObservedProperty(resource, item, SsnVocab.FOR_PROPERTY, ov.getFoi());
+//				resource = addObservedProperty(resource, item, SsnVocab.FOR_PROPERTY, ov.getFoi());
 			}
 		}	
 		String[] props = ov.getMeasurement_prop_uris();
