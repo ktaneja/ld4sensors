@@ -78,59 +78,61 @@ public abstract class LD4SObject{
 	public abstract void setLink_criteria(String link_criteria, String localhost)throws Exception ;
 
 	public LD4SObject(JSONObject json) throws JSONException{
-		if (json.has("base_datetime")){
-			this.setBase_datetime(LD4SDataResource.removeBrackets(
-					json.getString("base_datetime")));
+		if (json != null){
+			if (json.has("base_datetime")){
+				this.setBase_datetime(LD4SDataResource.removeBrackets(
+						json.getString("base_datetime")));
+			}
+			if (json.has("resource_datetime")){
+				this.setResource_time(LD4SDataResource.removeBrackets(
+						json.getString("resource_datetime")));
+			}
+			if (json.has("start_range")){
+				this.setStart_range(LD4SDataResource.removeBrackets(
+						json.getString("start_range")));
+			}
+			if (json.has("end_range")){
+				this.setEnd_range(LD4SDataResource.removeBrackets(
+						json.getString("end_range")));
+			}
+			if (json.has("archive")){
+				this.setArchive(LD4SDataResource.removeBrackets(
+						json.getString("archive")));
+			}
+			if (json.has("type")){
+				this.setType(LD4SDataResource.removeBrackets(
+						json.getString("type")));
+			}
+			if (json.has("author")){
+				this.setAuthor(json.getJSONArray("author"));
+			}
+			if (json.has("description")){
+				this.setDescription(LD4SDataResource.removeBrackets(
+						json.getString("description")));
+			}
+			if (json.has("uri")){
+				this.setRemote_uri(LD4SDataResource.removeBrackets(
+						json.getString("uri")));
+			}
+			if (json.has("location-name")){
+				this.setLocation_name(LD4SDataResource.removeBrackets(
+						json.getString("location-name")));
+			}
+			if (json.has("location-predicate-coords")){
+				this.setLocation_coords(LD4SDataResource.removeBrackets(
+						json.getString("location-predicate-coords")));
+			}
+			if (json.has("location-coords")){
+				this.setCoords(LD4SDataResource.removeBrackets(
+						json.getString("location-coords")));
+			}
+			//spaces relation # <lat,long | name> 
+			if (json.has("locations")){
+				this.setSpace(json.getJSONArray("locations"));
+			}
+			initAcceptedTypes();
+			initDefaultType();
 		}
-		if (json.has("resource_datetime")){
-			this.setResource_time(LD4SDataResource.removeBrackets(
-					json.getString("resource_datetime")));
-		}
-		if (json.has("start_range")){
-			this.setStart_range(LD4SDataResource.removeBrackets(
-					json.getString("start_range")));
-		}
-		if (json.has("end_range")){
-			this.setEnd_range(LD4SDataResource.removeBrackets(
-					json.getString("end_range")));
-		}
-		if (json.has("archive")){
-			this.setArchive(LD4SDataResource.removeBrackets(
-					json.getString("archive")));
-		}
-		if (json.has("type")){
-			this.setType(LD4SDataResource.removeBrackets(
-					json.getString("type")));
-		}
-		if (json.has("author")){
-			this.setAuthor(json.getJSONArray("author"));
-		}
-		if (json.has("description")){
-			this.setDescription(LD4SDataResource.removeBrackets(
-					json.getString("description")));
-		}
-		if (json.has("uri")){
-			this.setRemote_uri(LD4SDataResource.removeBrackets(
-					json.getString("uri")));
-		}
-		if (json.has("location-name")){
-			this.setLocation_name(LD4SDataResource.removeBrackets(
-					json.getString("location-name")));
-		}
-		if (json.has("location-predicate-coords")){
-			this.setLocation_coords(LD4SDataResource.removeBrackets(
-					json.getString("location-predicate-coords")));
-		}
-		if (json.has("location-coords")){
-			this.setCoords(LD4SDataResource.removeBrackets(
-					json.getString("location-coords")));
-		}
-		//spaces relation # <lat,long | name> 
-		if (json.has("locations")){
-			this.setSpace(json.getJSONArray("locations"));
-		}
-		initAcceptedTypes();
-		initDefaultType();
 	}
 	
 	protected void setType(String type) {
@@ -142,25 +144,27 @@ public abstract class LD4SObject{
 	}
 
 	public LD4SObject(Form form){
-		this.setBase_datetime(
-				form.getFirstValue("base_datetime"));
-		this.setStart_range(
-				form.getFirstValue("start_range"));
-		this.setEnd_range(
-				form.getFirstValue("end_range"));
-		this.setArchive(
-				form.getFirstValue("archive"));
-		this.setDescription(
-				form.getFirstValue("description"));
-		this.setRemote_uri(
-				form.getFirstValue("uri"));
-		this.setType(
-				form.getFirstValue("type"));
-		//spaces relation # <lat,long | name> 
-		this.setSpace(
-				form.getValuesArray("locations"));
-		initAcceptedTypes();
-		initDefaultType();
+		if (form != null){
+			this.setBase_datetime(
+					form.getFirstValue("base_datetime"));
+			this.setStart_range(
+					form.getFirstValue("start_range"));
+			this.setEnd_range(
+					form.getFirstValue("end_range"));
+			this.setArchive(
+					form.getFirstValue("archive"));
+			this.setDescription(
+					form.getFirstValue("description"));
+			this.setRemote_uri(
+					form.getFirstValue("uri"));
+			this.setType(
+					form.getFirstValue("type"));
+			//spaces relation # <lat,long | name> 
+			this.setSpace(
+					form.getValuesArray("locations"));
+			initAcceptedTypes();
+			initDefaultType();
+		}
 	}
 
 	public LD4SObject(String base_datetime, String start_range, String end_range,
