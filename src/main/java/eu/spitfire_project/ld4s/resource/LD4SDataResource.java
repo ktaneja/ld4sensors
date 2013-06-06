@@ -1123,6 +1123,9 @@ throws java.lang.Exception{
 
 	protected Representation serializeAccordingToReqMediaType(Model rdfData){
 		String str_rdfData = null;
+		if (requestedMedia == null){
+			requestedMedia = MediaType.APPLICATION_RDF_XML;
+		}
 		if (requestedMedia.equals(MediaType.APPLICATION_RDF_XML)) {
 			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
 					LD4SConstants.LANG_RDFXML);
