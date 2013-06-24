@@ -1,6 +1,7 @@
 package eu.spitfire_project.ld4s.server;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -33,7 +34,7 @@ public class Server extends Application{
 	private FrontSideCache frontSideCache;
 
 	//	  /** Holds the logger for this Service. */
-	//	  private Logger logger;
+	private java.util.logging.Logger logger;
 
 	/** Holds the ServerProperties instance for this Service. */
 	private ServerProperties properties;
@@ -95,11 +96,11 @@ public class Server extends Application{
 		// Provide a pointer to this server in the Context so that Resources can get at this server.
 		attributes.put("LD4Sensors", server);
 
-
+		server.logger = Logger.getAnonymousLogger();
 		// Now let's open for business.
-		//	    server.logger.warning("Host: " + server.hostName);
-		//
-		//	    server.logger.warning("LD4Sensors (Version " + getVersion() + ") now running.");
+		server.logger.info("Host: " + server.hostName);
+
+		server.logger.info("LD4Sensors (Version " + getVersion() + ") now running.");
 		server.component.start();
 		
 		return server;
@@ -295,7 +296,7 @@ public class Server extends Application{
 
 	/**
 	 * Returns the host name associated with this server. Example:
-	 * "http://localhost:9877/ld4s"
+	 * "http://0.0.0.0:9877/ld4s"
 	 *
 	 * @return The host name.
 	 */

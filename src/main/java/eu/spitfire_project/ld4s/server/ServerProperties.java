@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -24,7 +25,7 @@ public class ServerProperties {
 	public final static Role ANONYMOUS= new Role("anonymous", "anonymous");
 
 
-	public static final String SERVER = "http://localhost";
+	public static String SERVER = "http://0.0.0.0";
 	public static final int PORT = 8182;
 	public static final String CONTEXT_ROOT = "ld4s";
 
@@ -94,13 +95,14 @@ public class ServerProperties {
 		+"ld4s.properties";
 		this.properties = new Properties();
 		// Set defaults
-		properties.setProperty(HOSTNAME_KEY, "localhost");
+		properties.setProperty(HOSTNAME_KEY, InetAddress.getLocalHost().getHostAddress());
+		ServerProperties.SERVER = properties.getProperty(HOSTNAME_KEY);
 		properties.setProperty(PORT_KEY, String.valueOf(PORT));
 		properties.setProperty(CONTEXT_ROOT_KEY, CONTEXT_ROOT);
 		properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
 		properties.setProperty(RDF_DIR_KEY, userDir + "/rdf");
 		properties.setProperty(TEST_PORT_KEY, "9875");
-		properties.setProperty(TEST_HOSTNAME_KEY, "localhost");
+		properties.setProperty(TEST_HOSTNAME_KEY, "0.0.0.0");
 		properties.setProperty(FRONTSIDECACHE_ENABLED, "true");
 		//	    properties.setProperty(CACHE_ENABLED, "true");
 		//	    properties.setProperty(CACHE_MAX_LIFE, "365");
@@ -185,7 +187,7 @@ public class ServerProperties {
 	}
 
 	/**
-	 * Returns the fully qualified host name, such as "http://localhost:9877/ld4s/".
+	 * Returns the fully qualified host name, such as "http://0.0.0.0:9877/ld4s/".
 	 *
 	 * @return The fully qualified host name.
 	 */

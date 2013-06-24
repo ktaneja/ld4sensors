@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -157,6 +158,19 @@ public abstract class LD4SDataResource extends ServerResource{
 
 	@Override
 	protected void doInit() throws ResourceException {
+		Form responseHeaders = (Form) getResponse().getAttributes().get("org.restlet.http.headers");   
+
+
+		if ( responseHeaders == null ) { 
+
+		        responseHeaders = new Form(); 
+
+		        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);   
+
+		    } 
+
+		responseHeaders.add("Access-Control-Allow-Origin", "*"); 
+		
 		this.user = getClientInfo().getUser();
 		if (this.user == null){
 			this.user = new User();
@@ -1047,7 +1061,7 @@ throws java.lang.Exception{
 			rs = qExec.execSelect() ;
 			ResultSetFormatter.out(rs) ;
 
-			namedModel = "http://localhost:8182/ld4s/graph/ov";
+			namedModel = "http://0.0.0.0:8182/ld4s/graph/ov";
 			query = //			           "SELECT (count(*) AS ?count) { ?s ?p ?o} LIMIT 10", 
 				//			           dataset) ;
 				"SELECT * { GRAPH <"+namedModel+"> {?s ?p ?o}} LIMIT 100";
@@ -1145,7 +1159,14 @@ throws java.lang.Exception{
 			setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
 			return null;
 		}
-		return getStringRepresentationFromRdf(str_rdfData, requestedMedia);
+		Representation ret = getStringRepresentationFromRdf(str_rdfData, requestedMedia);
+		try {
+			this.getLogger().info("***RESPONSE***" +ret.getText());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
 	}
 
 	/**
