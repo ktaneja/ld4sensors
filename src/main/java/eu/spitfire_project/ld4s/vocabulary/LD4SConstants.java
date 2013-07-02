@@ -34,4 +34,5 @@ public class LD4SConstants {
 
 	  public static final String SEPARATOR1_ID = " ";
 	  public static final String SEPARATOR2_ID = "__";
+	  public static final String JSON_SEPARATOR = "_";
 }

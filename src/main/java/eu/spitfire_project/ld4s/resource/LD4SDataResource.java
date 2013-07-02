@@ -171,6 +171,9 @@ public abstract class LD4SDataResource extends ServerResource{
 
 		responseHeaders.add("Access-Control-Allow-Origin", "*"); 
 		
+		System.out.println("********ORIGINAL REQUEST:*********"+getRequest().toString()+
+				"\nHEADERS:"+getRequestAttributes());
+		
 		this.user = getClientInfo().getUser();
 		if (this.user == null){
 			this.user = new User();
