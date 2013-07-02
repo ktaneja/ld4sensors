@@ -13,6 +13,7 @@ import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
+import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 
 public class Link extends LD4SObject{
@@ -57,9 +58,9 @@ public class Link extends LD4SObject{
 			this.context.setConfidence(
 					Double.valueOf(LD4SDataResource.removeBrackets(json.getString("rank"))));
 		}
-		if (json.has("explicit_content_length")){
+		if (json.has("explicit"+LD4SConstants.JSON_SEPARATOR+"content"+LD4SConstants.JSON_SEPARATOR+"length")){
 			this.setBytes(Double.valueOf(LD4SDataResource.removeBrackets(
-					json.getString("explicit_content_length"))));
+					json.getString("explicit"+LD4SConstants.JSON_SEPARATOR+"content"+LD4SConstants.JSON_SEPARATOR+"length"))));
 		}
 		if (json.has("updated")){
 			this.setDatetime(LD4SDataResource.removeBrackets(json.getString("updated")));
@@ -127,8 +128,8 @@ public class Link extends LD4SObject{
 		if (form.getFirstValue("rank") != null){
 			this.context.setConfidence(Double.valueOf(form.getFirstValue("rank")));
 		}
-		if (form.getFirstValue("explicit_content_length") != null){
-			this.setBytes(Double.valueOf(form.getFirstValue("explicit_content_length")));
+		if (form.getFirstValue("explicit"+LD4SConstants.JSON_SEPARATOR+"content"+LD4SConstants.JSON_SEPARATOR+"length") != null){
+			this.setBytes(Double.valueOf(form.getFirstValue("explicit"+LD4SConstants.JSON_SEPARATOR+"content"+LD4SConstants.JSON_SEPARATOR+"length")));
 		}
 		setDatetime(form.getFirstValue("updated"));
 		setTitle(form.getFirstValue("title"));

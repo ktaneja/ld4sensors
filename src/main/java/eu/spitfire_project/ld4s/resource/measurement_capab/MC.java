@@ -12,6 +12,7 @@ import com.hp.hpl.jena.ontology.OntClass;
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
+import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 
 /**
@@ -106,7 +107,7 @@ public class MC extends LD4SObject  implements Serializable{
 		super(form);
 		this.setRemote_uri(form.getFirstValue("uri")); 
 		this.setResource_time(
-				form.getFirstValue("resource_time"));
+				form.getFirstValue("resource"+LD4SConstants.JSON_SEPARATOR+"time"));
 		this.setLink_criteria(
 				form.getFirstValue("context"), localhost);
 	}

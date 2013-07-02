@@ -9,6 +9,7 @@ import com.hp.hpl.jena.ontology.OntClass;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.lod_cloud.Person;
+import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 
 
 public abstract class LD4SObject{
@@ -79,21 +80,21 @@ public abstract class LD4SObject{
 
 	public LD4SObject(JSONObject json) throws JSONException{
 		if (json != null){
-			if (json.has("base_datetime")){
+			if (json.has("base"+LD4SConstants.JSON_SEPARATOR+"datetime")){
 				this.setBase_datetime(LD4SDataResource.removeBrackets(
-						json.getString("base_datetime")));
+						json.getString("base"+LD4SConstants.JSON_SEPARATOR+"datetime")));
 			}
-			if (json.has("resource_datetime")){
+			if (json.has("resource"+LD4SConstants.JSON_SEPARATOR+"datetime")){
 				this.setResource_time(LD4SDataResource.removeBrackets(
-						json.getString("resource_datetime")));
+						json.getString("resource"+LD4SConstants.JSON_SEPARATOR+"datetime")));
 			}
-			if (json.has("start_range")){
+			if (json.has("start"+LD4SConstants.JSON_SEPARATOR+"range")){
 				this.setStart_range(LD4SDataResource.removeBrackets(
-						json.getString("start_range")));
+						json.getString("start"+LD4SConstants.JSON_SEPARATOR+"range")));
 			}
-			if (json.has("end_range")){
+			if (json.has("end"+LD4SConstants.JSON_SEPARATOR+"range")){
 				this.setEnd_range(LD4SDataResource.removeBrackets(
-						json.getString("end_range")));
+						json.getString("end"+LD4SConstants.JSON_SEPARATOR+"range")));
 			}
 			if (json.has("archive")){
 				this.setArchive(LD4SDataResource.removeBrackets(
@@ -114,17 +115,17 @@ public abstract class LD4SObject{
 				this.setRemote_uri(LD4SDataResource.removeBrackets(
 						json.getString("uri")));
 			}
-			if (json.has("location-name")){
+			if (json.has("location"+LD4SConstants.JSON_SEPARATOR+"name")){
 				this.setLocation_name(LD4SDataResource.removeBrackets(
-						json.getString("location-name")));
+						json.getString("location"+LD4SConstants.JSON_SEPARATOR+"name")));
 			}
-			if (json.has("location-predicate-coords")){
+			if (json.has("location"+LD4SConstants.JSON_SEPARATOR+"predicate"+LD4SConstants.JSON_SEPARATOR+"coords")){
 				this.setLocation_coords(LD4SDataResource.removeBrackets(
-						json.getString("location-predicate-coords")));
+						json.getString("location"+LD4SConstants.JSON_SEPARATOR+"predicate"+LD4SConstants.JSON_SEPARATOR+"coords")));
 			}
-			if (json.has("location-coords")){
+			if (json.has("location"+LD4SConstants.JSON_SEPARATOR+"coords")){
 				this.setCoords(LD4SDataResource.removeBrackets(
-						json.getString("location-coords")));
+						json.getString("location"+LD4SConstants.JSON_SEPARATOR+"coords")));
 			}
 			//spaces relation # <lat,long | name> 
 			if (json.has("locations")){
