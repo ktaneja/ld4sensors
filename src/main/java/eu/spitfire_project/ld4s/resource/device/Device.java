@@ -106,6 +106,9 @@ public class Device extends LD4SObject  implements Serializable{
 		if (json.has("observation"+LD4SConstants.JSON_SEPARATOR+"values")){
 			this.setValues(json.getJSONArray("observation"+LD4SConstants.JSON_SEPARATOR+"values"));
 		}
+		if (json.has("tsproperties")){
+			this.setTsproperties(json.getJSONArray("tsproperties"));
+		}
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
 		}
@@ -237,6 +240,14 @@ public class Device extends LD4SObject  implements Serializable{
 
 	public void setTsproperties(String[] tsproperties) {
 		this.tsproperties = tsproperties;
+	}
+	
+	public void setTsproperties(JSONArray jvalues) throws JSONException {
+		String[] values = new String[jvalues.length()];
+		for (int i=0; i< jvalues.length(); i++){
+			values[i] = jvalues.get(i).toString();
+		}
+		setTsproperties(values);
 	}
 
 	public String[] getTsproperties() {

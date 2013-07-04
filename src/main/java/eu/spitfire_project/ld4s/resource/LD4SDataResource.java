@@ -158,6 +158,9 @@ public abstract class LD4SDataResource extends ServerResource{
 
 	@Override
 	protected void doInit() throws ResourceException {
+		/**
+		 * SECURITY ADD-on - start
+		 */
 		Form responseHeaders = (Form) getResponse().getAttributes().get("org.restlet.http.headers");   
 
 
@@ -170,6 +173,10 @@ public abstract class LD4SDataResource extends ServerResource{
 		    } 
 
 		responseHeaders.add("Access-Control-Allow-Origin", "*"); 
+		responseHeaders.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE,OPTIONS"); 
+		/**
+		 * SECURITY ADD-on - end
+		 */
 		
 		System.out.println("********ORIGINAL REQUEST:*********"+getRequest().toString()+
 				"\nHEADERS:"+getRequestAttributes());
@@ -231,6 +238,22 @@ public abstract class LD4SDataResource extends ServerResource{
 		return nm;
 	}
 
+	/**
+	 * Content negotiation: checks wether the client is accepted one of the supported media types
+	 * i.e., 
+	 * application-all (the final output from the server will be Turtle)
+	 * application/* (the final output from the server will be Turtle)
+	 * text/* (the final output from the server will be Turtle)
+	 * 
+	 * application/rdf+xml (the final output from the server will be RDF/XML)
+	 * text/n3 (the final output from the server will be N3 (which is equal to Turtle))
+	 * text/n-triples (the final output from the server will be Ntriples)
+	 * application/x-turtle (the final output from the server will be Turtle)
+	 * application/rdf+json (the final output from the server will be RDF/JSON)
+	 * 
+	 * @param acceptedMediaTypes
+	 * @return
+	 */
 	private MediaType selectMedia(List<Preference<MediaType>> acceptedMediaTypes) {
 		MediaType ret = null;
 		MediaType media = null;
@@ -243,7 +266,8 @@ public abstract class LD4SDataResource extends ServerResource{
 						|| media.equals(MediaType.APPLICATION_ALL) || media.equals(MediaType.TEXT_ALL)
 						|| media.equals(MediaType.TEXT_RDF_N3) || media.equals(MediaType.APPLICATION_RDF_XML)
 						|| media.equals(MediaType.TEXT_RDF_NTRIPLES)
-						|| media.equals(MediaType.APPLICATION_RDF_TURTLE))
+						|| media.equals(MediaType.APPLICATION_RDF_TURTLE)
+						|| media.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON))
 				{
 					ret = media;
 				}
@@ -1143,7 +1167,11 @@ throws java.lang.Exception{
 		if (requestedMedia == null){
 			requestedMedia = MediaType.APPLICATION_RDF_XML;
 		}
-		if (requestedMedia.equals(MediaType.APPLICATION_RDF_XML)) {
+		if (requestedMedia.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON)) {
+			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
+					LD4SConstants.LANG_RDFJSON);
+		}
+		else if (requestedMedia.equals(MediaType.APPLICATION_RDF_XML)) {
 			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
 					LD4SConstants.LANG_RDFXML);
 		}

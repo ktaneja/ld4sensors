@@ -130,19 +130,6 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 	 */
 	@Override
 	public Representation put(Form obj){
-		Form responseHeaders = (Form) getResponse().getAttributes().get("org.restlet.http.headers");   
-
-
-		if ( responseHeaders == null ) { 
-
-		        responseHeaders = new Form(); 
-
-		        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);   
-
-		    } 
-
-		responseHeaders.add("Access-Control-Allow-Origin", "*"); 
-		responseHeaders.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE,OPTIONS"); 
 		if (resourceId == null || resourceId.trim().compareTo("") == 0){
 			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			return null;
@@ -199,19 +186,6 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 	 */
 	@Override
 	public Representation put(JSONObject obj){
-		Form responseHeaders = (Form) getResponse().getAttributes().get("org.restlet.http.headers");   
-
-
-		if ( responseHeaders == null ) { 
-
-		        responseHeaders = new Form(); 
-
-		        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);   
-
-		    } 
-
-		responseHeaders.add("Access-Control-Allow-Origin", "*"); 
-		responseHeaders.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE,OPTIONS"); 
 		if (resourceId == null || resourceId.trim().compareTo("") == 0){
 			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			return null;
@@ -306,19 +280,6 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 	 */
 	@Override
 	public Representation post(Form obj){
-		Form responseHeaders = (Form) getResponse().getAttributes().get("org.restlet.http.headers");   
-
-
-		if ( responseHeaders == null ) { 
-
-		        responseHeaders = new Form(); 
-
-		        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);   
-
-		    } 
-
-		responseHeaders.add("Access-Control-Allow-Origin", "*");
-		responseHeaders.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE,OPTIONS"); 
 		//if an host has not been set then the LD4S service one has to be assigned
 		Representation ret = null;
 		rdfData = ModelFactory.createDefaultModel();
@@ -366,20 +327,6 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 	 */
 	@Override
 	public Representation post(JSONObject obj){
-		Form responseHeaders = (Form) getResponse().getAttributes().get("org.restlet.http.headers");   
-
-
-		if ( responseHeaders == null ) { 
-
-		        responseHeaders = new Form(); 
-
-		        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);   
-
-		    } 
-
-		responseHeaders.add("Access-Control-Allow-Origin", "*"); 
-		responseHeaders.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE,OPTIONS"); 
-		
 		Representation ret = null;
 		rdfData = ModelFactory.createDefaultModel();
 		super.initModel(rdfData,"spitfire.rdf");

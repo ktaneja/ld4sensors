@@ -16,9 +16,11 @@ public class LD4SConstants {
 	  public static final String MEDIA_TYPE_TURTLE = "application/x-turtle";
 	  public static final String MEDIA_TYPE_NTRIPLES = "text/plain";
 	  public static final String MEDIA_TYPE_SPARQL_RESULTS = "application/sparql-results+xml";
+	  public static final String MEDIA_TYPE_RDF_JSON = "application/rdf+json";
 	  public static final String LANG_N3 = "N3";
 	  public static final String LANG_TURTLE = "TURTLE";
 	  public static final String LANG_RDFXML = "RDF/XML";
+	  public static final String LANG_RDFJSON = "RDF/JSON";
 	  public static final String LANG_NTRIPLE = "N-TRIPLE";
 	  public static final String LANG_RDFXML_ABBREV = "RDF/XML-ABBREV";
 	  
