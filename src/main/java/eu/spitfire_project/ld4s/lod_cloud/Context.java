@@ -2,6 +2,7 @@ package eu.spitfire_project.ld4s.lod_cloud;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -368,8 +369,9 @@ public class Context {
 			String[] sp = time_range.split(split);
 			if (sp.length == 2){
 				this.time_range = new Date[2];
-				this.time_range[0] = DateFormat.getDateInstance().parse(sp[0]);
-				this.time_range[1] = DateFormat.getDateInstance().parse(sp[1]);
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				this.time_range[0] = dateFormat.parse(sp[0]);
+				this.time_range[1] = dateFormat.parse(sp[1]);
 			}else{
 				throw new ParseException("Time range set wrongly.", -1);
 			}

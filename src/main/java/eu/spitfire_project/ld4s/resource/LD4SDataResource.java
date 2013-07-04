@@ -21,6 +21,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Options;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.security.Role;
@@ -154,6 +155,29 @@ public abstract class LD4SDataResource extends ServerResource{
 		resource2namedGraph.put("platform", base+"platform");
 		resource2namedGraph.put("meas_capab", base+"meas_capab");
 		resource2namedGraph.put("meas_prop", base+"meas_prop");
+	}
+	
+	/**
+	 * Necessary to overcome a security issue typical of requests sent to the web service
+	 * from the jquery's ajax function.
+	 * 
+	 * @author huangyuan
+	 * @param entity
+	 * @throws ResourceException
+	 */
+	@Options
+	public void doOptions(Representation entity) throws ResourceException {
+		Form responseHeaders = (Form) getResponse().getAttributes().get(
+				"org.restlet.http.headers");
+		if (responseHeaders == null) {
+			responseHeaders = new Form();
+			getResponse().getAttributes().put("org.restlet.http.headers",
+					responseHeaders);
+		}
+		responseHeaders.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");//tell browser all the function can be used
+		responseHeaders.add("Access-Control-Allow-Headers", "Content-Type");//tell browser should send content-Type
+		responseHeaders.add("Access-Control-Allow-Credentials", "true");//true I have found other people all set true
+		responseHeaders.add("Access-Control-Max-Age", "30");//when testing should be  shorter about 30 for server bigger is better
 	}
 
 	@Override
