@@ -1,8 +1,10 @@
 package eu.spitfire_project.ld4s.resource;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -22,6 +24,8 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Options;
+import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.security.Role;
@@ -103,6 +107,9 @@ public abstract class LD4SDataResource extends ServerResource{
 
 	/**  Preferred media type. */
 	protected MediaType requestedMedia;
+	
+	/**  Content type. */
+	protected MediaType contentType;
 
 	//	/** Default URI for annotating unknown resources. */
 	//	protected String defaultUri = null;
@@ -138,6 +145,69 @@ public abstract class LD4SDataResource extends ServerResource{
 
 	protected static HashMap<String, String> resource2namedGraph = null;
 
+	
+	@Put
+	public Representation put(String obj){
+		if (resourceId == null || resourceId.trim().compareTo("") == 0){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+
+		Representation ret = null;
+		Model rdfData = ModelFactory.createDefaultModel();
+		rdfData = rdfData.read(obj);
+		if (rdfData.isEmpty()){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+		// create a new resource in the database
+		if (store(rdfData, this.namedModel)){
+			setStatus(Status.SUCCESS_CREATED);	 
+			ret = serializeAccordingToReqMediaType(rdfData);
+		}else{
+			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
+		}
+		return ret;
+	}
+	
+	
+	
+	@Post
+	public Representation post(String obj){
+
+		Representation ret = null;
+		Model rdfData = ModelFactory.createOntologyModel();
+		InputStream stream;
+		try {
+			stream = new ByteArrayInputStream(obj.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+		String lang = mediatypeToJenaLang(contentType);
+		if (lang == null){
+			setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+			return null;
+		}
+		rdfData = rdfData.read(stream, null, lang);
+		
+		if (rdfData.isEmpty()){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+
+		// create a new resource in the database only if the preferred resource hosting server is
+		// the LD4S one
+
+		if (update(rdfData, this.namedModel)){
+			setStatus(Status.SUCCESS_OK);	 
+			ret = serializeAccordingToReqMediaType(rdfData);
+		}else{
+			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
+		}
+
+		return ret;
+	}
 
 	protected void initResource2NamedGraph(String baseHost){
 		String base = baseHost+"graph/";
@@ -202,8 +272,18 @@ public abstract class LD4SDataResource extends ServerResource{
 		 * SECURITY ADD-on - end
 		 */
 		
-		System.out.println("********ORIGINAL REQUEST:*********"+getRequest().toString()+
+		/**
+		 * PRINT full request details and payload
+		 */
+		System.out.println("\n********ORIGINAL REQUEST:*********\n"+getRequest().toString()+
 				"\nHEADERS:"+getRequestAttributes());
+		
+//		try {
+//			System.out.println("\n********PAYLOAD:*********\n"+getRequestEntity().getText());
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		
 		this.user = getClientInfo().getUser();
 		if (this.user == null){
@@ -212,6 +292,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		this.roles = getClientInfo().getRoles();
 		this.requestedMedia = selectMedia(getClientInfo().getAcceptedMediaTypes());
 		this.entity = getRequestEntity();
+		this.contentType = this.entity.getMediaType();
 		MetadataService ms = getMetadataService(); 
         ms.addCommonExtensions(); 
         ms.addExtension("ttl", MediaType.APPLICATION_RDF_TURTLE);
@@ -318,6 +399,7 @@ public abstract class LD4SDataResource extends ServerResource{
 			}
 			// read the RDF file
 			model.read(in, null);
+			
 		}
 		return model;
 	}
@@ -414,6 +496,31 @@ public abstract class LD4SDataResource extends ServerResource{
 		dataset.addProperty(VoIDVocab.VOCABULARY, "http://umbel.org/umbel/sc/");
 		return model;
 	}
+	
+	/**
+	 * Creates main resources and additional related information
+	 * excluding linked data
+	 *
+	 * @param m_returned model which the resources to be created should be attached to
+	 * @param obj object containing the information to be semantically annotate
+	 * @param id resource identification
+	 * @return model 
+	 * @throws Exception
+	 */
+	protected Resource makeOVData() throws Exception {
+		Resource resource = createOVResource();
+		resource.addProperty(DCTerms.isPartOf,
+				"http://"+this.ld4sServer.getHostName()+"void");
+		return resource;
+	}
+
+	
+	protected Resource createOVResource()  throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 	/**
 	 * Called when an error resulting from an exception is caught during processing.
@@ -621,33 +728,34 @@ public abstract class LD4SDataResource extends ServerResource{
 	public Resource addLinkedData(Resource resource,
 			Domain searchType, Context context) throws Exception {
 		SearchRouter searchobj = null;
+		String host = "http://"+this.ld4sServer.getHostName();
 		switch(searchType){
 		case ALL:
-			searchobj = new GenericApi(this.ld4sServer.getHostName(), 
+			searchobj = new GenericApi(host, 
 					context, this.user, resource);
 			break;
 		case PEOPLE:
-			searchobj = new PeopleApi(this.ld4sServer.getHostName(), 
+			searchobj = new PeopleApi(host, 
 					context, this.user, resource);
 			break;
 		case WEATHER:
-			searchobj = new WeatherApi(this.ld4sServer.getHostName(), 
+			searchobj = new WeatherApi(host, 
 					context, this.user, resource);
 			break;
 		case LOCATION:
-			searchobj = new LocationApi(this.ld4sServer.getHostName(), 
+			searchobj = new LocationApi(host, 
 					context, this.user, resource);
 			break;
 		case FEATURE: //searched in DBpedia ONLY
-			searchobj = new EncyclopedicApi(this.ld4sServer.getHostName(), 
+			searchobj = new EncyclopedicApi(host, 
 					context, this.user, resource);
 			break;
 		case UNIT:
-			searchobj = new UomApi(this.ld4sServer.getHostName(), 
+			searchobj = new UomApi(host, 
 					context, this.user, resource);
 			break;
 		default: //searched in cross-domain datasets
-			searchobj = new EncyclopedicApi(this.ld4sServer.getHostName(), 
+			searchobj = new EncyclopedicApi(host, 
 					context, this.user, resource);
 		}
 		Model model = searchobj.start();
@@ -1185,35 +1293,41 @@ throws java.lang.Exception{
 //		testSparqlPrint(namedModel);
 		return ret;
 	}
+	
+	protected String mediatypeToJenaLang(MediaType mediatype){
+		String jenalang = null;
+		if (mediatype == null){
+			jenalang = MediaType.APPLICATION_RDF_XML.getName();
+		}
+		if (mediatype.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON)) {
+			jenalang = LD4SConstants.LANG_RDFJSON;
+		}
+		else if (mediatype.equals(MediaType.APPLICATION_RDF_XML)) {
+			jenalang = LD4SConstants.LANG_RDFXML;
+		}
+		else if (mediatype.equals(MediaType.TEXT_RDF_NTRIPLES)) {
+			jenalang = LD4SConstants.LANG_NTRIPLE;
+		}else if (mediatype.equals(MediaType.TEXT_ALL) 
+				|| mediatype.equals(MediaType.TEXT_RDF_N3)
+				|| mediatype.equals(MediaType.TEXT_PLAIN)
+				|| mediatype.equals(MediaType.APPLICATION_RDF_TURTLE)
+				|| mediatype.equals(MediaType.APPLICATION_ALL)
+				|| mediatype.equals(MediaType.ALL)
+		){		
+			jenalang = LD4SConstants.LANG_TURTLE;
+		}
+		return jenalang;
+	}
 
 	protected Representation serializeAccordingToReqMediaType(Model rdfData){
 		String str_rdfData = null;
-		if (requestedMedia == null){
-			requestedMedia = MediaType.APPLICATION_RDF_XML;
-		}
-		if (requestedMedia.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON)) {
-			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
-					LD4SConstants.LANG_RDFJSON);
-		}
-		else if (requestedMedia.equals(MediaType.APPLICATION_RDF_XML)) {
-			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
-					LD4SConstants.LANG_RDFXML);
-		}
-		else if (requestedMedia.equals(MediaType.TEXT_RDF_NTRIPLES)) {
-			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
-					LD4SConstants.LANG_NTRIPLE);
-		}else if (requestedMedia.equals(MediaType.TEXT_ALL) 
-				|| requestedMedia.equals(MediaType.TEXT_RDF_N3)
-				|| requestedMedia.equals(MediaType.APPLICATION_RDF_TURTLE)
-				|| requestedMedia.equals(MediaType.APPLICATION_ALL)
-				|| requestedMedia.equals(MediaType.ALL)
-		)			
-		{
-			str_rdfData = serializeRDFModel(rdfData, null, LD4SConstants.LANG_TURTLE);
-		}else{
+		String lang =  mediatypeToJenaLang(this.requestedMedia);
+		if (lang == null){
 			setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
 			return null;
-		}
+		}		
+		str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE, lang);
+			
 		Representation ret = getStringRepresentationFromRdf(str_rdfData, requestedMedia);
 		try {
 			this.getLogger().info("***RESPONSE***" +ret.getText());

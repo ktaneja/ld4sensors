@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -187,7 +188,8 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	public void testPut() throws Exception {
 		System.out.println("Test Put - java object payload");
 		initJson(false, false); 
-		ClientResource cr = new ClientResource(local_uri+resourceId);
+		
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -210,7 +212,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	public void testFormPut() throws Exception {
 		System.out.println("Test Put - form payload");
 		initForm(false, false); 
-		ClientResource cr = new ClientResource(local_uri+resourceId);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -233,7 +235,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	public void testJSONPut() throws Exception {
 		System.out.println("Test Put - JSON payload");
 		initJson(false, false); 
-		ClientResource cr = new ClientResource(local_uri+resourceId);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -255,12 +257,12 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	@Test
 	public void testGet() throws Exception {
 		System.out.println("Test Get");
-		ClientResource cr = new ClientResource(local_uri+resourceId);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
 		List<Preference<MediaType>> accepted = new LinkedList<Preference<MediaType>>();
-		accepted.add(new Preference<MediaType>(MediaType.APPLICATION_RDF_TURTLE));
+		accepted.add(new Preference<MediaType>(this.media));
 		cr.getClientInfo().setAcceptedMediaTypes(accepted);
 		Representation resp = cr.get();
 		System.out.println("RESPONSE to GET REQUEST***\n"+resp.getText());
@@ -278,12 +280,12 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	@Test
 	public void testLDGet() throws Exception {
 		System.out.println("Test Get with query string appended");
-		ClientResource cr = new ClientResource(local_uri+resourceId+"?"+filters);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
 		List<Preference<MediaType>> accepted = new LinkedList<Preference<MediaType>>();
-		accepted.add(new Preference<MediaType>(MediaType.APPLICATION_RDF_TURTLE));
+		accepted.add(new Preference<MediaType>(this.media));
 		cr.getClientInfo().setAcceptedMediaTypes(accepted);
 		Representation resp = cr.get();
 		System.out.println("RESPONSE to GET REQUEST***\n"+resp.getText());
@@ -301,7 +303,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	@Test
 	public void testDelete() throws Exception {
 		System.out.println("Test Delete");
-		ClientResource cr = new ClientResource(local_uri+resourceId);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -324,7 +326,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 		System.out.println("Test POST local and with no external links - Form payload");
 		initForm(false, false);
 		System.out.println(form.toString());		 
-		ClientResource cr = new ClientResource(local_uri+resourceId);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -344,7 +346,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	public void testLDPostLocalResource() throws Exception {
 		System.out.println("Test POST local and with external links - Java object payload");
 		initJson(false, true);
-		ClientResource cr = new ClientResource(local_uri+resourceId);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri+resourceId);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -366,7 +368,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 		System.out.println("Test POST remote and with no external links - JSON payload");
 		initJson(true, false);
 		System.out.println(json.toString());		 
-		ClientResource cr = new ClientResource(local_uri);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
@@ -387,7 +389,7 @@ public class TestTempPlatfPropRestApi extends LD4STestHelper {
 	public void testLDPostRemoteResource() throws Exception {
 		System.out.println("Test POST remote and with external links - Java object payload");
 		initJson(true, true);
-		ClientResource cr = new ClientResource(local_uri);
+		ClientResource cr = initClient(Protocol.HTTP, 10000, local_uri);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);

@@ -9,11 +9,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
@@ -31,6 +34,12 @@ public class TestOVRestApi extends LD4STestHelper {
 
 	/** Milliseconds shift from the base time as a resource creation time point. */
 	protected String resource_time = "22846";
+	
+//	protected String serialized_rdf = "<http://www.example.org/ov/remotex12y>      a       <http://spitfire-project.eu/ontology/ns/OV> ;      <http://purl.org/NET/corelf#rt>              \"22846\"^^<http://www.w3.org/2001/XMLSchema#long> ;      <http://purl.org/dc/terms/isPartOf>              \"127.0.1.1:8182/ld4s/void\" ;      <http://spitfire-project.eu/ontology/ns/tEnd>              \"10321\"^^<http://www.w3.org/2001/XMLSchema#long> ;      <http://spitfire-project.eu/ontology/ns/tStart>              \"5800\"^^<http://www.w3.org/2001/XMLSchema#long> ;      <http://spitfire-project.eu/ontology/ns/value>              \"12.4\"^^<http://www.w3.org/2001/XMLSchema#double> , \"21.9\"^^<http://www.w3.org/2001/XMLSchema#double> , \"24.5\"^^<http://www.w3.org/2001/XMLSchema#double> , \"88.7\"^^<http://www.w3.org/2001/XMLSchema#double> .";
+//	protected MediaType contentType = MediaType.APPLICATION_RDF_TURTLE;
+	
+	protected String serialized_rdf = "<?xml version=\"1.0\"?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:ns=\"http://spitfire-project.eu/ontology/ns/\" xmlns:corelf=\"http://purl.org/NET/corelf#\" xmlns:terms=\"http://purl.org/dc/terms/\">	<ns:OV rdf:about=\"http://localhost:8182/ld4s/ov/x12y\">		<corelf:bt rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">12-08-23T19:03Z</corelf:bt>		<corelf:rt rdf:datatype=\"http://www.w3.org/2001/XMLSchema#long\">22846</corelf:rt>		<terms:isPartOf>127.0.1.1:8182/ld4s/void</terms:isPartOf>		<ns:tEnd rdf:datatype=\"http://www.w3.org/2001/XMLSchema#long\">10321</ns:tEnd>		<ns:tStart rdf:datatype=\"http://www.w3.org/2001/XMLSchema#long\">5800</ns:tStart>		<ns:value rdf:datatype=\"http://www.w3.org/2001/XMLSchema#double\">24.5</ns:value>	</ns:OV></rdf:RDF>";
+	protected MediaType contentType = MediaType.APPLICATION_RDF_XML;
 
 	/** Observed values. */
 	protected String[] values = new String[]{"12.4", "21.9", "88.7", "24.5"};
@@ -363,6 +372,35 @@ public class TestOVRestApi extends LD4STestHelper {
 				+local_uri+"==============\n"+rdf);
 	}
 
+	
+	/**
+	 * Test POST {host}/ov
+	 * requirement: rdf serialization as a string payload
+	 *
+	 * @throws Exception If problems occur.
+	 */
+	@Test
+	public void testRDFPostRemoteResource() throws Exception {
+		System.out.println("Test POST remote and with no external links - JSON payload");
+		System.out.println(serialized_rdf);		 
+		ClientResource cr = new ClientResource(local_uri);
+		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
+				//user_password);
+		//cr.setChallengeResponse(authentication);
+		StringRepresentation sr = new StringRepresentation(serialized_rdf, contentType, Language.ALL, CharacterSet.UTF_8);
+		Representation resp = cr.post(sr);
+		Status status = cr.getStatus();
+		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
+		assertTrue(status.isSuccess());
+		
+		String rdf = resp.getText();
+		System.out.println("\n\n\n==============\nTesting OV Serialized RDF POST " +
+				"(annotation to be soterd remotely)\n"
+				+ "sent : "+serialized_rdf
+				+local_uri+"==============\n"+rdf);
+	}
+	
+	
 	/**
 	 * Test POST {host}/ov
 	 * requirement: resource stored remotely + Linked Data enrichment

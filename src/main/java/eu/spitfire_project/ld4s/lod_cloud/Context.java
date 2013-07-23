@@ -97,6 +97,11 @@ public class Context {
 			list = new LinkedList<String>();
 			list.add(getBaseDomain("http://dbpedia.org/"));
 			domain2Uri.put(Domain.ENCYCLOPEDIC, list);
+			list = new LinkedList<String>();
+			list.add(getBaseDomain("http://legislation.data.gov.uk/"));
+			list.add(getBaseDomain("http://statistics.data.gov.uk/"));
+			list.add(getBaseDomain("http://education.data.gov.uk/"));
+			domain2Uri.put(Domain.GOVERNMENT, list);
 		}
 
 		public static void initDomainResources(String host){

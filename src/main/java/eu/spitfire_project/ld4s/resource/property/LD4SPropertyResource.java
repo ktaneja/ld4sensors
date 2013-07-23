@@ -42,23 +42,7 @@ public class LD4SPropertyResource extends LD4SDataResource {
 		return resource;
 	}
 
-	/**
-	 * Creates main resources and additional related information
-	 * excluding linked data
-	 *
-	 * @param m_returned model which the resources to be created should be attached to
-	 * @param obj object containing the information to be semantically annotate
-	 * @param id resource identification
-	 * @return model 
-	 * @throws Exception
-	 */
-	protected Resource makeOVData() throws Exception {
-		Resource resource = createOVResource();
-		resource.addProperty(DCTerms.isPartOf,
-				this.ld4sServer.getHostName()+"void");
-		return resource;
-	}
-
+	
 	/**
 	 * Creates the main resource
 	 * @param model
@@ -66,6 +50,7 @@ public class LD4SPropertyResource extends LD4SDataResource {
 	 * @return
 	 * @throws Exception 
 	 */
+	@Override
 	protected  Resource createOVResource() throws Exception {
 		Resource resource = null;
 		String subjuri = null;

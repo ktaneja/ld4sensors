@@ -69,54 +69,54 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 	}
 
 
-//	/**
-//	 * Create and store a new Observation Value resource as Linked Data
-//	 * from the submitted content. 
-//	 * This resource MUST be stored in the LD4S TDB.
-//	 * This resource MUST not be enriched with Linked Data since this would modify the initial
-//	 * submitted content significantly (use POST instead).
-//	 *
-//	 *@param obj information to be semantically annotated and stored
-//	 */
-//	@Put
-//	public Representation put(OV ldobj){
-//		if (resourceId == null || resourceId.trim().compareTo("") == 0){
-//			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-//			return null;
-//		}
-//		this.ov = ldobj;
-//
-//		if (ov.getRemote_uri() != null){
-//			//if the preferred resource hosting is a remote one, PUT can not be used
-//			//(use POST instead) 
-//			if (this.ov.isStoredRemotely(ld4sServer.getHostName())){
-//				setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-//				return null;
-//			}			
-//		}
-//
-//		Representation ret = null;
-//		rdfData = ModelFactory.createDefaultModel();
-//		super.initModel(rdfData,"spitfire.rdf");
-//		logger.fine(resourceName + " LD4S: Now building LD4S.");
-//		try {
-//			rdfData = makeOVData().getModel();
-//		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}		
-//		// create a new resource in the database
-//		if (store(rdfData, this.namedModel)){
-//			setStatus(Status.SUCCESS_CREATED);	
-//			ret = serializeAccordingToReqMediaType(rdfData);
-//		}else{
-//			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
-//		}
-//		return ret;
-//	}
+	//	/**
+	//	 * Create and store a new Observation Value resource as Linked Data
+	//	 * from the submitted content. 
+	//	 * This resource MUST be stored in the LD4S TDB.
+	//	 * This resource MUST not be enriched with Linked Data since this would modify the initial
+	//	 * submitted content significantly (use POST instead).
+	//	 *
+	//	 *@param obj information to be semantically annotated and stored
+	//	 */
+	//	@Put
+	//	public Representation put(OV ldobj){
+	//		if (resourceId == null || resourceId.trim().compareTo("") == 0){
+	//			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+	//			return null;
+	//		}
+	//		this.ov = ldobj;
+	//
+	//		if (ov.getRemote_uri() != null){
+	//			//if the preferred resource hosting is a remote one, PUT can not be used
+	//			//(use POST instead) 
+	//			if (this.ov.isStoredRemotely(ld4sServer.getHostName())){
+	//				setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+	//				return null;
+	//			}			
+	//		}
+	//
+	//		Representation ret = null;
+	//		rdfData = ModelFactory.createDefaultModel();
+	//		super.initModel(rdfData,"spitfire.rdf");
+	//		logger.fine(resourceName + " LD4S: Now building LD4S.");
+	//		try {
+	//			rdfData = makeOVData().getModel();
+	//		} catch (UnsupportedEncodingException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		} catch (JSONException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		}		
+	//		// create a new resource in the database
+	//		if (store(rdfData, this.namedModel)){
+	//			setStatus(Status.SUCCESS_CREATED);	
+	//			ret = serializeAccordingToReqMediaType(rdfData);
+	//		}else{
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
+	//		}
+	//		return ret;
+	//	}
 
 	// PUT req: resource stored locally + no Linked Data enrichment
 	/**
@@ -232,45 +232,47 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 		return ret;
 	}
 
-//	/**
-//	 * Update a stored Observation Value resource
-//	 * with the information sent 
-//	 *
-//	 *@param obj information to store
-//	 */
-//	@Post
-//	public Representation post(OV ldobj){
-//		this.ov = ldobj;
-//		Representation ret = null;
-//		rdfData = ModelFactory.createDefaultModel();
-//		super.initModel(rdfData,"spitfire.rdf");
-//		logger.fine(resourceName + " LD4S: Now updating.");
-//		try {
-//			rdfData = makeOVLinkedData().getModel();
-//
-//			// create a new resource in the database only if the preferred resource hosting server is
-//			// the LD4S one
-//			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
-//				if (update(rdfData, this.namedModel)){
-//					setStatus(Status.SUCCESS_OK);	 
-//					ret = serializeAccordingToReqMediaType(rdfData);
-//				}else{
-//					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
-//				}
-//			}else{
-//				setStatus(Status.SUCCESS_OK);	 
-//				ret = serializeAccordingToReqMediaType(rdfData);
-//			}
-//		}  catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}catch (JSONException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}		
-//
-//		return ret;
-//	}
+	
+
+	//	/**
+	//	 * Update a stored Observation Value resource
+	//	 * with the information sent 
+	//	 *
+	//	 *@param obj information to store
+	//	 */
+	//	@Post
+	//	public Representation post(OV ldobj){
+	//		this.ov = ldobj;
+	//		Representation ret = null;
+	//		rdfData = ModelFactory.createDefaultModel();
+	//		super.initModel(rdfData,"spitfire.rdf");
+	//		logger.fine(resourceName + " LD4S: Now updating.");
+	//		try {
+	//			rdfData = makeOVLinkedData().getModel();
+	//
+	//			// create a new resource in the database only if the preferred resource hosting server is
+	//			// the LD4S one
+	//			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
+	//				if (update(rdfData, this.namedModel)){
+	//					setStatus(Status.SUCCESS_OK);	 
+	//					ret = serializeAccordingToReqMediaType(rdfData);
+	//				}else{
+	//					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
+	//				}
+	//			}else{
+	//				setStatus(Status.SUCCESS_OK);	 
+	//				ret = serializeAccordingToReqMediaType(rdfData);
+	//			}
+	//		}  catch (UnsupportedEncodingException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		}catch (JSONException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		}		
+	//
+	//		return ret;
+	//	}
 
 	/**
 	 * Update a stored Observation Value resource
@@ -365,6 +367,8 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 		return ret;
 	}
 
+
+	
 	// DELETE req: resource stored locally
 	/**
 	 * Delete an already store Observation Value resource 
