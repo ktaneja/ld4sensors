@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Thu Jul 04 16:38:24 IST 2013
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=false
+onejar.checkbox=false
+jarname=ld4sensors_4jul.jar
+manifest.mergeall=true
+manifest.mainclass=eu.spitfire_project.ld4s.server.Server
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
