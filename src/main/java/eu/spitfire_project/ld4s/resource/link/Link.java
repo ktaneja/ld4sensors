@@ -231,10 +231,10 @@ public class Link extends LD4SObject{
 		this.defaultType = SptVocab.DATALINKING;
 	}
 
-	@Override
-	protected void initAcceptedTypes() {
-		this.acceptedTypes = new OntClass[]{};
-	}
+//	@Override
+//	protected void initAcceptedTypes() {
+//		this.acceptedTypes = new OntClass[]{};
+//	}
 
 	@Override
 	public String getRemote_uri() {

@@ -2,7 +2,6 @@ package eu.spitfire_project.ld4s.resource.temporal_property.sensor;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
@@ -72,14 +71,19 @@ public class LD4STempSensPropResource extends LD4SDataResource {
 				resource = addFoi(resource, item);
 			}
 		}		
-		item = ov.getSensor_id();
+		item = ov.getSensor();
 		if (item != null && item.trim().compareTo("")!=0){
 			if (item.startsWith("http://")){
-				resource.addProperty(SptVocab.TEMPORAL, 
+				resource.addProperty(SptVocab.FOR_SENSOR, 
 						rdfData.createResource(item));	
 			}else{
-				resource.addProperty(SptVocab.TEMPORAL, item);
+				resource.addProperty(SptVocab.FOR_SENSOR, item);
 			}
+		}
+		item = ov.getDinamicity();
+		if (item != null && item.trim().compareTo("")!=0){
+			resource.addProperty(SptVocab.HAS_DINAMICITY, item);
+			
 		}
 		item = ov.getNet_role();
 		if (item != null && item.trim().compareTo("")!=0){

@@ -65,10 +65,10 @@ public class LinkReview extends LD4SObject{
 		this.defaultType = SptVocab.LINKREVIEW;
 	}
 
-	@Override
-	protected void initAcceptedTypes() {
-		this.acceptedTypes = new OntClass[]{RevVocab.FEEDBACK};
-	}
+//	@Override
+//	protected void initAcceptedTypes() {
+//		this.acceptedTypes = new OntClass[]{RevVocab.FEEDBACK};
+//	}
 
 	@Override
 	public String getRemote_uri() {

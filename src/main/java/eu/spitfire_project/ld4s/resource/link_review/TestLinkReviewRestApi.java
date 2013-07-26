@@ -194,6 +194,7 @@ public class TestLinkReviewRestApi extends LD4STestHelper {
 	public void testGet() throws Exception {
 		System.out.println("Test Get");
 		ClientResource cr = new ClientResource(local_uri+resourceId);
+//		ClientResource cr = new ClientResource("http://127.0.1.1:8182/ld4s/link/127.0.1.1%3a8182%2fld4s%2fresource%2fproperty%2ftemperature_2013%2f07%2f26+17%3a33%3a40");
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);

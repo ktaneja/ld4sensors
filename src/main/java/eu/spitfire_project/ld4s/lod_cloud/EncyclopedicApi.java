@@ -294,7 +294,7 @@ public class EncyclopedicApi extends SearchRouter {
 			String rdfdownload = makeRequest(to, MediaType.APPLICATION_RDF_XML);
 			if (rdfdownload != null){	
 				Model temp = ModelFactory.createDefaultModel();
-				File f = new File("C:\\test1.rdf");
+				File f = new File("test1.rdf");
 				f.setWritable(true);
 				FileWriter fw = new FileWriter(f);
 				fw.write(rdfdownload);

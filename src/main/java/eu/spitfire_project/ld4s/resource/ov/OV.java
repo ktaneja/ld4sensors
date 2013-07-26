@@ -160,10 +160,10 @@ public class OV extends LD4SObject  implements Serializable{
 		return this.link_criteria;
 	}
 
-	@Override
-	protected void initAcceptedTypes() {
-		this.acceptedTypes = new OntClass[]{};
-	}
+//	@Override
+//	protected void initAcceptedTypes() {
+//		this.acceptedTypes = new OntClass[]{};
+//	}
 
 	@Override
 	protected void initDefaultType() {

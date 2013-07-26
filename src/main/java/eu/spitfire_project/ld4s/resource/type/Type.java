@@ -1,4 +1,4 @@
-package eu.spitfire_project.ld4s.resource.property;
+package eu.spitfire_project.ld4s.resource.type;
 
 import java.io.Serializable;
 
@@ -6,54 +6,65 @@ import org.json.JSONObject;
 import org.restlet.data.Form;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
-import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
+import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 
 /**
- * Observed Property resource.
- * This resource is usually stored on the Sensor and transmitted rarely.
+ * Type resource.
+ * This resource enables the generation of RDF descriptions for an RDF class
+ * rather than for an RDF instance, unlike the other LD4S resources.
  * 
+
  * @author Myriam Leggieri <iammyr@email.com>
  *
  */
-public class Property extends LD4SObject  implements Serializable{
+public class Type extends LD4SObject  implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8845385924519981423L;
+	
+	/** Measurement Capability URI. */
+	private String meas_capab_uri = null;
 
-	public Property(String host, String[] values, String uom,
-			String op, String bn, String bovn, String criteria, String localhost,
+
+	public Type(String meas_capab,
 			String base_datetime, String start_range, String end_range, 
 			String[] locations) 
 	throws Exception{
 		super(base_datetime, start_range, end_range,locations);
-		this.setRemote_uri(host);
-		this.setLink_criteria(criteria, localhost);
+		this.setMeasurementCapability(meas_capab);
 	}
 
-	public Property(JSONObject json, String localhost) throws Exception {
+	public Type(JSONObject json, String localhost) throws Exception {
 		super(json);
-		if (json.has("uri")){
-			this.setRemote_uri(LD4SDataResource.removeBrackets(
-					json.getString("uri")));
-		}
-		if (json.has("context")){
-			this.setLink_criteria(json.getString("context"), localhost);
+		if (json.has("measurement"+LD4SConstants.JSON_SEPARATOR+"capability")){
+			this.setMeasurementCapability(LD4SDataResource.removeBrackets(
+					json.getString("observed"+LD4SConstants.JSON_SEPARATOR+"property")));
 		}
 	}
 
-	public Property (Form form, String localhost) throws Exception {
+	
+
+	private void setMeasurementCapability(String meas_capab) {
+		this.meas_capab_uri = meas_capab;
+		
+	}
+
+	public Type (Form form, String localhost) throws Exception {
 		super(form);
-		this.setLink_criteria(
-				form.getFirstValue("context"), localhost);
+		this.setMeasurementCapability(form.getFirstValue("measurement"+LD4SConstants.JSON_SEPARATOR+"capability"));
 	}
 
-
+	public String getMeasurementCapability() {
+		return meas_capab_uri;
+	}
+	
 	@Override
 	public String getRemote_uri() {
 		return remote_uri;
@@ -102,13 +113,11 @@ public class Property extends LD4SObject  implements Serializable{
 		return this.link_criteria;
 	}
 
-//	@Override
-//	protected void initAcceptedTypes() {
-//		this.acceptedTypes = new OntClass[]{};
-//	}
-
 	@Override
 	protected void initDefaultType() {
-		this.defaultType = SsnVocab.PROPERTY;
+		this.defaultType = (OntClass) RDFS.Class ;
 	}
+
+	
+		
 }

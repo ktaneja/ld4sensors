@@ -22,6 +22,7 @@ import eu.spitfire_project.ld4s.resource.ping.PingResource;
 import eu.spitfire_project.ld4s.resource.platform.PlatformResource;
 import eu.spitfire_project.ld4s.resource.temporal_property.platform.TempPlatfPropResource;
 import eu.spitfire_project.ld4s.resource.temporal_property.sensor.TempSensPropResource;
+import eu.spitfire_project.ld4s.resource.type.TypeResource;
 
 public class Server extends Application{
 
@@ -265,6 +266,15 @@ public class Server extends Application{
 				router.attach("/link", LinkResource.class);
 				router.attach("/link/", LinkResource.class);
 				
+				//=============================================================
+				
+				
+				// GET req:resource stored locally
+				// PUT req: resource stored locally
+				// DELETE req: resource stored locally
+				// POST req: resource stored locally
+				router.attach("/type/{resource_id}", TypeResource.class);
+								
 				//=============================================================
 				
 				// DATASET DESCRIPTION

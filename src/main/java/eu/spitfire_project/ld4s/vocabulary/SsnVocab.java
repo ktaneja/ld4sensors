@@ -50,6 +50,8 @@ public class SsnVocab {
       .createObjectProperty(NS+"inCondition");
 	  public static final ObjectProperty FOR_PROPERTY = m_model
       .createObjectProperty(NS+"forProperty");
+	  public static final ObjectProperty ON_PLATFORM = m_model
+		      .createObjectProperty(NS+"onPlatform");
 	  public static final ObjectProperty HAS_MEASUREMENT_PROPERTY = m_model
       .createObjectProperty(NS+"hasMeasurementProperty");
 	  public static final ObjectProperty HAS_MEASUREMENT_CAPABILITIES = m_model

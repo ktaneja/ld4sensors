@@ -33,7 +33,6 @@ import org.restlet.security.User;
 import org.restlet.service.MetadataService;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -47,6 +46,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -225,6 +225,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		resource2namedGraph.put("platform", base+"platform");
 		resource2namedGraph.put("meas_capab", base+"meas_capab");
 		resource2namedGraph.put("meas_prop", base+"meas_prop");
+		resource2namedGraph.put("type", base+"type");
 	}
 	
 	/**
@@ -790,19 +791,29 @@ public abstract class LD4SDataResource extends ServerResource{
 		return string;
 	}
 
-
+	/*
+	 * retrieves the Spitfire ontology new classes stored in the TDB
+	 */
+	protected ResIterator getAcceptedTypes(String class_uri) {
+		Model rdfData = retrieve(class_uri, this.namedModel);
+		ResIterator ret = rdfData.listSubjects();
+				
+		return ret;
+	}
+	
 	protected Resource crossResourcesAnnotation(LD4SObject ov, Resource resource) throws Exception{
 		String 
 		//check whether the specified subtype is a valid one,
 		item = ov.getType();
-		OntClass[] at = null;
-		OntClass preftype = null;;
+		ResIterator at = null;
+		Resource preftype = null, curr = null;
 		if (item != null && item.trim().compareTo("")!=0){
-			at = ov.getAcceptedTypes();
+			at = getAcceptedTypes(resource.getURI());
 			if (at != null){
-				for (int ind=0; ind<at.length&&preftype==null ;ind++){
-					if (at[ind].getURI().toLowerCase().contains(item.toLowerCase())){
-						preftype = at[ind];
+				while (at.hasNext() && preftype==null){
+					curr = at.next();
+					if (curr.getURI().toLowerCase().contains(item.toLowerCase())){
+						preftype = curr;
 					}
 				}
 				if (preftype != null){

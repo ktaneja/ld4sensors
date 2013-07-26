@@ -74,6 +74,15 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 				resource.addProperty(SsnVocab.IN_DEPLOYMENT, item);
 			}
 		}
+		item = ov.getPlatform();
+		if (item != null && item.trim().compareTo("")!=0){
+			if (item.startsWith("http://")){
+				resource.addProperty(SptVocab.FOR_PLATFORM, 
+						rdfData.createResource(item));	
+			}else{
+				resource.addProperty(SptVocab.FOR_PLATFORM, item);
+			}
+		}
 		item = ov.getPlatform_id();
 		if (item != null && item.trim().compareTo("")!=0){
 			if (item.startsWith("http://")){

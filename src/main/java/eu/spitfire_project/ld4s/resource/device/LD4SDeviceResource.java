@@ -2,12 +2,12 @@ package eu.spitfire_project.ld4s.resource.device;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.vocabulary.CorelfVocab;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
+import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 
 /**
  * Construct an oobservation value resource.
@@ -17,7 +17,7 @@ import eu.spitfire_project.ld4s.vocabulary.SptVocab;
  */
 public class LD4SDeviceResource extends LD4SDataResource {
 	/** Service resource name. */
-	protected String resourceName = "Observation Value";
+	protected String resourceName = "Device";
 
 	/** RDF Data Model of this Service resource semantic annotation. */
 	protected Model rdfData = null;
@@ -77,6 +77,16 @@ public class LD4SDeviceResource extends LD4SDataResource {
 		if (item != null && item.trim().compareTo("")!=0){
 			if (item.startsWith("http://")){
 				resource.addProperty(CorelfVocab.BASE_OV_NAME, 
+						rdfData.createResource(item));	
+			}else{
+				resource.addProperty(CorelfVocab.BASE_OV_NAME, 
+						rdfData.createTypedLiteral(item));
+			}
+		}
+		item = ov.getPlatform_uri();
+		if (item != null && item.trim().compareTo("")!=0){
+			if (item.startsWith("http://")){
+				resource.addProperty(SsnVocab.ON_PLATFORM, 
 						rdfData.createResource(item));	
 			}else{
 				resource.addProperty(CorelfVocab.BASE_OV_NAME, 

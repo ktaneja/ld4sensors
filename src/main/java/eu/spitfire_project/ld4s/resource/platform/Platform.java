@@ -204,11 +204,11 @@ public class Platform extends LD4SObject  implements Serializable{
 		return tpproperties;
 	}
 
-	@Override
-	protected void initAcceptedTypes() {
-		this.setAcceptedTypes(new OntClass[]{
-				SptSnVocab.TESTBED});
-	}
+//	@Override
+//	protected void initAcceptedTypes() {
+//		this.setAcceptedTypes(new OntClass[]{
+//				SptSnVocab.TESTBED});
+//	}
 
 	@Override
 	protected void initDefaultType() {

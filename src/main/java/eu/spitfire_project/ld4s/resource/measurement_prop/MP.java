@@ -74,6 +74,7 @@ public class MP extends LD4SObject  implements Serializable{
 		this.setRemote_uri(host);
 		this.setResource_time(resource_time);
 		this.setLink_criteria(criteria, localhost);
+		this.initSuggestedTypes();
 	}
 
 	public MP(JSONObject json, String localhost) throws Exception {
@@ -100,6 +101,7 @@ public class MP extends LD4SObject  implements Serializable{
 		if (json.has("conditions")){
 			this.setConditions(json.getJSONArray("conditions"));
 		}
+		this.initSuggestedTypes();
 	}
 
 	public MP (Form form, String localhost) throws Exception {
@@ -168,8 +170,8 @@ public class MP extends LD4SObject  implements Serializable{
 	}
 
 	@Override
-	protected void initAcceptedTypes() {
-		this.acceptedTypes = new OntClass[]{SsnVocab.ACCURACY, SsnVocab.DETECTION_LIMIT,
+	protected void initSuggestedTypes() {
+		this.suggestedTypes = new OntClass[]{SsnVocab.ACCURACY, SsnVocab.DETECTION_LIMIT,
 				SsnVocab.DRIFT, SsnVocab.FREQUENCY, SsnVocab.LATENCY, SsnVocab.PRECISION,
 				SsnVocab.RESOLUTION, SsnVocab.RESPONSE_TIME, SsnVocab.SELECTIVITY,
 				SsnVocab.SENSITIVITY};

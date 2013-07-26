@@ -69,11 +69,11 @@ public class FeatureOfInterest extends LD4SObject{
 		
 	}
 
-	@Override
-	protected void initAcceptedTypes() {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	protected void initAcceptedTypes() {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	protected void initDefaultType() {

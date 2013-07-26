@@ -54,6 +54,10 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 	  // Vocabulary properties
 	  // /////////////////////////
 
+	  public static final ObjectProperty FOR_SENSOR = m_model
+		      .createObjectProperty(NS+"forSensor");
+	  public static final ObjectProperty FOR_PLATFORM = m_model
+		      .createObjectProperty(NS+"forPlatform");
 	  public static final ObjectProperty HAS_VALUE_RANGE = m_model
       .createObjectProperty(NS+"hasValueRange");
 	  public static final ObjectProperty HAS_VALUE = m_model
@@ -154,6 +158,9 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 	  public static final ObjectProperty IS_CROSS = m_model
       .createObjectProperty(NS+"isTopicFor");
 	  
+	  public static final ObjectProperty HAS_DINAMICITY = m_model
+		      .createObjectProperty(NS+"dinamicity");
+	  
 	  public static final ObjectProperty TITLE = m_model
       .createObjectProperty(NS+"title");
 	  public static final ObjectProperty START_TIME = m_model
@@ -194,6 +201,12 @@ import com.hp.hpl.jena.vocabulary.RDFS;
       .createClass(SptVocab.NS+"SensorTemporalProperty");
 	  public static final OntClass OV = m_model
 	      .createClass(SptVocab.NS+"OV");
+	  public static final OntClass DINAMICITY = m_model
+		      .createClass(SptVocab.NS+"Dinamicity");
+	  public static final OntClass STATIC = m_model
+		      .createClass(SptVocab.NS+"Static");
+	  public static final OntClass MOBILE = m_model
+		      .createClass(SptVocab.NS+"Mobile");
 	  public static final OntClass DATALINKING = m_model
       .createClass(SptVocab.NS+"DataLink");
 	  public static final OntClass LINKREVIEW = m_model

@@ -7,8 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Form;
 
-import com.hp.hpl.jena.ontology.OntClass;
-
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
@@ -39,9 +37,6 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 	private static final long serialVersionUID = 8845385924519981423L;
 
 	
-	/** Sensor ID. */
-	private String sensor_id = null;
-
 	/** Network Role. */
 	private String net_role = null;
 
@@ -50,19 +45,26 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 
 	/** Feature of Interest. */
 	private String foi = null;
+	
+	/** Sensor URI. */
+	private String sensor = null;
+	
+	/** Dinamicity. */
+	private String dinamicity = null;
 
 
 	public TempSensProp(String host, String[] net_links, String net_role, String sens,
 			String foi, String start_time, String end_time, String criteria, 
-			String localhost,
+			String localhost, String dinamicity,
 			String base_datetime, String start_range, String end_range, 
 			String[] locations) 
 	throws Exception{
 		super(base_datetime, start_range, end_range,locations);
 		this.setRemote_uri(host);
-		this.setSensor_id(sens);;
+		this.setSensor(sens);;
 		this.setFoi(foi);
 		this.setLink_criteria(criteria, localhost);
+		this.setDinamicity(dinamicity);
 	}
 
 	public TempSensProp(JSONObject json, String localhost) throws Exception {
@@ -71,9 +73,13 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 			this.setRemote_uri(LD4SDataResource.removeBrackets(
 					json.getString("uri")));
 		}
-		if (json.has("sensor"+LD4SConstants.JSON_SEPARATOR+"id")){
-			this.setSensor_id(LD4SDataResource.removeBrackets(
-					json.getString("senso"+LD4SConstants.JSON_SEPARATOR+"id")));
+		if (json.has("sensor")){
+			this.setSensor(LD4SDataResource.removeBrackets(
+					json.getString("sensor")));
+		}
+		if (json.has("dinamicity")){
+			this.setDinamicity(LD4SDataResource.removeBrackets(
+					json.getString("dinamicity")));
 		}
 		if (json.has("foi")){
 			this.setFoi(LD4SDataResource.removeBrackets(
@@ -91,6 +97,18 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 		}
 	}
 
+	public void setDinamicity(String dinamicity) {
+		if (dinamicity.compareTo(SptVocab.STATIC.getLocalName()) == 0 
+				|| dinamicity.compareTo(SptVocab.MOBILE.getLocalName()) == 0){
+			this.dinamicity = dinamicity;		
+		}
+	}
+	
+	public String getDinamicity() {
+		return dinamicity;
+		
+	}
+
 	public TempSensProp (Form form, String localhost) throws Exception {
 		super(form);
 		this.setNet_links(form.getValuesArray("net"+LD4SConstants.JSON_SEPARATOR+"links"));
@@ -99,7 +117,7 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 				form.getFirstValue("foi"));
 		this.setNet_role(
 				form.getFirstValue("net"+LD4SConstants.JSON_SEPARATOR+"role"));
-		this.setSensor_id(
+		this.setSensor(
 				form.getFirstValue("sensor"+LD4SConstants.JSON_SEPARATOR+"id"));
 		this.setLink_criteria(
 				form.getFirstValue("context"), localhost);
@@ -153,12 +171,12 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 		return this.link_criteria;
 	}
 
-	public void setSensor_id(String sensor_id) {
-		this.sensor_id = sensor_id;
+	public void setSensor(String sensor_uri) {
+		this.sensor = sensor_uri;
 	}
 
-	public String getSensor_id() {
-		return sensor_id;
+	public String getSensor() {
+		return sensor;
 	}
 
 	public void setNet_role(String net_role) {
@@ -198,10 +216,10 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 	}
 
 
-	@Override
-	protected void initAcceptedTypes() {
-		this.acceptedTypes = new OntClass[]{};
-	}
+//	@Override
+//	protected void initAcceptedTypes() {
+//		this.acceptedTypes = new OntClass[]{};
+//	}
 
 	@Override
 	protected void initDefaultType() {

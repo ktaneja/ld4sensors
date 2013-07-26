@@ -14,7 +14,7 @@ import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 
 public abstract class LD4SObject{
 	
-	protected OntClass[] acceptedTypes;
+	protected OntClass[] suggestedTypes;
 	
 	protected OntClass defaultType;
 
@@ -67,8 +67,7 @@ public abstract class LD4SObject{
 	/** Milliseconds shift from the base time as a reading collection time point. */
 	private String time = null;
 
-	protected abstract void initDefaultType(); 
-	protected abstract void initAcceptedTypes(); 
+	protected abstract void initDefaultType();  
 	public abstract String getRemote_uri();
 	public abstract void setRemote_uri(String resourceHost);
 	public abstract void setStoredRemotely(boolean storedRemotely);
@@ -131,9 +130,15 @@ public abstract class LD4SObject{
 			if (json.has("locations")){
 				this.setSpace(json.getJSONArray("locations"));
 			}
-			initAcceptedTypes();
+			initSuggestedTypes();
 			initDefaultType();
 		}
+	}
+	
+	
+	
+	protected void initSuggestedTypes() {
+		
 	}
 	
 	protected void setType(String type) {
@@ -163,8 +168,8 @@ public abstract class LD4SObject{
 			//spaces relation # <lat,long | name> 
 			this.setSpace(
 					form.getValuesArray("locations"));
-			initAcceptedTypes();
-			initDefaultType();
+			initSuggestedTypes();
+//			initDefaultType();
 		}
 	}
 
@@ -175,8 +180,8 @@ public abstract class LD4SObject{
 		this.setEnd_range(end_range);
 		//spaces relation # <lat,long | name> 
 		this.setSpace(locations);
-		initAcceptedTypes();
-		initDefaultType();
+//		initAcceptedTypes();
+//		initDefaultType();
 	}
 
 	public void setEnd_range(String end_range) {
@@ -329,11 +334,11 @@ public abstract class LD4SObject{
 	public String getDescription() {
 		return description;
 	}
-	public void setAcceptedTypes(OntClass[] acceptedTypes) {
-		this.acceptedTypes = acceptedTypes;
+	public void setSuggestedTypes(OntClass[] acceptedTypes) {
+		this.suggestedTypes = acceptedTypes;
 	}
-	public OntClass[] getAcceptedTypes() {
-		return acceptedTypes;
+	public OntClass[] getSuggestedTypes() {
+		return suggestedTypes;
 	}
 	public void setDefaultType(OntClass defaultType) {
 		this.defaultType = defaultType;

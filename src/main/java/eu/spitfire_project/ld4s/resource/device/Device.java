@@ -40,7 +40,9 @@ public class Device extends LD4SObject  implements Serializable{
 	/** Temporarily (to enhance the link search): Feature of Interest. */
 	private String foi = null;
 
-
+	/** Platform the system is attached to. */
+	private String platform_uri = null;
+	
 	/** Unit of Measurement. */
 	private String unit_of_measurement = null;
 
@@ -74,6 +76,7 @@ public class Device extends LD4SObject  implements Serializable{
 		this.setBase_name(bn);
 		this.setBase_ov_name(bovn);
 		this.setLink_criteria(criteria, localhost);
+		this.initSuggestedTypes();
 	}
 
 	public Device(JSONObject json, String localhost) throws Exception {
@@ -81,6 +84,10 @@ public class Device extends LD4SObject  implements Serializable{
 		if (json.has("uri")){
 			this.setRemote_uri(LD4SDataResource.removeBrackets(
 					json.getString("uri")));
+		}
+		if (json.has("platform")){
+			this.setPlatform_uri(LD4SDataResource.removeBrackets(
+					json.getString("platform")));
 		}
 		if (json.has("uom")){
 			this.setUnit_of_measurement(LD4SDataResource.removeBrackets(
@@ -112,9 +119,15 @@ public class Device extends LD4SObject  implements Serializable{
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
 		}
+		this.initSuggestedTypes();
 	}
 
 	
+
+	private void setPlatform_uri(String platform) {
+		this.platform_uri = platform;
+		
+	}
 
 	public Device (Form form, String localhost) throws Exception {
 		super(form);
@@ -135,7 +148,10 @@ public class Device extends LD4SObject  implements Serializable{
 				form.getFirstValue("context"), localhost);
 	}
 
-
+	public String getPlatform_uri() {
+		return platform_uri;
+	}
+	
 	@Override
 	public String getRemote_uri() {
 		return remote_uri;
@@ -255,8 +271,8 @@ public class Device extends LD4SObject  implements Serializable{
 	}
 
 	@Override
-	protected void initAcceptedTypes() {
-		this.setAcceptedTypes(new OntClass[]{
+	protected void initSuggestedTypes() {
+		this.setSuggestedTypes(new OntClass[]{
 				SptSnVocab.ACTUATOR, SptSnVocab.TRANSDUCER,
 				SptSnVocab.ACCELEROMETER,
 				SptSnVocab.GPS,

@@ -68,6 +68,9 @@ public class TempPlatfProp extends LD4SObject  implements Serializable{
 
 	/** Deployment URI. */
 	private String deployment = null;
+	
+	/** Platform URI. */
+	private String platform = null;
 
 
 	public TempPlatfProp(String host, String[] wornby, String deployment, 
@@ -94,13 +97,17 @@ public class TempPlatfProp extends LD4SObject  implements Serializable{
 			this.setRemote_uri(LD4SDataResource.removeBrackets(
 					json.getString("uri")));
 		}
-		if (json.has("platform"+LD4SConstants.JSON_SEPARATOR+"id")){
-			this.setPlatform_id(LD4SDataResource.removeBrackets(
-					json.getString("platform"+LD4SConstants.JSON_SEPARATOR+"id")));
+		if (json.has("platform")){
+			this.setPlatform(LD4SDataResource.removeBrackets(
+					json.getString("platform")));
 		}
 		if (json.has("deployment")){
 			this.setDeployment(LD4SDataResource.removeBrackets(
 					json.getString("deployment")));
+		}
+		if (json.has("platform")){
+			this.setPlatform(LD4SDataResource.removeBrackets(
+					json.getString("platform")));
 		}
 		if (json.has("worn"+LD4SConstants.JSON_SEPARATOR+"by")){
 			this.setWornby(json.getJSONArray("worn"+LD4SConstants.JSON_SEPARATOR+"by"));
@@ -315,6 +322,14 @@ public class TempPlatfProp extends LD4SObject  implements Serializable{
 	public String getDeployment() {
 		return deployment;
 	}
+	
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
+	public String getPlatform() {
+		return platform;
+	}
 
 	public void setAlgorithms(String[] algorithms) {
 		this.algorithms = algorithms;
@@ -369,10 +384,10 @@ public class TempPlatfProp extends LD4SObject  implements Serializable{
 		return person_wornby;
 	}
 
-	@Override
-	protected void initAcceptedTypes() {
-		this.acceptedTypes = new OntClass[]{};
-	}
+//	@Override
+//	protected void initAcceptedTypes() {
+//		this.acceptedTypes = new OntClass[]{};
+//	}
 
 	@Override
 	protected void initDefaultType() {
