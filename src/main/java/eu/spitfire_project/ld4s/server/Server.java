@@ -20,6 +20,7 @@ import eu.spitfire_project.ld4s.resource.other.OtherResource;
 import eu.spitfire_project.ld4s.resource.ov.OVResource;
 import eu.spitfire_project.ld4s.resource.ping.PingResource;
 import eu.spitfire_project.ld4s.resource.platform.PlatformResource;
+import eu.spitfire_project.ld4s.resource.sparql.SparqlResource;
 import eu.spitfire_project.ld4s.resource.temporal_property.platform.TempPlatfPropResource;
 import eu.spitfire_project.ld4s.resource.temporal_property.sensor.TempSensPropResource;
 
@@ -142,12 +143,15 @@ public class Server extends Application{
 			    router.attach("/ping", PingResource.class);
 //			    router.attach("/ping?user={user}&password={password}", PingResource.class);
 			    
-//				router.attach("/sparql", SparqlResource.class);
+				router.attach("/sparql/{query}", SparqlResource.class);
 //				router.attach("/ov/sparql", SparqlResource.class);
-//				router.attach("/sensdev/sparql", SparqlResource.class);
+//				router.attach("/device/sparql", SparqlResource.class);
 //				router.attach("/tps/sparql", SparqlResource.class);
 //				router.attach("/tpp/sparql", SparqlResource.class);
 //				router.attach("/link/sparql", SparqlResource.class);
+//				router.attach("/meas_capab/sparql", SparqlResource.class);
+//				router.attach("/platform/sparql", SparqlResource.class);
+//				router.attach("/meas_prop/sparql", SparqlResource.class);
 				
 				// POST req: resource stored remotely IF resourceId == null
 				router.attach("/ov/", OVResource.class);
