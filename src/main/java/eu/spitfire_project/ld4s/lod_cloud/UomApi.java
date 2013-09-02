@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
@@ -31,8 +31,8 @@ public class UomApi extends SearchRouter {
 
 
 	public UomApi(String baseHost, Context context,
-			User author, Resource from_resource) {
-		super(baseHost, context, author, from_resource);
+			User author, Resource from_resource, OntModel from_model) {
+		super(baseHost, context, author, from_resource, from_model);
 	}
 
 
@@ -143,7 +143,7 @@ public class UomApi extends SearchRouter {
 
 
 	@Override
-	public Model start() throws Exception {
+	public OntModel start() throws Exception {
 		String thing = context.getThing();
 
 		//get the factory
@@ -201,7 +201,7 @@ public class UomApi extends SearchRouter {
 			thing += getDBPEDIA_DISAMBIGUATION_SUFFIX();
 		}
 		context.setThing(addterms+context.getThing()+ " unit");
-		GenericApi gen = new GenericApi(baseHost, context, author, from_resource);
+		GenericApi gen = new GenericApi(baseHost, context, author, from_resource, from_model);
 		return gen.start();
 
 	}
@@ -236,8 +236,8 @@ public class UomApi extends SearchRouter {
 	 * @throws UnsupportedEncodingException
 	 * @throws JSONException
 	 */
-	protected Model createLink(Uom uom) {
-		Model model = from_resource.getModel();
+	protected OntModel createLink(Uom uom) {
+		OntModel model = from_model;
 		if (uom == null){
 			return model;
 		}

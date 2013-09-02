@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.security.User;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -67,14 +68,14 @@ public class LocationApi extends SearchRouter{
 
 
 	public LocationApi(String baseHost, Context context,
-			User author, Resource from_resource) {
-		super(baseHost, context, author, from_resource);
+			User author, Resource from_resource, OntModel from_model) {
+		super(baseHost, context, author, from_resource, from_model);
 		// TODO Auto-generated constructor stub
 	}
 
 
 	@Override
-	public Model start() throws Exception {
+	public OntModel start() throws Exception {
 		String query = null;
 
 
@@ -116,12 +117,12 @@ public class LocationApi extends SearchRouter{
 		//last attempt
 		//Sindice while specifying only cross domain dataset to search against.
 		context.setDomains(new Domain[]{Domain.GEOGRAPHY});
-		GenericApi gen = new GenericApi(baseHost, context, author, from_resource);
+		GenericApi gen = new GenericApi(baseHost, context, author, from_resource, from_model);
 		return gen.start();
 
 	}
 	
-	protected Model handleAnswer(JSONObject json){
+	protected OntModel handleAnswer(JSONObject json){
 		try {
 			if (!json.has("geonames")
 					&& json.has("postalCodes")){
@@ -164,7 +165,7 @@ public class LocationApi extends SearchRouter{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return from_resource.getModel();
+		return from_model;
 	}
 
 
@@ -178,9 +179,9 @@ public class LocationApi extends SearchRouter{
 	 * @throws JSONException
 	 * @throws UnsupportedEncodingException
 	 */
-	protected Model createLink(JSONObject to) 
+	protected OntModel createLink(JSONObject to) 
 	throws UnsupportedEncodingException, JSONException{
-		Model model = from_resource.getModel();
+		OntModel model = from_model;
 		if (!to.has("geonameId")){
 			return model;
 		}

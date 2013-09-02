@@ -8,6 +8,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
@@ -56,7 +58,7 @@ public class LinkReviewResource extends LD4SLinkReviewResource implements LD4SAp
 			if (!this.context.isEmpty()){
 				//how it should be: add the already existing links iff their context 
 				//matches with the requested one search for new links
-				rdfData = addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context).getModel();
+				rdfData = (OntModel)addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context, rdfData)[1];
 			}
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}
@@ -136,7 +138,7 @@ public class LinkReviewResource extends LD4SLinkReviewResource implements LD4SAp
 		}
 
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 //		try {
@@ -192,11 +194,11 @@ public class LinkReviewResource extends LD4SLinkReviewResource implements LD4SAp
 		}
 
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 		try {
-			this.ov = new LinkReview(obj, this.ld4sServer.getHostName());
+			this.ov = new LinkReviewOld(obj, this.ld4sServer.getHostName());
 			if (ov.getRemote_uri() != null){
 				//if the preferred resource hosting server is a remote one, PUT can not be used
 				//(use POST instead) 
@@ -206,7 +208,7 @@ public class LinkReviewResource extends LD4SLinkReviewResource implements LD4SAp
 				}			
 			}
 			try {
-				rdfData = makeOVData().getModel();
+				rdfData = (OntModel)makeOVData()[1];
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -282,7 +284,7 @@ public class LinkReviewResource extends LD4SLinkReviewResource implements LD4SAp
 	public Representation post(Form obj){
 		//if an host has not been set then the LD4S service one has to be assigned
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 //		try {
@@ -328,12 +330,12 @@ public class LinkReviewResource extends LD4SLinkReviewResource implements LD4SAp
 	@Override
 	public Representation post(JSONObject obj){
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
-			this.ov = new LinkReview(obj, this.ld4sServer.getHostName());
-			rdfData = makeOVLinkedData().getModel();
+			this.ov = new LinkReviewOld(obj, this.ld4sServer.getHostName());
+			rdfData = (OntModel)makeOVLinkedData()[1];
 
 			// create a new resource in the database only if the preferred resource hosting server is
 			// the LD4S one

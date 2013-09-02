@@ -137,7 +137,9 @@ public abstract class LD4SObject{
 	}
 	
 	protected void setType(String type) {
+		//if the type exists
 		this.pref_type = type;
+		//otherwise create a new one
 	}
 
 	public String getType() {
@@ -177,6 +179,10 @@ public abstract class LD4SObject{
 		this.setSpace(locations);
 		initAcceptedTypes();
 		initDefaultType();
+	}
+	
+	public LD4SObject(){
+		
 	}
 
 	public void setEnd_range(String end_range) {

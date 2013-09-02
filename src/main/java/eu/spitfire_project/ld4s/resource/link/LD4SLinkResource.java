@@ -1,8 +1,7 @@
 package eu.spitfire_project.ld4s.resource.link;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
@@ -14,7 +13,7 @@ public class LD4SLinkResource extends LD4SDataResource {
 	protected String resourceName = "Data Link";
 	
 	/** RDF Data Model of this Service resource semantic annotation. */
-	protected Model rdfData = null;
+	protected OntModel rdfData = null;
 	
 	/** Resource provided by this Service resource. */
 	protected Link ov = null;
@@ -29,12 +28,12 @@ public class LD4SLinkResource extends LD4SDataResource {
 	 * @return model 
 	 * @throws Exception
 	 */
-	protected Resource makeOVLinkedData() throws Exception {
-		Resource resource = makeOVData();
+	protected Object[] makeOVLinkedData() throws Exception {
+		Object[] resp = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
-		return resource;
+		resp = addLinkedData((Resource)resp[0], Domain.ALL, this.context, (OntModel)resp[1]);
+		return resp;
 	}
 	
 	
@@ -47,7 +46,7 @@ public class LD4SLinkResource extends LD4SDataResource {
 	 * @throws Exception 
 	 */
 	@Override
-	protected  Resource createOVResource() throws Exception {
+	protected  Object[] createOVResource() throws Exception {
 		Resource[] resource = null;
 		String subjuri = null;
 		if (resourceId != null){
@@ -60,7 +59,7 @@ public class LD4SLinkResource extends LD4SDataResource {
 		
 		resource = createDataLinkResource(
 				rdfData.createResource(ov.getFrom()), this.ld4sServer.getHostName(), ov, RDFS.seeAlso, subjuri);
-		return resource!=null&&resource.length==2?resource[0]:rdfData.createResource();
+		return resource!=null&&resource.length==2? new Object[]{resource[0], rdfData}:new Object[]{rdfData.createResource(), rdfData};
 	}
 
 	

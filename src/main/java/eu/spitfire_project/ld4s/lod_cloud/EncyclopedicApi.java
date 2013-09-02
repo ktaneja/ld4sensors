@@ -19,6 +19,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.security.User;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -44,8 +45,8 @@ public class EncyclopedicApi extends SearchRouter {
 
 
 	public EncyclopedicApi(String baseHost, Context context,
-			User author, Resource from_resource) {
-		super(baseHost, context, author, from_resource);
+			User author, Resource from_resource, OntModel from_model) {
+		super(baseHost, context, author, from_resource, from_model);
 	}
 
 	protected String buildQueryString() throws UnsupportedEncodingException {
@@ -167,12 +168,12 @@ public class EncyclopedicApi extends SearchRouter {
 	 * - returning the related DBpedia URI
 	 */
 	@Override
-	public Model start() throws Exception {
+	public OntModel start() throws Exception {
 		String thing = null;
 		Status status = null;
 
 		if (context.getThing() == null){
-			return from_resource.getModel();
+			return from_model;
 		}
 		Response resp = null;
 		String id = getWikipediaRedirectionID(context.getThing());
@@ -253,7 +254,7 @@ public class EncyclopedicApi extends SearchRouter {
 			thing += getDBPEDIA_DISAMBIGUATION_SUFFIX();
 		}
 		context.setThing(addterms+context.getThing());
-		GenericApi gen = new GenericApi(baseHost, context, author, from_resource);
+		GenericApi gen = new GenericApi(baseHost, context, author, from_resource, from_model);
 		return gen.start();
 
 	}
@@ -283,8 +284,8 @@ public class EncyclopedicApi extends SearchRouter {
 	 * @throws UnsupportedEncodingException
 	 * @throws JSONException
 	 */
-	protected Model createLink(String to) {
-		Model model = from_resource.getModel();
+	protected OntModel createLink(String to) {
+		OntModel model = from_model;
 		if (to == null){
 			return model;
 		}		

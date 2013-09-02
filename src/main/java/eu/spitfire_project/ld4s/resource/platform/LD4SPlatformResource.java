@@ -1,8 +1,7 @@
 package eu.spitfire_project.ld4s.resource.platform;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
@@ -20,7 +19,7 @@ public class LD4SPlatformResource extends LD4SDataResource {
 	protected String resourceName = "Observation Value";
 
 	/** RDF Data Model of this Service resource semantic annotation. */
-	protected Model rdfData = null;
+	protected OntModel rdfData = null;
 
 	/** Resource provided by this Service resource. */
 	protected Platform ov = null;
@@ -36,12 +35,12 @@ public class LD4SPlatformResource extends LD4SDataResource {
 	 * @return model 
 	 * @throws Exception
 	 */
-	protected Resource makeOVLinkedData() throws Exception {
-		Resource resource = makeOVData();
+	protected Object[] makeOVLinkedData() throws Exception {
+		Object[] resp = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
-		return resource;
+		resp = addLinkedData((Resource)resp[0], Domain.ALL, this.context, (OntModel)resp[1]);
+		return resp;
 	}
 
 
@@ -53,7 +52,7 @@ public class LD4SPlatformResource extends LD4SDataResource {
 	 * @throws Exception 
 	 */
 	@Override
-	protected  Resource createOVResource() throws Exception {
+	protected  Object[] createOVResource() throws Exception {
 		Resource resource = null;
 		String subjuri = null;
 		if (resourceId != null){
@@ -107,8 +106,8 @@ public class LD4SPlatformResource extends LD4SDataResource {
 				}
 			}			
 		}
-		resource = crossResourcesAnnotation(ov, resource);
-		return resource;
+		resource = crossResourcesAnnotation(ov, resource, rdfData);
+		return new Object[]{resource, rdfData};
 	}
 
 

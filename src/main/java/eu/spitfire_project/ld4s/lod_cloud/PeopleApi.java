@@ -22,6 +22,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -63,14 +64,14 @@ public class PeopleApi extends SearchRouter {
 
 
 	public PeopleApi(String baseHost, Context context,
-			User author, Resource from_resource) {
-		super(baseHost, context, author, from_resource);
+			User author, Resource from_resource, OntModel from_model) {
+		super(baseHost, context, author, from_resource, from_model);
 		// TODO Auto-generated constructor stub
 	}
 
 
 	@Override
-	public Model start() throws Exception {
+	public OntModel start() throws Exception {
 		String query = null;
 		String pers = null;
 		String resp = null;
@@ -222,7 +223,7 @@ public class PeopleApi extends SearchRouter {
 		//last attempt
 		//Sindice while specifying only cross domain dataset to search against.
 		context.setDomains(new Domain[]{Domain.PEOPLE});
-		GenericApi gen = new GenericApi(baseHost, context, author, from_resource);
+		GenericApi gen = new GenericApi(baseHost, context, author, from_resource, from_model);
 		return gen.start4Foaf();
 //		return from_resource.getModel();
 	}
@@ -237,8 +238,8 @@ public class PeopleApi extends SearchRouter {
 	 * @throws JSONException
 	 * @throws UnsupportedEncodingException
 	 */
-	protected Model createLink(String title, String link_ext) throws JSONException, UnsupportedEncodingException{
-		Model model = from_resource.getModel();
+	protected OntModel createLink(String title, String link_ext) throws JSONException, UnsupportedEncodingException{
+		OntModel model = from_model;
 		if (link_ext == null || link_ext.trim().compareTo("") == 0){
 			return model;
 		}

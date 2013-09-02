@@ -1,12 +1,12 @@
 package eu.spitfire_project.ld4s.resource.link_review;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
@@ -19,10 +19,10 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 	protected String resourceName = "Link Review";
 	
 	/** RDF Data Model of this Service resource semantic annotation. */
-	protected Model rdfData = null;
+	protected OntModel rdfData = null;
 	
 	/** Resource provided by this Service resource. */
-	protected LinkReview ov = null;
+	protected LinkReviewOld ov = null;
 
 	/**
 	 * Creates main resources and additional related information
@@ -34,12 +34,12 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 	 * @return model 
 	 * @throws Exception
 	 */
-	protected Resource makeOVLinkedData() throws Exception {
-		Resource resource = makeOVData();
+	protected Object[] makeOVLinkedData() throws Exception {
+		Object[] resp = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
-		return resource;
+		resp = addLinkedData((Resource)resp[0], Domain.ALL, this.context, (OntModel)resp[1]);
+		return resp;
 	}
 	
 	
@@ -51,7 +51,7 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 	 * @throws Exception 
 	 */
 	@Override
-	protected  Resource createOVResource() throws Exception {
+	protected  Object[] createOVResource() throws Exception {
 		Resource resource = null;
 		String subjuri = null;
 		if (resourceId != null){
@@ -76,20 +76,20 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 				Resource subj = null;
 				double rates = 0.0;
 				StmtIterator stmtit = null;
+				Statement st = null;
 				//if this link exists
 				if (forlink != null && (subj=forlink.getResource(item)) != null){
-					//accordingly update the total amount of votes
-					stmtit = forlink.listStatements(subj, RevVocab.RATING, (RDFNode)null);
-					Statement st = null;
-					while(stmtit.hasNext()){
-						st = stmtit.next();
-						rates += st.getObject().asLiteral().getDouble();
-					}
-					rates += vote; 
-					forlink.removeAll(null, RevVocab.RATING, (RDFNode)null);
-					rdfData.removeAll(null, RevVocab.RATING, (RDFNode)null);
-					subj.addProperty(RevVocab.RATING, 
-							forlink.createTypedLiteral(String.valueOf(rates), XSDDatatype.XSDdouble));
+//					//accordingly update the rating (all the links should be ordered from the most voted downwards) - *not yet implemented*
+//					stmtit = forlink.listStatements(subj, RevVocab.RATING, (RDFNode)null);//					
+//					while(stmtit.hasNext()){
+//						st = stmtit.next();
+//						rates += st.getObject().asLiteral().getDouble();
+//					}
+//					rates += vote; 
+//					forlink.removeAll(null, RevVocab.RATING, (RDFNode)null);
+//					rdfData.removeAll(null, RevVocab.RATING, (RDFNode)null);
+//					subj.addProperty(RevVocab.RATING, 
+//							forlink.createTypedLiteral(String.valueOf(rates), XSDDatatype.XSDdouble));
 					//accordingly update the total amount of positive votes 
 					if (vote > 0){
 						double pos_votes = 0.0;
@@ -120,9 +120,9 @@ public class LD4SLinkReviewResource extends LD4SDataResource {
 			}
 		}
 		//add other properties; esp. the author and the datetime
-		resource = crossResourcesAnnotation(ov, resource);
+		resource = crossResourcesAnnotation(ov, resource, rdfData);
 		
-		return resource!=null?resource:rdfData.createResource();
+		return resource!=null?new Object[]{resource, rdfData}:new Object[]{rdfData.createResource(), rdfData};
 	}
 
 	
