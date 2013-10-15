@@ -1,6 +1,5 @@
 package eu.spitfire_project.ld4s.lod_cloud;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class Context {
 
 	public static enum Domain {GEOGRAPHY, CROSSDOMAIN, LIFESCIENCE, PUBLICATION,
 		GOVERNMENT, MEDIA, USERGENERATED, WEATHER, PEOPLE, ENCYCLOPEDIC, ALL, LOCATION,
-		FEATURE, UNIT};
+		FEATURE, UNIT, ELECTRICITY_TARIFF};
 
 		public static final String[] relation_sem = {SptVocab.IN.getURI(), 
 			SptVocab.UNDER.getURI(), SptVocab.OVER.getURI(), 
@@ -71,6 +70,16 @@ public class Context {
 		private double confidence = 0.0;
 		
 		private Person person = null;
+		
+		private String company = null;
+		
+		private String time = null;
+		
+		private String date = null;
+		
+		private String country = null;
+		
+		
 
 		public Context(String localhost){
 			if (domain2Uri == null){
@@ -97,11 +106,6 @@ public class Context {
 			list = new LinkedList<String>();
 			list.add(getBaseDomain("http://dbpedia.org/"));
 			domain2Uri.put(Domain.ENCYCLOPEDIC, list);
-			list = new LinkedList<String>();
-			list.add(getBaseDomain("http://legislation.data.gov.uk/"));
-			list.add(getBaseDomain("http://statistics.data.gov.uk/"));
-			list.add(getBaseDomain("http://education.data.gov.uk/"));
-			domain2Uri.put(Domain.GOVERNMENT, list);
 		}
 
 		public static void initDomainResources(String host){
@@ -638,5 +642,37 @@ public class Context {
 
 		public String[][] getAdditionalTerms() {
 			return additionalPredicateTerms;
+		}
+
+		public String getCompany() {
+			return company;
+		}
+
+		public void setCompany(String company) {
+			this.company = company;
+		}
+
+		public String getTime() {
+			return time;
+		}
+
+		public void setTime(String time) {
+			this.time = time;
+		}
+
+		public String getDate() {
+			return date;
+		}
+
+		public void setDate(String date) {
+			this.date = date;
+		}
+
+		public String getCountry() {
+			return country;
+		}
+
+		public void setCountry(String country) {
+			this.country = country;
 		}
 }

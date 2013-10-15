@@ -16,9 +16,28 @@ import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 
 /**
- * Measurement Capability resource.
- * This resource is usually stored on the Sensor and transmitted rarely.
- *
+ * Observation Value resource.
+ * This resource is usually stored on the Sensor and transmitted frequently.
+ * 
+1st Case: Single Value Transmission
+<obval11204id> <http://www.w3.org/2000/01/rdf-schema#type> <http://spitfire-project.eu/ontology/ns/OV> .
+<obval11204id> <http://purl.org/NET/corelf#t> "2356511" .
+<obval11204id> <http://spitfire-project.eu/ontology/ns/val> "12.343" .
+
+2nd Case: Multiple Values Transmission
+@prefix spt: <http://spitfire-project.eu/ontology/ns/> .
+@prefix clf: <http://purl.org/NET/corelf#> .
+<obval11204id> a spt:OV ;
+clf:t "23565" ;
+spt:val "12.343" ;
+spt:val "10.002" ;
+.
+.
+.
+spt:val "11.240" ;
+spt:tStart "3423532" ;
+spt:tEnd "4325235" .
+
  * @author Myriam Leggieri <iammyr@email.com>
  *
  */

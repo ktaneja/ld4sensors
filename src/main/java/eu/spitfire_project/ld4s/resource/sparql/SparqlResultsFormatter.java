@@ -75,10 +75,16 @@ public class SparqlResultsFormatter {
 	            values.add(r.getURI());
 	          }
 	        }
-	        bindingElem.appendChild(valueElem);
-	        resultElem.appendChild(bindingElem);
+	        if (valueElem != null){
+	        	bindingElem.appendChild(valueElem);
+	        }
+	        if (bindingElem != null){
+	        	resultElem.appendChild(bindingElem);
+	        }
 	      }
-	      resultsElem.appendChild(resultElem);
+	      if (resultElem != null){
+	    	  resultsElem.appendChild(resultElem);
+	      }
 	    }
 	    root.appendChild(resultsElem);
 	    ret = new Object[] { doc, values };

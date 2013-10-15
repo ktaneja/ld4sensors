@@ -1,7 +1,8 @@
 package eu.spitfire_project.ld4s.resource.device;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
@@ -16,10 +17,10 @@ import eu.spitfire_project.ld4s.vocabulary.SptVocab;
  */
 public class LD4SDeviceResource extends LD4SDataResource {
 	/** Service resource name. */
-	protected String resourceName = "Observation Value";
+	protected String resourceName = "Sensing Device";
 
 	/** RDF Data Model of this Service resource semantic annotation. */
-	protected OntModel rdfData = null;
+	protected Model rdfData = null;
 
 	/** Resource provided by this Service resource. */
 	protected Device ov = null;
@@ -35,16 +36,31 @@ public class LD4SDeviceResource extends LD4SDataResource {
 	 * @return model 
 	 * @throws Exception
 	 */
-	protected Object[] makeOVLinkedData() throws Exception {
-		Object[] resp = makeOVData();
-		Resource resource = (Resource)resp[0];
+	protected Resource makeOVLinkedData() throws Exception {
+		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resp = addLinkedData(resource, Domain.ALL, this.context, (OntModel)resp[1]);
-		return resp;
+		resource = addLinkedData(resource, Domain.ALL, this.context);
+		return resource;
 	}
 
-	
+	/**
+	 * Creates main resources and additional related information
+	 * excluding linked data
+	 *
+	 * @param m_returned model which the resources to be created should be attached to
+	 * @param obj object containing the information to be semantically annotate
+	 * @param id resource identification
+	 * @return model 
+	 * @throws Exception
+	 */
+	protected Resource makeOVData() throws Exception {
+		Resource resource = createOVResource();
+		resource.addProperty(DCTerms.isPartOf,
+				this.ld4sServer.getHostName()+"void");
+		return resource;
+	}
+
 	/**
 	 * Creates the main resource
 	 * @param model
@@ -52,8 +68,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 	 * @return
 	 * @throws Exception 
 	 */
-	@Override
-	protected  Object[] createOVResource() throws Exception {
+	protected  Resource createOVResource() throws Exception {
 		Resource resource = null;
 		String subjuri = null;
 		if (resourceId != null){
@@ -90,7 +105,9 @@ public class LD4SDeviceResource extends LD4SDataResource {
 				resource.addProperty(SptVocab.OBSERVED_PROPERTY, 
 						rdfData.createResource(item));	
 			}else{
-				resource = addObsProp(resource, item, SptVocab.OBSERVED_PROPERTY, ov.getFoi(), rdfData);
+				resource = addObsProp(resource, item, SptVocab.OBSERVED_PROPERTY, ov.getFoi(),
+						ov.getConDate(), ov.getConTime(),
+						ov.getConCompany(), ov.getConCountry());
 			}
 		}	
 		item = ov.getUnit_of_measurement();
@@ -99,7 +116,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 				resource.addProperty(SptVocab.UOM, 
 						rdfData.createResource(item));	
 			}else{
-				resource = addUom(resource, item, rdfData);
+				resource = addUom(resource, item);
 			}
 		}
 		String[] tprops = ov.getTsproperties();
@@ -127,8 +144,8 @@ public class LD4SDeviceResource extends LD4SDataResource {
 				}
 			}			
 		}
-		resource = crossResourcesAnnotation(ov, resource, rdfData);
-		return new Object[]{resource, rdfData};
+		resource = crossResourcesAnnotation(ov, resource);
+		return resource;
 	}
 
 

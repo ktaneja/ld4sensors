@@ -1,7 +1,9 @@
 package eu.spitfire_project.ld4s.lod_cloud;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,25 +16,63 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.link.Link;
+import eu.spitfire_project.ld4s.server.ServerProperties;
+import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.MuoVocab;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 
 public class UomApi extends SearchRouter {
-	public static final String UCUM_FILE = "ucum-essence.xml";
-	public static final String UCUM_FILE_SOURCE = "http://aurora.regenstrief.org/~ucum/ucum-essence.xml";
+	//	public static final String UCUM_FILE = "ucum-essence.xml";
+	public static final String UCUM_FILE_SOURCE = "http://unitsofmeasure.org/ucum-essence.xml";
+//	"http://aurora.regenstrief.org/~ucum/ucum-essence.xml";
 	private static final String DBPEDIA_DISAMBIGUATION_SUFFIX = "_(disambiguation)";
 
+	/*Document to parse the file containing unit-of-measurement details */
+	private static Document dom = null;
 
 
 	public UomApi(String baseHost, Context context,
-			User author, Resource from_resource, OntModel from_model) {
-		super(baseHost, context, author, from_resource, from_model);
+			User author, Resource from_resource) {
+		super(baseHost, context, author, from_resource);
+		if (dom == null){
+			try{
+				File uomfile = new File(LD4SConstants.UOM_FILE_PATH);
+				if (!uomfile.exists()){
+					int endIndex = LD4SConstants.UOM_FILE_PATH.lastIndexOf(LD4SConstants.SYSTEM_SEPARATOR);
+					String dirs = LD4SConstants.UOM_FILE_PATH.substring(0, endIndex);
+					File directories = new File(dirs);
+					if (!directories.exists()){
+						directories.mkdirs();
+					}
+					if (!directories.exists()){
+						System.err.println("Unable to create the directories for the Unit-of-Measurement file at "+ServerProperties.UOM_FILE_KEY);
+					}else{					
+						URL website = new URL(UCUM_FILE_SOURCE);
+						org.apache.commons.io.FileUtils.copyURLToFile(website, uomfile);
+					}
+				}
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
+				if (uomfile.exists()){
+					dom = db.parse(LD4SConstants.UOM_FILE_PATH);
+				}
+			} catch (ParserConfigurationException e) {
+				System.err.println("Unable to load the Unit-of-Measurement file from "+LD4SConstants.UOM_FILE_PATH);
+				e.printStackTrace();
+			} catch (SAXException e) {
+				System.err.println("Unable to load the Unit-of-Measurement file from "+LD4SConstants.UOM_FILE_PATH);
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.err.println("Unable to load the Unit-of-Measurement file from "+LD4SConstants.UOM_FILE_PATH);
+				e.printStackTrace();
+			}
+		}
 	}
 
 
@@ -86,8 +126,8 @@ public class UomApi extends SearchRouter {
 						break;
 					}
 
-					if (match != null && match.trim().compareTo("") != 0
-							&& (searched.compareToIgnoreCase(match)==0 || searched.startsWith(match))){
+					if ((searched.compareToIgnoreCase(match)==0 || searched.startsWith(match)
+							&& match != null && match.trim().compareTo("") != 0)){
 						ret = new Uom();
 						switch (choice){
 						case 0:
@@ -143,47 +183,36 @@ public class UomApi extends SearchRouter {
 
 
 	@Override
-	public OntModel start() throws Exception {
+	public Model start() throws Exception {
 		String thing = context.getThing();
-
-		//get the factory
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-		try {
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			String path = SptVocab.class.getResource(UCUM_FILE).getPath();
-			Document dom = db.parse(path);
-			Element docEle = dom.getDocumentElement();
-			Uom uom = null;
-			//search for either Code/CODE in unit (remove eventual [])
-			// or name in unit
-			// printSymbol in unit
-			// or Unit/UNIT in value in unit
-			uom = getUnit(docEle.getElementsByTagName("unit"), thing);
-			if (uom == null){
-				//check if there is a redirection on Wikipedia since it would indicate 
-				//the existence of a synonym or a more common term.
-				thing = EncyclopedicApi.getWikipediaRedirectionID(thing);
-				//if it finds it, get the wikipedia ID of the redirection field
-				//repeats the search in the stardard units file (getUnit(..))
-				uom = getUnit(docEle.getElementsByTagName("unit"), thing);
-//				useless because this would return just a prefix, meaning nothing specific
-//				//search for either Code/CODE in prefix (remove eventual [])
-//				//or name
-//				//or printSymbol in prefix
-//				uom = getUnit(docEle.getElementsByTagName("prefix"), thing);
-
-			}
-			if (uom != null){
-				return createLink(uom);
-			}
-		}catch(ParserConfigurationException pce) {
-			pce.printStackTrace();
-		}catch(SAXException se) {
-			se.printStackTrace();
-		}catch(IOException ioe) {
-			ioe.printStackTrace();
+		if (dom == null){
+			return null;
 		}
+		Element docEle = dom.getDocumentElement();
+		Uom uom = null;
+		//search for either Code/CODE in unit (remove eventual [])
+		// or name in unit
+		// printSymbol in unit
+		// or Unit/UNIT in value in unit
+		uom = getUnit(docEle.getElementsByTagName("unit"), thing);
+		if (uom == null){
+			//check if there is a redirection on Wikipedia since it would indicate 
+			//the existence of a synonym or a more common term.
+			thing = EncyclopedicApi.getWikipediaRedirectionID(thing);
+			//if it finds it, get the wikipedia ID of the redirection field
+			//repeats the search in the stardard units file (getUnit(..))
+			uom = getUnit(docEle.getElementsByTagName("unit"), thing);
+			//				useless because this would return just a prefix, meaning nothing specific
+			//				//search for either Code/CODE in prefix (remove eventual [])
+			//				//or name
+			//				//or printSymbol in prefix
+			//				uom = getUnit(docEle.getElementsByTagName("prefix"), thing);
+
+		}
+		if (uom != null){
+			return createLink(uom);
+		}
+
 
 		//last attempt: generic search on sindice, helped by adding "unit" to the query search
 		context.setDomains(new Domain[]{Domain.CROSSDOMAIN});
@@ -201,7 +230,7 @@ public class UomApi extends SearchRouter {
 			thing += getDBPEDIA_DISAMBIGUATION_SUFFIX();
 		}
 		context.setThing(addterms+context.getThing()+ " unit");
-		GenericApi gen = new GenericApi(baseHost, context, author, from_resource, from_model);
+		GenericApi gen = new GenericApi(baseHost, context, author, from_resource);
 		return gen.start();
 
 	}
@@ -236,8 +265,8 @@ public class UomApi extends SearchRouter {
 	 * @throws UnsupportedEncodingException
 	 * @throws JSONException
 	 */
-	protected OntModel createLink(Uom uom) {
-		OntModel model = from_model;
+	protected Model createLink(Uom uom) {
+		Model model = from_resource.getModel();
 		if (uom == null){
 			return model;
 		}
@@ -274,7 +303,7 @@ public class UomApi extends SearchRouter {
 			model.add(to_resource.getModel());
 		}
 		return model;
-		
+
 	}
 
 }

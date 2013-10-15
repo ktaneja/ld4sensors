@@ -24,10 +24,10 @@ public class TestPropertyRestApi extends LD4STestHelper {
 	protected String resourceId = "a12b";
 
 	/** LD4S currently running server host. */
-	protected String local_uri = "http://localhost:8182/ld4s/property/";
+	protected String local_uri = "http://localhost:8182/ld4s/sensdev/";
 
 	/** Resource URI necessary in case of remote resource hosting server. */
-	protected String remote_uri = "http://www.example.org/property/remotea12b";
+	protected String remote_uri = "http://www.example.org/sensdev/remotea12b";
 
 	/** Milliseconds shift from the base time. */
 	protected String base_datetime = "12-08-28T19:03Z";
@@ -36,7 +36,7 @@ public class TestPropertyRestApi extends LD4STestHelper {
 	protected String base_ov_name = "http://www.example1.org/ov/";
 
 	/** Base host name. */
-	protected String base_name = "http://www.example2.org/property/";
+	protected String base_name = "http://www.example2.org/sensdev/";
 
 	/** Observed Property. */
 	protected String observed_property = "http://www.example3.org/prop/temperature12";

@@ -24,7 +24,9 @@ public class TestDeviceRestApi extends LD4STestHelper {
 	protected String resourceId = "a12b";
 
 	/** LD4S currently running server host. */
-	protected String local_uri = "http://localhost:8182/ld4s/device/";
+	protected String local_uri = 
+			"http://myrdebby.myrdebby.com:8182/ld4s/device/";
+//			"http://spitfire-project.eu:8182/ld4s/device/";
 
 	/** Resource URI necessary in case of remote resource hosting server. */
 	protected String remote_uri = "http://www.example.org/device/remotea12b";
@@ -39,10 +41,11 @@ public class TestDeviceRestApi extends LD4STestHelper {
 	protected String base_name = "http://www.example2.org/device/";
 
 	/** Observed Property. */
-	protected String observed_property = 
+	protected String observed_property = "powerconsumption" ; 
 //		"http://www.example3.org/prop/temperature12";
 //		"area";
-		"temperature";
+//		"temperature";
+//			"light";
 
 	/** Temporarily: to enhance the link search for the observed property. */
 	protected String foi = "room";
@@ -53,7 +56,8 @@ public class TestDeviceRestApi extends LD4STestHelper {
 	/** Unit of Measurement. */
 	protected String uom = 
 //		"section";
-		"centigrade";
+//		"centigrade";
+			"lux";
 	
 	/** Observed Value IDs. */
 	protected String[] values = new String[]{"a12b", "x12y", "c23d", "e45f"};
@@ -95,6 +99,12 @@ public class TestDeviceRestApi extends LD4STestHelper {
 			json.append("base_ov_name", base_ov_name);
 			json.append("observed_property", observed_property);
 			json.append("foi", foi);
+			
+			json.append("con_company", "http://spitfire-project.eu/ontology/ns/en/electricitySupplyBoard");
+			json.append("con_date", "2013-10-15");
+			json.append("con_time", "04:00:34");
+			json.append("con_country", "http://spitfire-project.eu/ontology/ns/en/greece");
+			
 			json.append("uom", uom);
 			json.append("type", type);
 			JSONObject obj = new JSONObject();

@@ -1,5 +1,7 @@
 package eu.spitfire_project.ld4s.lod_cloud;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 public class Person {
 
 	private String firstname = null;
@@ -11,6 +13,8 @@ public class Person {
 	private String nickname = null;
 
 	private String email = null;
+	
+	private String email_sha1 = null;
 
 	private String homepage = null;
 
@@ -31,7 +35,7 @@ public class Person {
 	}
 
 	public void setFirstname(String firstname) {
-		if (firstname != null){
+		if (firstname != null && firstname.charAt(0) != -1){
 			this.firstname = Character.toUpperCase(firstname.charAt(0))+firstname.substring(1);
 		}
 	}
@@ -59,11 +63,18 @@ public class Person {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		if (email != null && email.trim().compareTo("") != 0){
+			this.email = email;
+			this.email_sha1 = DigestUtils.shaHex(this.email);
+		}
 	}
 
 	public String getEmail() {
 		return email;
+	}
+	
+	public String getEmailSha1() {
+		return email_sha1;
 	}
 
 	public void setHomepage(String homepage) {

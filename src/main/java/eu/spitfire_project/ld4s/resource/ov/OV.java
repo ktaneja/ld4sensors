@@ -51,6 +51,8 @@ public class OV extends LD4SObject  implements Serializable{
 	/** Observed values. */
 	private String[] values = null;
 
+	/** Sensor ID. */
+	private String sensor_id = null;
 
 
 	public OV(String host, String[] values, String resource_time,
@@ -77,6 +79,10 @@ public class OV extends LD4SObject  implements Serializable{
 		}
 		if (json.has("values")){
 			this.setValues(json.getJSONArray("values"));
+		}
+		if (json.has("sensor"+LD4SConstants.JSON_SEPARATOR+"id")){
+			this.setSensor_id(LD4SDataResource.removeBrackets(
+					json.getString("senso"+LD4SConstants.JSON_SEPARATOR+"id")));
 		}
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
@@ -120,6 +126,14 @@ public class OV extends LD4SObject  implements Serializable{
 		}
 	}
 
+	public void setSensor_id(String sensor_id) {
+		this.sensor_id = sensor_id;
+	}
+
+	public String getSensor_id() {
+		return sensor_id;
+	}
+	
 	public String[] getValues() {
 		return values;
 	}

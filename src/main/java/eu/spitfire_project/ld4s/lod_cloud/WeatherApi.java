@@ -2,7 +2,7 @@ package eu.spitfire_project.ld4s.lod_cloud;
 
 import org.restlet.security.User;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class WeatherApi extends SearchRouter{
@@ -14,8 +14,8 @@ public class WeatherApi extends SearchRouter{
 	private String location_name = null;
 
 	public WeatherApi(String baseHost, Context context,
-			User author, Resource from_resource, OntModel from_model) {
-		super(baseHost, context, author, from_resource, from_model);
+			User author, Resource from_resource) {
+		super(baseHost, context, author, from_resource);
 		if (context != null && context.getTime_range() != null){
 			setTimerange(timerange);
 		}
@@ -29,7 +29,7 @@ public class WeatherApi extends SearchRouter{
 
 	
 	@Override
-	public OntModel start() throws Exception {
+	public Model start() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

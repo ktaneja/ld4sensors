@@ -41,6 +41,8 @@ public class ServerProperties {
 	public static final String PORT_KEY = "ld4s.port";
 	/** The RDF directory key. */
 	public static final String RDF_DIR_KEY = "ld4s.rdf.dir";
+	/** The directory containing the Unit of Measurement file. */
+	public static final String UOM_FILE_KEY = "ld4s.uom.file";
 	/** The Restlet Logging key. */
 	public static final String RESTLET_LOGGING_KEY = "ld4s.restlet.logging";
 	/** The dpd port key during testing. */
@@ -100,7 +102,8 @@ public class ServerProperties {
 		properties.setProperty(PORT_KEY, String.valueOf(PORT));
 		properties.setProperty(CONTEXT_ROOT_KEY, CONTEXT_ROOT);
 		properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
-		properties.setProperty(RDF_DIR_KEY, userDir + "/rdf");
+		properties.setProperty(RDF_DIR_KEY, userDir + "/.ld4s/rdf");
+		properties.setProperty(UOM_FILE_KEY, userDir + "/.ld4s/uom/"+"ucum-essence.xml");
 		properties.setProperty(TEST_PORT_KEY, "9875");
 		properties.setProperty(TEST_HOSTNAME_KEY, "0.0.0.0");
 		properties.setProperty(FRONTSIDECACHE_ENABLED, "true");

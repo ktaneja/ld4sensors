@@ -37,4 +37,10 @@ public class LD4SConstants {
 	  public static final String SEPARATOR1_ID = " ";
 	  public static final String SEPARATOR2_ID = "__";
 	  public static final String JSON_SEPARATOR = "_";
+	  
+	  public static String UOM_FILE_PATH = null;
+	  
+	  public static void setUomFile(String path){
+		  LD4SConstants.UOM_FILE_PATH = path;
+	  }
 }

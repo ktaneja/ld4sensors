@@ -8,12 +8,11 @@ import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
+import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 
 /**
  * Resource representing an observation value.
@@ -58,7 +57,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 			if (!this.context.isEmpty()){
 				//how it should be: add the already existing links iff their context 
 				//matches with the requested one search for new links
-				rdfData = (OntModel)addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context, rdfData)[1];
+				rdfData = addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context).getModel();
 			}
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}
@@ -66,8 +65,8 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 			setStatusError("Error creating " + resourceName + "  LD4S.", e);
 			ret = null;
 		}
-
-		return ret;
+		
+		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 	}
 
 
@@ -117,7 +116,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 //		}else{
 //			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
 //		}
-//		return ret;
+//		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 //	}
 
 	// PUT req: resource stored locally + no Linked Data enrichment
@@ -138,7 +137,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		}
 
 		Representation ret = null;
-		rdfData = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+		rdfData = ModelFactory.createDefaultModel();
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 		try {
@@ -153,7 +152,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 				}			
 			}
 			try {
-				rdfData = (OntModel)makeOVData()[1];
+				rdfData = makeOVData().getModel();
 			}  catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -162,7 +161,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 			}		
 			// create a new resource in the database
-			if (store(rdfData, this.namedModel)){
+			if (storeHandler(rdfData)){
 				setStatus(Status.SUCCESS_CREATED);
 				ret = serializeAccordingToReqMediaType(rdfData);
 			}else{
@@ -174,7 +173,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 					+e1.getMessage());
 			return null;
 		}
-		return ret;
+		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 	}
 
 	/**
@@ -194,7 +193,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		}
 
 		Representation ret = null;
-		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+		rdfData = ModelFactory.createDefaultModel();
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 		try {
@@ -208,7 +207,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 				}			
 			}
 			try {
-				rdfData = (OntModel)makeOVData()[1];
+				rdfData = makeOVData().getModel();
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -225,13 +224,13 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		}
 
 		// create a new resource in the database
-		if (store(rdfData, this.namedModel)){
+		if (storeHandler(rdfData)){
 			setStatus(Status.SUCCESS_CREATED);	 
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}else{
 			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
 		}
-		return ret;
+		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 	}
 
 //	/**
@@ -271,7 +270,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 //			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 //		}		
 //
-//		return ret;
+//		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 //	}
 
 	/**
@@ -284,12 +283,12 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	public Representation post(Form obj){
 		//if an host has not been set then the LD4S service one has to be assigned
 		Representation ret = null;
-		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+		rdfData = ModelFactory.createDefaultModel();
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
 			this.ov = new Device(obj, this.ld4sServer.getHostName());
-			rdfData = (OntModel)makeOVLinkedData()[1];
+			rdfData = makeOVLinkedData().getModel();
 
 			// create a new resource in the database only if the preferred resource hosting server is
 			// the LD4S one
@@ -318,7 +317,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		}		
 
 
-		return ret;
+		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 	}
 
 	/**
@@ -330,12 +329,12 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	@Override
 	public Representation post(JSONObject obj){
 		Representation ret = null;
-		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+		rdfData = ModelFactory.createDefaultModel();
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
 			this.ov = new Device(obj, this.ld4sServer.getHostName());
-			rdfData = (OntModel)makeOVLinkedData()[1];
+			rdfData = makeOVLinkedData().getModel();
 
 			// create a new resource in the database only if the preferred resource hosting server is
 			// the LD4S one
@@ -364,7 +363,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		}
 
 
-		return ret;
+		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 	}
 
 	// DELETE req: resource stored locally

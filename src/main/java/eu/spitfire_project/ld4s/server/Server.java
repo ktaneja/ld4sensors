@@ -31,6 +31,9 @@ public class Server extends Application{
 	/** Holds the host name associated with this Server. */
 	private String hostName;
 	
+	/** Holds the host name associated with this Server without port and context. */
+	private String host;
+	
 	/**Holds the frontside cache associated with this Server. */
 	private FrontSideCache frontSideCache;
 
@@ -85,6 +88,8 @@ public class Server extends Application{
 		server.properties = properties;
 		server.hostName = ServerProperties.SERVER + ":" + ServerProperties.PORT + "/" 
 		+ ServerProperties.CONTEXT_ROOT + "/";
+		server.host = ServerProperties.SERVER;
+		
 
 		server.component = new Component();
 		server.component.getServers().add(Protocol.HTTP, ServerProperties.PORT);
@@ -135,23 +140,18 @@ public class Server extends Application{
 			   
 
 			 // OTHER
-			    router.attach("/resource/{other}", OtherResource.class);
-			    router.attach("/resource/{other}/", OtherResource.class);
-			    router.attach("/resource/{other}/{id}", OtherResource.class);				
+			    router.attach("/res/{other}", OtherResource.class);
+			    router.attach("/res/{other}/", OtherResource.class);
+			    router.attach("/res/{other}/{id}", OtherResource.class);
+			    router.attach("/res/property/{other}", OtherResource.class);
+			    router.attach("/res/property/{other}/", OtherResource.class);
+			    router.attach("/res/property/{other}/{id}", OtherResource.class);
 				
 			    
 			    router.attach("/ping", PingResource.class);
 //			    router.attach("/ping?user={user}&password={password}", PingResource.class);
 			    
-				router.attach("/sparql/{query}", SparqlResource.class);
-//				router.attach("/ov/sparql", SparqlResource.class);
-//				router.attach("/device/sparql", SparqlResource.class);
-//				router.attach("/tps/sparql", SparqlResource.class);
-//				router.attach("/tpp/sparql", SparqlResource.class);
-//				router.attach("/link/sparql", SparqlResource.class);
-//				router.attach("/meas_capab/sparql", SparqlResource.class);
-//				router.attach("/platform/sparql", SparqlResource.class);
-//				router.attach("/meas_prop/sparql", SparqlResource.class);
+				router.attach("/sparql", SparqlResource.class);
 				
 				// POST req: resource stored remotely IF resourceId == null
 				router.attach("/ov/", OVResource.class);
@@ -306,6 +306,17 @@ public class Server extends Application{
 	 */
 	public String getHostName() {
 		return this.hostName;
+	}
+	
+	
+	/**
+	 * Returns the host name without port and context. Example:
+	 * "0.0.0.0"
+	 *
+	 * @return The host name.
+	 */
+	public String getHost() {
+		return this.host;
 	}
 
 	/**
