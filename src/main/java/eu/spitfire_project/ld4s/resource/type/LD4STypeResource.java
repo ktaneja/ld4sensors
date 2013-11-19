@@ -3,7 +3,7 @@ package eu.spitfire_project.ld4s.resource.type;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.vocabulary.CorelfVocab;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;

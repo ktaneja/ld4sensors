@@ -183,6 +183,13 @@ import com.hp.hpl.jena.rdf.model.Resource;
       .createClass(SptVocab.NS+"DataLink");
 	  public static final OntClass LINKREVIEW = m_model
       .createClass(NS+"LinkReview");
+	  
+	  
+	  public static final ObjectProperty GATEWAY_ADDRESS= m_model
+		      .createObjectProperty(NS+"gatewayAddress");
+	  public static final ObjectProperty SENSOR_ADDRESS= m_model
+		      .createObjectProperty(NS+"sensorAddress");
+	  
 	  // Vocabulary individuals
 	  // /////////////////////////
 	  

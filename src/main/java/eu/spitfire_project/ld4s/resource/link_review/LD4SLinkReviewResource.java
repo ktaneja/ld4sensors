@@ -9,7 +9,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.vocabulary.RevVocab;
 

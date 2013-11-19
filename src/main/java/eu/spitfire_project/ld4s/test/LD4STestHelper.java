@@ -8,7 +8,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.Role;
 
-import eu.spitfire_project.ld4s.lod_cloud.Person;
+import eu.spitfire_project.ld4s.network.lod_cloud.Person;
 import eu.spitfire_project.ld4s.server.Server;
 import eu.spitfire_project.ld4s.server.ServerProperties;
 

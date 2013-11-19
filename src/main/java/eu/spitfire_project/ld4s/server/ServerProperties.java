@@ -23,6 +23,9 @@ public class ServerProperties {
 	public final static Role PUBLISHER = new Role("publisher", "publisher");
 	public final static Role ADMINISTRATOR = new Role("admin", "administrator");
 	public final static Role ANONYMOUS= new Role("anonymous", "anonymous");
+	
+	public static final String RULES_FILE_PROPERTY_KEY = "rules.file";
+	public static final String RULES_FILE_PROPERTY = "rules.txt";
 
 
 	public static String SERVER = "http://0.0.0.0";
@@ -111,6 +114,7 @@ public class ServerProperties {
 		//	    properties.setProperty(CACHE_MAX_LIFE, "365");
 		//	    properties.setProperty(CACHE_CAPACITY, "500000");
 		properties.setProperty(ADMIN_EMAIL_KEY, "admin");
+		properties.setProperty(RULES_FILE_PROPERTY_KEY, RULES_FILE_PROPERTY);
 		FileInputStream stream = null;
 		try {
 			stream = new FileInputStream(propFile);

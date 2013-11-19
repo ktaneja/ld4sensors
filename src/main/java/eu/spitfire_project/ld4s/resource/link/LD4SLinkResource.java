@@ -5,7 +5,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 
 public class LD4SLinkResource extends LD4SDataResource {

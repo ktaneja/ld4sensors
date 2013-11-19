@@ -12,7 +12,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
 
 /**

@@ -10,7 +10,7 @@ import org.restlet.representation.Representation;
 
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 

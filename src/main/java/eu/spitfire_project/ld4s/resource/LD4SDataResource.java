@@ -7,11 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
@@ -84,17 +80,17 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import eu.spitfire_project.ld4s.lod_cloud.Context;
-import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
-import eu.spitfire_project.ld4s.lod_cloud.ElectricityTariffApi;
-import eu.spitfire_project.ld4s.lod_cloud.EncyclopedicApi;
-import eu.spitfire_project.ld4s.lod_cloud.GenericApi;
-import eu.spitfire_project.ld4s.lod_cloud.LocationApi;
-import eu.spitfire_project.ld4s.lod_cloud.PeopleApi;
-import eu.spitfire_project.ld4s.lod_cloud.Person;
-import eu.spitfire_project.ld4s.lod_cloud.SearchRouter;
-import eu.spitfire_project.ld4s.lod_cloud.UomApi;
-import eu.spitfire_project.ld4s.lod_cloud.WeatherApi;
+import eu.spitfire_project.ld4s.network.lod_cloud.Context;
+import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.network.lod_cloud.ElectricityTariffApi;
+import eu.spitfire_project.ld4s.network.lod_cloud.EncyclopedicApi;
+import eu.spitfire_project.ld4s.network.lod_cloud.GenericApi;
+import eu.spitfire_project.ld4s.network.lod_cloud.LocationApi;
+import eu.spitfire_project.ld4s.network.lod_cloud.PeopleApi;
+import eu.spitfire_project.ld4s.network.lod_cloud.Person;
+import eu.spitfire_project.ld4s.network.lod_cloud.SearchRouter;
+import eu.spitfire_project.ld4s.network.lod_cloud.UomApi;
+import eu.spitfire_project.ld4s.network.lod_cloud.WeatherApi;
 import eu.spitfire_project.ld4s.resource.link.Link;
 import eu.spitfire_project.ld4s.resource.sparql.SparqlResultsFormatter;
 import eu.spitfire_project.ld4s.server.Server;
@@ -159,7 +155,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	protected Representation entity = null;
 
 	/** Contextual criteria for link creation. */
-	protected eu.spitfire_project.ld4s.lod_cloud.Context context = null;
+	protected eu.spitfire_project.ld4s.network.lod_cloud.Context context = null;
 
 	/** Modality in which the user prefers to get a resource, i.e., linked with external data or not. */
 	protected boolean linked = true;
@@ -320,6 +316,10 @@ public abstract class LD4SDataResource extends ServerResource{
 	
 	}
 
+	protected String getRuleFilePath(){
+		ServerProperties sp = this.ld4sServer.getServerProperties();
+		return sp.get(ServerProperties.RULES_FILE_PROPERTY_KEY);
+	}
 	
 
 	public static String getNamedModel(String uri) {
@@ -753,18 +753,18 @@ public abstract class LD4SDataResource extends ServerResource{
 	 */
 	public static Model initVoIDModel() {
 		Model model = ModelFactory.createDefaultModel();
-		com.hp.hpl.jena.rdf.model.Resource dataset = model.createResource(SptVocab.NS);
-		dataset.addProperty(RDF.type, VoIDVocab.DATASET);
-		dataset.addProperty(DC.title, "LD4Sensors");
-		dataset.addProperty(DC.description,
+		com.hp.hpl.jena.rdf.model.Resource ds = model.createResource(SptVocab.NS);
+		ds.addProperty(RDF.type, VoIDVocab.DATASET);
+		ds.addProperty(DC.title, "LD4Sensors");
+		ds.addProperty(DC.description,
 				"Data about sensors, sensing devices in general and " +
 						"sensor measurements stored in the LD4Sensors Triple DB"
 						+ "published as Linked Data.");
-		dataset.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/.*");
-		dataset.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/sparql?query=.*");
-		dataset.addProperty(DC.creator,
+		ds.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/.*");
+		ds.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/sparql?query=.*");
+		ds.addProperty(DC.creator,
 				"http://myr.altervista.org/foaf.rdf#iammyr");
-		dataset
+		ds
 		.addProperty(
 				DC.publisher,
 				model
@@ -775,18 +775,19 @@ public abstract class LD4SDataResource extends ServerResource{
 						"LD4Sensors - Digital Enterprise Research Institute (DERI) - National University of Ireland, Galway at Galway")
 						.addProperty(FoafVocab.HOMEPAGE, "http://spitfire-project.eu/ld4s"));
 		/** The following subject URIs come from the UMBEL dataset (based upon OpenCyc). */
-		dataset.addProperty(DC.subject, "http://umbel.org/umbel/sc/SoftwareProject");
-		dataset.addProperty(DCTerms.accessRights, "http://www.gnu.org/copyleft/fdl.html");
-		dataset.addProperty(VoIDVocab.SPARQL_ENDPOINT,
+		ds.addProperty(DC.subject, "http://umbel.org/umbel/sc/SoftwareProject");
+		ds.addProperty(DCTerms.accessRights, "http://www.gnu.org/copyleft/fdl.html");
+		ds.addProperty(VoIDVocab.SPARQL_ENDPOINT,
 				"http://spitfire-project.eu/ld4s/ov/sparql?query=");
-		dataset.addProperty(VoIDVocab.VOCABULARY, FoafVocab.NS);
-		dataset.addProperty(VoIDVocab.VOCABULARY, SptVocab.NS);
-		dataset.addProperty(VoIDVocab.VOCABULARY, SiocVocab.NS);
-		dataset.addProperty(VoIDVocab.VOCABULARY, VoIDVocab.NS);
-		dataset.addProperty(VoIDVocab.VOCABULARY, DC.NS);
-		dataset.addProperty(VoIDVocab.VOCABULARY, OWL.NS);
-		dataset.addProperty(VoIDVocab.VOCABULARY, DCTerms.NS);
-		dataset.addProperty(VoIDVocab.VOCABULARY, "http://umbel.org/umbel/sc/");
+		ds.addProperty(VoIDVocab.VOCABULARY, FoafVocab.NS);
+		ds.addProperty(VoIDVocab.VOCABULARY, SptVocab.NS);
+		ds.addProperty(VoIDVocab.VOCABULARY, SiocVocab.NS);
+		ds.addProperty(VoIDVocab.VOCABULARY, VoIDVocab.NS);
+		ds.addProperty(VoIDVocab.VOCABULARY, DC.NS);
+		ds.addProperty(VoIDVocab.VOCABULARY, OWL.NS);
+		ds.addProperty(VoIDVocab.VOCABULARY, DCTerms.NS);
+		ds.addProperty(VoIDVocab.VOCABULARY, "http://umbel.org/umbel/sc/");
+		
 		return model;
 	}
 
@@ -938,14 +939,18 @@ public abstract class LD4SDataResource extends ServerResource{
 		return ret;
 	}
 
+	protected String getDatasetFolderPath(){
+		return ld4sServer.getServerProperties().getFoldername()+
+				LD4SConstants.SYSTEM_SEPARATOR+"tdb"
+				+LD4SConstants.SYSTEM_SEPARATOR+"LD4SDataset1";
+	}
+	
 	/**
 	 * Initialize a connection with the triple db
 	 */
-	private void initTDB(){
+	protected void initTDB(){
 		// Direct way: Make a TDB-backed dataset
-		String directory = ld4sServer.getServerProperties().getFoldername()+
-				LD4SConstants.SYSTEM_SEPARATOR+"tdb"
-				+LD4SConstants.SYSTEM_SEPARATOR+"LD4SDataset1" ;
+		String directory = getDatasetFolderPath() ;
 		File dirf = new File (directory);
 		if (!dirf.exists()){
 			dirf.mkdirs();
@@ -972,7 +977,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	/**
 	 * Close connection with the triple db
 	 */
-	private void closeTDB(){
+	protected void closeTDB(){
 		if (dataset != null){
 			dataset.close() ;
 		}
