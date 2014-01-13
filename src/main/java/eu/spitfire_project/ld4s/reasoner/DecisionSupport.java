@@ -46,7 +46,7 @@ public class DecisionSupport extends ReasonerManager {
 	 * @param datasetFolderPath
 	 * @return
 	 */
-	public static Model getChoice(String ruleFilePath, String namedGraphUri,
+	public static Model getChoice(String namedGraphUri,
 			String datasetFolderPath) {
 		if (datasetFolderPath == null || namedGraphUri == null){
 			return null;

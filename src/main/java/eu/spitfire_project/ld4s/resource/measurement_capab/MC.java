@@ -12,13 +12,31 @@ import com.hp.hpl.jena.ontology.OntClass;
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
-import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 
 /**
- * Measurement Capability resource.
- * This resource is usually stored on the Sensor and transmitted rarely.
- *
+ * Observation Value resource.
+ * This resource is usually stored on the Sensor and transmitted frequently.
+ * 
+1st Case: Single Value Transmission
+<obval11204id> <http://www.w3.org/2000/01/rdf-schema#type> <http://spitfire-project.eu/ontology/ns/OV> .
+<obval11204id> <http://purl.org/NET/corelf#t> "2356511" .
+<obval11204id> <http://spitfire-project.eu/ontology/ns/val> "12.343" .
+
+2nd Case: Multiple Values Transmission
+@prefix spt: <http://spitfire-project.eu/ontology/ns/> .
+@prefix clf: <http://purl.org/NET/corelf#> .
+<obval11204id> a spt:OV ;
+clf:t "23565" ;
+spt:val "12.343" ;
+spt:val "10.002" ;
+.
+.
+.
+spt:val "11.240" ;
+spt:tStart "3423532" ;
+spt:tEnd "4325235" .
+
  * @author Myriam Leggieri <iammyr@email.com>
  *
  */
@@ -38,8 +56,6 @@ public class MC extends LD4SObject  implements Serializable{
 	 * normally sensing more than one property). */
 	private String observed_property = null;
 	
-	/** Temporarily (to enhance the link search): Feature of Interest. */
-	private String foi = null;
 	
 	/** Measurement Properties  
 	 * including for each meas. prop. more or 
@@ -72,10 +88,10 @@ public class MC extends LD4SObject  implements Serializable{
 			this.setObserved_property(LD4SDataResource.removeBrackets(
 					json.getString("observed_property")));
 		}
-		if (json.has("foi")){
-			this.setFoi(LD4SDataResource.removeBrackets(
-					json.getString("foi")));
-		}
+//		if (json.has("foi")){
+//			this.setFoi(LD4SDataResource.removeBrackets(
+//					json.getString("foi")));
+//		}
 		if (json.has("measurement_properties")){
 			this.setMeasurement_prop_uris(json.getJSONArray("measurement_properties"));
 		}
@@ -88,7 +104,7 @@ public class MC extends LD4SObject  implements Serializable{
 		super(form);
 		this.setRemote_uri(form.getFirstValue("uri")); 
 		this.setResource_time(
-				form.getFirstValue("resource"+LD4SConstants.JSON_SEPARATOR+"time"));
+				form.getFirstValue("resource_time"));
 		this.setLink_criteria(
 				form.getFirstValue("context"), localhost);
 	}
@@ -185,11 +201,5 @@ public class MC extends LD4SObject  implements Serializable{
 		return measurement_prop_uris;
 	}
 
-	public void setFoi(String foi) {
-		this.foi = foi;
-	}
-
-	public String getFoi() {
-		return foi;
-	}
+	
 }

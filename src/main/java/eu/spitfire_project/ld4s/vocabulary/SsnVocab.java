@@ -64,8 +64,6 @@ public class SsnVocab {
       .createObjectProperty(NS+"inDeploment");
 	  public static final ObjectProperty FEATURE_OF_INTEREST = m_model
       .createObjectProperty(NS+"featureOfInterest");
-	  public static final ObjectProperty ON_PLATFORM = m_model
-		      .createObjectProperty(NS+"onPlatform");
 	  
 	  // Vocabulary classes
 	  // /////////////////////////

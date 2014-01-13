@@ -12,7 +12,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
-import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SptSnVocab;
 import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 
@@ -86,28 +85,25 @@ public class Device extends LD4SObject  implements Serializable{
 			this.setUnit_of_measurement(LD4SDataResource.removeBrackets(
 					json.getString("uom")));
 		}
-		if (json.has("observed"+LD4SConstants.JSON_SEPARATOR+"property")){
+		if (json.has("observed_property")){
 			this.setObserved_property(LD4SDataResource.removeBrackets(
-					json.getString("observed"+LD4SConstants.JSON_SEPARATOR+"property")));
+					json.getString("observed_property")));
 		}
 		if (json.has("foi")){
 			this.setFoi(LD4SDataResource.removeBrackets(
 					json.getString("foi")));
 		}
-		if (json.has("base"+LD4SConstants.JSON_SEPARATOR+"name")){
+		if (json.has("base_name")){
 			this.setBase_name(LD4SDataResource.removeBrackets(
-					json.getString("base"+LD4SConstants.JSON_SEPARATOR+"name")));
+					json.getString("base_name")));
 		}
 		
-		if (json.has("base"+LD4SConstants.JSON_SEPARATOR+"ov"+LD4SConstants.JSON_SEPARATOR+"name")){
+		if (json.has("base_ov_name")){
 			this.setBase_ov_name(LD4SDataResource.removeBrackets(
-					json.getString("base"+LD4SConstants.JSON_SEPARATOR+"ov"+LD4SConstants.JSON_SEPARATOR+"name")));
+					json.getString("base_ov_name")));
 		}
-		if (json.has("observation"+LD4SConstants.JSON_SEPARATOR+"values")){
-			this.setValues(json.getJSONArray("observation"+LD4SConstants.JSON_SEPARATOR+"values"));
-		}
-		if (json.has("tsproperties")){
-			this.setTsproperties(json.getJSONArray("tsproperties"));
+		if (json.has("observation_values")){
+			this.setValues(json.getJSONArray("observation_values"));
 		}
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
@@ -118,19 +114,19 @@ public class Device extends LD4SObject  implements Serializable{
 
 	public Device (Form form, String localhost) throws Exception {
 		super(form);
-		this.setValues(form.getValuesArray("observation"+LD4SConstants.JSON_SEPARATOR+"values"));
+		this.setValues(form.getValuesArray("observation_values"));
 		this.setTsproperties(form.getValuesArray("tsproperties"));
 		this.setRemote_uri(form.getFirstValue("uri")); 
 		this.setUnit_of_measurement(
 				form.getFirstValue("uom"));
 		this.setBase_name(
-				form.getFirstValue("base"+LD4SConstants.JSON_SEPARATOR+"name"));
+				form.getFirstValue("base_name"));
 		this.setType(
 				form.getFirstValue("type"));
 		this.setBase_ov_name(
-				form.getFirstValue("base"+LD4SConstants.JSON_SEPARATOR+"ov"+LD4SConstants.JSON_SEPARATOR+"name"));
+				form.getFirstValue("base_ov_name"));
 		this.setObserved_property(
-				form.getFirstValue("observed"+LD4SConstants.JSON_SEPARATOR+"property"));
+				form.getFirstValue("observed_property"));
 		this.setLink_criteria(
 				form.getFirstValue("context"), localhost);
 	}
@@ -240,14 +236,6 @@ public class Device extends LD4SObject  implements Serializable{
 
 	public void setTsproperties(String[] tsproperties) {
 		this.tsproperties = tsproperties;
-	}
-	
-	public void setTsproperties(JSONArray jvalues) throws JSONException {
-		String[] values = new String[jvalues.length()];
-		for (int i=0; i< jvalues.length(); i++){
-			values[i] = jvalues.get(i).toString();
-		}
-		setTsproperties(values);
 	}
 
 	public String[] getTsproperties() {

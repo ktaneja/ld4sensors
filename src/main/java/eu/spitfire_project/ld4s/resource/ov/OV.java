@@ -12,7 +12,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
-import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 
 /**
@@ -71,9 +70,9 @@ public class OV extends LD4SObject  implements Serializable{
 			this.setRemote_uri(LD4SDataResource.removeBrackets(
 					json.getString("uri")));
 		}
-		if (json.has("resource"+LD4SConstants.JSON_SEPARATOR+"time")){
+		if (json.has("resource_time")){
 			this.setResource_time(LD4SDataResource.removeBrackets(
-					json.getString("resource"+LD4SConstants.JSON_SEPARATOR+"time")));
+					json.getString("resource_time")));
 		}
 		if (json.has("values")){
 			this.setValues(json.getJSONArray("values"));
@@ -88,7 +87,7 @@ public class OV extends LD4SObject  implements Serializable{
 		this.setValues(form.getValuesArray("values"));
 		this.setRemote_uri(form.getFirstValue("uri")); 
 		this.setResource_time(
-				form.getFirstValue("resource"+LD4SConstants.JSON_SEPARATOR+"time"));
+				form.getFirstValue("resource_time"));
 		this.setLink_criteria(
 				form.getFirstValue("context"), localhost);
 	}

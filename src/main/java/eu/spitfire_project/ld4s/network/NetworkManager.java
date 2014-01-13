@@ -39,13 +39,14 @@ public abstract class NetworkManager {
 	 * @return Model where the collected RDF descriptions are merged 
 	 */
 	public Model sourceDiscovery(){
+		if (descriptionFilePaths == null){
+			return null;
+		}
+		
 		Model ret = ModelFactory.createDefaultModel();
 
-
 		for (String filename : descriptionFilePaths){
-			if (!filename.endsWith("~")){ //skip the shadow-files
 				ret.add(FileManager.get().loadModel(filename));
-			}
 		}
 		return ret;
 	}
@@ -124,8 +125,11 @@ public abstract class NetworkManager {
 		if (ret){
 			String[] names = dir.list();
 			this.descriptionFilePaths = new String[names.length];
+			int count = 0;
 			for (int i=0 ;i<names.length ;i++){
-				this.descriptionFilePaths[i] = dirpath+"/"+names[i];
+				if (!names[i].endsWith("~")){ //skip the shadow-files
+					this.descriptionFilePaths[count++] = dirpath+"/"+names[i];
+				}
 			}
 		}
 

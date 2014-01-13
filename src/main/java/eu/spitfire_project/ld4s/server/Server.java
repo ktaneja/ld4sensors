@@ -1,7 +1,6 @@
 package eu.spitfire_project.ld4s.server;
 
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -21,7 +20,6 @@ import eu.spitfire_project.ld4s.resource.other.OtherResource;
 import eu.spitfire_project.ld4s.resource.ov.OVResource;
 import eu.spitfire_project.ld4s.resource.ping.PingResource;
 import eu.spitfire_project.ld4s.resource.platform.PlatformResource;
-import eu.spitfire_project.ld4s.resource.sparql.SparqlResource;
 import eu.spitfire_project.ld4s.resource.temporal_property.platform.TempPlatfPropResource;
 import eu.spitfire_project.ld4s.resource.temporal_property.sensor.TempSensPropResource;
 
@@ -32,14 +30,11 @@ public class Server extends Application{
 	/** Holds the host name associated with this Server. */
 	private String hostName;
 	
-	/** Holds the host name associated with this Server without port and context. */
-	private String host;
-	
 	/**Holds the frontside cache associated with this Server. */
 	private FrontSideCache frontSideCache;
 
 	//	  /** Holds the logger for this Service. */
-	private java.util.logging.Logger logger;
+	//	  private Logger logger;
 
 	/** Holds the ServerProperties instance for this Service. */
 	private ServerProperties properties;
@@ -63,6 +58,16 @@ public class Server extends Application{
 		return newInstance(new ServerProperties());
 	}
 
+	/**
+	 * Returns the full URI associated with this server. Example:
+	 * "http://0.0.0.0:9877/ld4s"
+	 *
+	 * @return The host uri.
+	 */
+	public String getUri() {
+		return "http://"+this.hostName;
+	}
+	
 	/**
 	 * Creates a new instance of the HTTP server suitable for unit testing. DPD
 	 * properties are initialized from the User's dailyprojectdata.properties file, then set to their
@@ -89,8 +94,6 @@ public class Server extends Application{
 		server.properties = properties;
 		server.hostName = ServerProperties.SERVER + ":" + ServerProperties.PORT + "/" 
 		+ ServerProperties.CONTEXT_ROOT + "/";
-		server.host = ServerProperties.SERVER;
-		
 
 		server.component = new Component();
 		server.component.getServers().add(Protocol.HTTP, ServerProperties.PORT);
@@ -103,11 +106,11 @@ public class Server extends Application{
 		// Provide a pointer to this server in the Context so that Resources can get at this server.
 		attributes.put("LD4Sensors", server);
 
-		server.logger = Logger.getAnonymousLogger();
-		// Now let's open for business.
-		server.logger.info("Host: " + server.hostName);
 
-		server.logger.info("LD4Sensors (Version " + getVersion() + ") now running.");
+		// Now let's open for business.
+		//	    server.logger.warning("Host: " + server.hostName);
+		//
+		//	    server.logger.warning("LD4Sensors (Version " + getVersion() + ") now running.");
 		server.component.start();
 		
 		return server;
@@ -141,18 +144,20 @@ public class Server extends Application{
 			   
 
 			 // OTHER
-			    router.attach("/res/{other}", OtherResource.class);
-			    router.attach("/res/{other}/", OtherResource.class);
-			    router.attach("/res/{other}/{id}", OtherResource.class);
-			    router.attach("/res/property/{other}", OtherResource.class);
-			    router.attach("/res/property/{other}/", OtherResource.class);
-			    router.attach("/res/property/{other}/{id}", OtherResource.class);
+			    router.attach("/resource/{other}", OtherResource.class);
+			    router.attach("/resource/{other}/", OtherResource.class);
+			    router.attach("/resource/{other}/{id}", OtherResource.class);				
 				
 			    
 			    router.attach("/ping", PingResource.class);
 //			    router.attach("/ping?user={user}&password={password}", PingResource.class);
 			    
-				router.attach("/sparql", SparqlResource.class);
+//				router.attach("/sparql", SparqlResource.class);
+//				router.attach("/ov/sparql", SparqlResource.class);
+//				router.attach("/sensdev/sparql", SparqlResource.class);
+//				router.attach("/tps/sparql", SparqlResource.class);
+//				router.attach("/tpp/sparql", SparqlResource.class);
+//				router.attach("/link/sparql", SparqlResource.class);
 				
 				// POST req: resource stored remotely IF resourceId == null
 				router.attach("/ov/", OVResource.class);
@@ -280,11 +285,10 @@ public class Server extends Application{
 				
 				// GRAPHs
 				router.attach("/graph/{other}", OtherResource.class);
-				
+		
 				// ACTUATOR DECISION SUPPORT
 				router.attach("/actuator/decision", ActuatorDecisionResource.class);
 				router.attach("/actuator/decision/", ActuatorDecisionResource.class);
-		
 		
 
 		return router;
@@ -305,33 +309,12 @@ public class Server extends Application{
 
 	/**
 	 * Returns the host name associated with this server. Example:
-	 * "http://0.0.0.0:9877/ld4s"
+	 * "http://localhost:9877/ld4s"
 	 *
 	 * @return The host name.
 	 */
 	public String getHostName() {
 		return this.hostName;
-	}
-	
-	/**
-	 * Returns the full URI associated with this server. Example:
-	 * "http://0.0.0.0:9877/ld4s"
-	 *
-	 * @return The host uri.
-	 */
-	public String getUri() {
-		return "http://"+this.hostName;
-	}
-	
-	
-	/**
-	 * Returns the host name without port and context. Example:
-	 * "0.0.0.0"
-	 *
-	 * @return The host name.
-	 */
-	public String getHost() {
-		return this.host;
 	}
 
 	/**

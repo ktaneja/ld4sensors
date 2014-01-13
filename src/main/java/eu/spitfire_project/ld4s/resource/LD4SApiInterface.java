@@ -21,9 +21,6 @@ public Representation put(Form obj);
 @Put
 public Representation put(JSONObject obj);
 
-//@Put
-//public Representation put(String obj);
-
 //@Post
 //public Representation post(LD4SObject obj);
 
@@ -32,9 +29,6 @@ public Representation post(Form obj);
 
 @Post
 public Representation post(JSONObject obj);
-//
-//@Post
-//public Representation post(String obj);
 
 @Delete
 public void remove();

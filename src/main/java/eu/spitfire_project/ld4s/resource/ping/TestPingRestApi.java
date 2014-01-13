@@ -20,9 +20,7 @@ public class TestPingRestApi extends LD4STestHelper{
 	  public void testAuthenticatedPing() throws Exception {
 	    LD4SClient client = new LD4SClient(user, user_password);
 	    assertTrue(client.makeRequest("ping", Method.GET, MediaType.ALL, null).getEntity().getText()
-	    		.compareTo(LD4SConstants.AUTHENTICATED_PINGTEXT
-	    				//+user_role.getName()+" "
-	    				) == 0);
+	    		.compareTo(LD4SConstants.AUTHENTICATED_PINGTEXT+user_role.getName()+" ") == 0);
 	  }
 	  
 	  /**

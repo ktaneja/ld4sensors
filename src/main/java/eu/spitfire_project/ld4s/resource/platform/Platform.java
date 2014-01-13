@@ -12,7 +12,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
-import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SptSnVocab;
 import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 
@@ -66,13 +65,13 @@ public class Platform extends LD4SObject  implements Serializable{
 
 	public Platform(JSONObject json, String localhost) throws Exception {
 		super(json);
-		if (json.has("base"+LD4SConstants.JSON_SEPARATOR+"name")){
+		if (json.has("base_name")){
 			this.setBase_name(LD4SDataResource.removeBrackets(
-					json.getString("base"+LD4SConstants.JSON_SEPARATOR+"name")));
+					json.getString("base_name")));
 		}
-		if (json.has("status"+LD4SConstants.JSON_SEPARATOR+"page")){
+		if (json.has("status_page")){
 			this.setStatus(LD4SDataResource.removeBrackets(
-					json.getString("status"+LD4SConstants.JSON_SEPARATOR+"page")));
+					json.getString("status_page")));
 		}
 		if (json.has("feeds")){
 			this.setFeeds(json.getJSONArray("feeds"));
@@ -92,7 +91,7 @@ public class Platform extends LD4SObject  implements Serializable{
 		this.setTpproperties(form.getValuesArray("tpproperties"));
 		this.setRemote_uri(form.getFirstValue("uri")); 
 		this.setBase_name(
-				form.getFirstValue("base"+LD4SConstants.JSON_SEPARATOR+"name"));
+				form.getFirstValue("base_name"));
 		this.setType(
 				form.getFirstValue("type"));
 		this.setLink_criteria(

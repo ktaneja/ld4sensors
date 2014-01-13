@@ -25,15 +25,15 @@ public class TestSparqlEndpoint extends LD4STestHelper{
 	@Test
 	public void testSelect() throws Exception {
 		String filters = "SELECT * " +
+//				"FROM NAMED <http://localhost:8182/ld4s/graph/ov> " +
 				"{" +
-				"GRAPH <http://localhost:8182/ld4s/graph/device> " +
 //					"<http://localhost:8182/ld4s/link/http%3a%2f%2flocalhost%3a8182%2fld4s%2fov%2fx12_red+dress>" +
-						"{?x ?y ?z}" 
+						"?x ?y ?z" 
 					+ "}" 
 				+"LIMIT 10";
 		filters = URLEncoder.encode(filters, "utf-8");
 		ClientResource cr = new ClientResource(
-				"http://localhost:8182/ld4s/sparql/"+filters);
+				"http://localhost:8182/ld4s/link/sparql?q="+filters);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);

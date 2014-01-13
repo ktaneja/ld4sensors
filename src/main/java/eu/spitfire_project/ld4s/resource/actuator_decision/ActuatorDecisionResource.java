@@ -99,9 +99,11 @@ public class ActuatorDecisionResource extends LD4SActuatorDecisionResource imple
 
 			//1. scan the network (for now, use an hard-coded list of addresses --> NetworkManager)
 			//for network devices' rdf descriptions
+			String sensorsStaticDescriptions = this.ld4sServer.getServerProperties()
+					.get(ServerProperties.SENSORS_RDF_DIR_KEY);
+			System.out.println("STATIC DESCRIPTIONS PATH="+sensorsStaticDescriptions);
 			SensorNetworkManager netman = new SensorNetworkManager(this.ld4sServer.getUri(),
-					this.ld4sServer.getServerProperties()
-					.get(ServerProperties.SENSORS_RDF_DIR_KEY));
+					sensorsStaticDescriptions);
 			Model descriptions = netman.sourceDiscovery();
 
 			//2. store the descriptions locally applying the inference
@@ -128,7 +130,7 @@ public class ActuatorDecisionResource extends LD4SActuatorDecisionResource imple
 			
 			//3. filter out the network devices whose triples do not match certain criteria
 			Model filteredSensors = NetworkDeviceFilter.applyFilter(this.ov, 
-					currentDecisionUri, getDatasetFolderPath());
+					currentDecisionUri, datasetFolderPath);
 
 			//4. get the latest readings
 			//for each address in the model
@@ -153,8 +155,7 @@ public class ActuatorDecisionResource extends LD4SActuatorDecisionResource imple
 			
 			//6. consult the rule set based on the coapResourcePath and all the collected 
 			//readings, in order to select a choice
-			rdfData = DecisionSupport.getChoice(getRuleFilePath(), 
-					currentDecisionUri, getDatasetFolderPath());
+			rdfData = DecisionSupport.getChoice(currentDecisionUri, datasetFolderPath);
 			//rdfData = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 			//rdfData = makeOVLinkedData().getModel();
 

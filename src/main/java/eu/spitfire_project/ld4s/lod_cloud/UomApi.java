@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
@@ -28,11 +28,14 @@ public class UomApi extends SearchRouter {
 	public static final String UCUM_FILE_SOURCE = "http://aurora.regenstrief.org/~ucum/ucum-essence.xml";
 	private static final String DBPEDIA_DISAMBIGUATION_SUFFIX = "_(disambiguation)";
 
+	private String path = null;
+
 
 
 	public UomApi(String baseHost, Context context,
-			User author, Resource from_resource, OntModel from_model) {
-		super(baseHost, context, author, from_resource, from_model);
+			User author, Resource from_resource, String uomFilePath) {
+		super(baseHost, context, author, from_resource);
+		this.path = uomFilePath;
 	}
 
 
@@ -143,7 +146,10 @@ public class UomApi extends SearchRouter {
 
 
 	@Override
-	public OntModel start() throws Exception {
+	public Model start() throws Exception {
+		if (path == null){
+			return null;
+		}
 		String thing = context.getThing();
 
 		//get the factory
@@ -151,7 +157,6 @@ public class UomApi extends SearchRouter {
 
 		try {
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			String path = SptVocab.class.getResource(UCUM_FILE).getPath();
 			Document dom = db.parse(path);
 			Element docEle = dom.getDocumentElement();
 			Uom uom = null;
@@ -167,11 +172,11 @@ public class UomApi extends SearchRouter {
 				//if it finds it, get the wikipedia ID of the redirection field
 				//repeats the search in the stardard units file (getUnit(..))
 				uom = getUnit(docEle.getElementsByTagName("unit"), thing);
-//				useless because this would return just a prefix, meaning nothing specific
-//				//search for either Code/CODE in prefix (remove eventual [])
-//				//or name
-//				//or printSymbol in prefix
-//				uom = getUnit(docEle.getElementsByTagName("prefix"), thing);
+				//				useless because this would return just a prefix, meaning nothing specific
+				//				//search for either Code/CODE in prefix (remove eventual [])
+				//				//or name
+				//				//or printSymbol in prefix
+				//				uom = getUnit(docEle.getElementsByTagName("prefix"), thing);
 
 			}
 			if (uom != null){
@@ -201,7 +206,7 @@ public class UomApi extends SearchRouter {
 			thing += getDBPEDIA_DISAMBIGUATION_SUFFIX();
 		}
 		context.setThing(addterms+context.getThing()+ " unit");
-		GenericApi gen = new GenericApi(baseHost, context, author, from_resource, from_model);
+		GenericApi gen = new GenericApi(baseHost, context, author, from_resource);
 		return gen.start();
 
 	}
@@ -236,8 +241,8 @@ public class UomApi extends SearchRouter {
 	 * @throws UnsupportedEncodingException
 	 * @throws JSONException
 	 */
-	protected OntModel createLink(Uom uom) {
-		OntModel model = from_model;
+	protected Model createLink(Uom uom) {
+		Model model = from_resource.getModel();
 		if (uom == null){
 			return model;
 		}
@@ -274,7 +279,7 @@ public class UomApi extends SearchRouter {
 			model.add(to_resource.getModel());
 		}
 		return model;
-		
+
 	}
 
 }

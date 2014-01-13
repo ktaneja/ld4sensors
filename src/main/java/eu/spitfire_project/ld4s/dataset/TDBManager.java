@@ -2,8 +2,6 @@ package eu.spitfire_project.ld4s.dataset;
 
 import java.io.File;
 
-import org.w3c.dom.Document;
-
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
@@ -20,8 +18,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
-
-import eu.spitfire_project.ld4s.resource.sparql.SparqlResultsFormatter;
 
 public class TDBManager {
 
@@ -174,10 +170,6 @@ public class TDBManager {
 			closeTDB(dataset);
 		}
 		return ret;
-	}
-
-	public static Document formatSearchResults(ResultSet rs){
-		return (Document)SparqlResultsFormatter.xmlResults(rs)[0];
 	}
 
 

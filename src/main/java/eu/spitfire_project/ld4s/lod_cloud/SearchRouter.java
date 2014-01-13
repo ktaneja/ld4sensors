@@ -11,8 +11,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.security.User;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public abstract class SearchRouter {
@@ -26,20 +26,17 @@ public abstract class SearchRouter {
 	protected Resource authorResource = null;
 	
 	protected Resource from_resource = null;
-	
-	protected OntModel from_model = null;
 
 	public SearchRouter(String baseHost, Context context, User author,
-			Resource from_resource, OntModel model){
+			Resource from_resource){
 		this.baseHost = baseHost;
 		this.context = context;
 		this.author = author;
 		this.from_resource = from_resource;
-		this.from_model = model;
 	}	
 
 	
-	public abstract OntModel start() throws Exception;
+	public abstract Model start() throws Exception;
 	
 	protected static String makeRequest(String query, MediaType mediatype){
 		String response = null;
@@ -86,9 +83,7 @@ public abstract class SearchRouter {
 		request.getClientInfo().getAcceptedMediaTypes().add(
 				new Preference<MediaType>(mediatype));
 		try{
-			Client client = new Client(Protocol.HTTP);
-			client.setConnectTimeout(10000);
-			resp = client.handle(request);
+			resp = new Client(Protocol.HTTP).handle(request);
 			Status status = resp.getStatus();
 			if (status.getCode() != 200) {
 				System.err.println("Request failed:"+status.getCode()+" - "+status.getDescription());

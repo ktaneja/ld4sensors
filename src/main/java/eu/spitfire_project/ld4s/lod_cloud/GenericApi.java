@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.security.User;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 
@@ -55,12 +55,12 @@ public class GenericApi extends SearchRouter{
 
 
 	public GenericApi(String baseHost, Context context,
-			User author, Resource from_resource, OntModel from_model) {
-		super(baseHost, context, author, from_resource, from_model);
+			User author, Resource from_resource) {
+		super(baseHost, context, author, from_resource);
 	}
 
 	@Override
-	public OntModel start() throws UnsupportedEncodingException, JSONException{
+	public Model start() throws UnsupportedEncodingException, JSONException{
 		if (getContext() == null || getBaseHost() == null || getContext().isEmpty()){
 			return null;
 		}
@@ -74,7 +74,7 @@ public class GenericApi extends SearchRouter{
 		return	handleAnswer(answer);
 	}
 
-	public OntModel start4Foaf() throws UnsupportedEncodingException, JSONException{
+	public Model start4Foaf() throws UnsupportedEncodingException, JSONException{
 		if (getContext() == null || getBaseHost() == null){
 			return null;
 		}
@@ -98,8 +98,8 @@ public class GenericApi extends SearchRouter{
 	 * @throws JSONException
 	 * @throws UnsupportedEncodingException
 	 */
-	private OntModel handleAnswer(String answer) throws JSONException, UnsupportedEncodingException{
-		OntModel ret = from_model;
+	private Model handleAnswer(String answer) throws JSONException, UnsupportedEncodingException{
+		Model ret = from_resource.getModel();;
 		if (answer == null || answer.trim().compareTo("") == 0){
 			return null;
 		}
@@ -386,9 +386,9 @@ public class GenericApi extends SearchRouter{
 	 * @throws UnsupportedEncodingException
 	 * @throws JSONException
 	 */
-	protected OntModel createLink(JSONObject to) 
+	protected Model createLink(JSONObject to) 
 	throws UnsupportedEncodingException, JSONException{
-		OntModel model = from_model;
+		Model model = from_resource.getModel();
 		if (!to.has("link")){
 			return model;
 		}

@@ -12,7 +12,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
-import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 
 /**
@@ -71,20 +70,20 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 			this.setRemote_uri(LD4SDataResource.removeBrackets(
 					json.getString("uri")));
 		}
-		if (json.has("sensor"+LD4SConstants.JSON_SEPARATOR+"id")){
+		if (json.has("sensor_id")){
 			this.setSensor_id(LD4SDataResource.removeBrackets(
-					json.getString("senso"+LD4SConstants.JSON_SEPARATOR+"id")));
+					json.getString("senso_id")));
 		}
 		if (json.has("foi")){
 			this.setFoi(LD4SDataResource.removeBrackets(
 					json.getString("foi")));
 		}
-		if (json.has("net"+LD4SConstants.JSON_SEPARATOR+"role")){
+		if (json.has("net_role")){
 			this.setNet_role(LD4SDataResource.removeBrackets(
-					json.getString("net"+LD4SConstants.JSON_SEPARATOR+"role")));
+					json.getString("net_role")));
 		}
-		if (json.has("net"+LD4SConstants.JSON_SEPARATOR+"links")){
-			this.setNet_links(json.getJSONArray("net"+LD4SConstants.JSON_SEPARATOR+"links"));
+		if (json.has("net_links")){
+			this.setNet_links(json.getJSONArray("net_links"));
 		}
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
@@ -93,14 +92,14 @@ public class TempSensProp extends LD4SObject  implements Serializable{
 
 	public TempSensProp (Form form, String localhost) throws Exception {
 		super(form);
-		this.setNet_links(form.getValuesArray("net"+LD4SConstants.JSON_SEPARATOR+"links"));
+		this.setNet_links(form.getValuesArray("net_links"));
 		this.setRemote_uri(form.getFirstValue("uri")); 
 		this.setFoi(
 				form.getFirstValue("foi"));
 		this.setNet_role(
-				form.getFirstValue("net"+LD4SConstants.JSON_SEPARATOR+"role"));
+				form.getFirstValue("net_role"));
 		this.setSensor_id(
-				form.getFirstValue("sensor"+LD4SConstants.JSON_SEPARATOR+"id"));
+				form.getFirstValue("sensor_id"));
 		this.setLink_criteria(
 				form.getFirstValue("context"), localhost);
 	}

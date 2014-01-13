@@ -3,10 +3,6 @@ package eu.spitfire_project.ld4s.test;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
-import org.restlet.Client;
-import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
-import org.restlet.resource.ClientResource;
 import org.restlet.security.Role;
 
 import eu.spitfire_project.ld4s.lod_cloud.Person;
@@ -52,21 +48,6 @@ public class LD4STestHelper {
 	protected Person author = new Person(
 //			"Ioannis", "Chatzigiannakis", null, null, null, null, null);
 			"Manfred", "Hauswirth", null, null, null, null, null);
-	
-	protected MediaType media = new MediaType("application/rdf+json");
-	
-	
-	protected ClientResource initClient(Protocol protocol, int timeout, String uri){
-		Client client = new Client(protocol);
-
-		client.setConnectTimeout(timeout);
-
-		ClientResource cr = new ClientResource(uri);
-
-		cr.setNext(client);
-
-		return cr;
-	}
 	
 	
 

@@ -13,7 +13,6 @@ import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.lod_cloud.Person;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
-import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 
 /**
@@ -94,16 +93,16 @@ public class TempPlatfProp extends LD4SObject  implements Serializable{
 			this.setRemote_uri(LD4SDataResource.removeBrackets(
 					json.getString("uri")));
 		}
-		if (json.has("platform"+LD4SConstants.JSON_SEPARATOR+"id")){
+		if (json.has("platform_id")){
 			this.setPlatform_id(LD4SDataResource.removeBrackets(
-					json.getString("platform"+LD4SConstants.JSON_SEPARATOR+"id")));
+					json.getString("platform_id")));
 		}
 		if (json.has("deployment")){
 			this.setDeployment(LD4SDataResource.removeBrackets(
 					json.getString("deployment")));
 		}
-		if (json.has("worn"+LD4SConstants.JSON_SEPARATOR+"by")){
-			this.setWornby(json.getJSONArray("worn"+LD4SConstants.JSON_SEPARATOR+"by"));
+		if (json.has("worn_by")){
+			this.setWornby(json.getJSONArray("worn_by"));
 		}
 		if (json.has("owners")){
 			this.setOwners(json.getJSONArray("owners"));
@@ -231,7 +230,7 @@ public class TempPlatfProp extends LD4SObject  implements Serializable{
 		super(form);
 		this.setRemote_uri(form.getFirstValue("uri"));
 		this.setPlatform_id(
-				form.getFirstValue("sensor"+LD4SConstants.JSON_SEPARATOR+"id"));
+				form.getFirstValue("sensor_id"));
 		this.setLink_criteria(
 				form.getFirstValue("context"), localhost);
 	}

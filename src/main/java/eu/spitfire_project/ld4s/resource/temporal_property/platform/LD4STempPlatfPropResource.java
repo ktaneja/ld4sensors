@@ -1,7 +1,8 @@
 package eu.spitfire_project.ld4s.resource.temporal_property.platform;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.lod_cloud.Person;
@@ -20,7 +21,7 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 	protected String resourceName = "Observation Value";
 
 	/** RDF Data Model of this Service resource semantic annotation. */
-	protected OntModel rdfData = null;
+	protected Model rdfData = null;
 
 	/** Resource provided by this Service resource. */
 	protected TempPlatfProp ov = null;
@@ -36,15 +37,30 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 	 * @return model 
 	 * @throws Exception
 	 */
-	protected Object[] makeOVLinkedData() throws Exception {
-		Object[] resp = makeOVData();
+	protected Resource makeOVLinkedData() throws Exception {
+		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resp = addLinkedData((Resource)resp[0], Domain.ALL, this.context, (OntModel)resp[1]);
-		return resp;
+		resource = addLinkedData(resource, Domain.ALL, this.context);
+		return resource;
 	}
 
-	
+	/**
+	 * Creates main resources and additional related information
+	 * excluding linked data
+	 *
+	 * @param m_returned model which the resources to be created should be attached to
+	 * @param obj object containing the information to be semantically annotate
+	 * @param id resource identification
+	 * @return model 
+	 * @throws Exception
+	 */
+	protected Resource makeOVData() throws Exception {
+		Resource resource = createOVResource();
+		resource.addProperty(DCTerms.isPartOf,
+				this.ld4sServer.getHostName()+"void");
+		return resource;
+	}
 
 	/**
 	 * Creates the main resource
@@ -53,8 +69,7 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 	 * @return
 	 * @throws Exception 
 	 */
-	@Override
-	protected  Object[] createOVResource() throws Exception {
+	protected  Resource createOVResource() throws Exception {
 		Resource resource = null;
 		String subjuri = null;
 		if (resourceId != null){
@@ -114,7 +129,7 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 							rdfData.createResource(p.getUri()));
 				}else{
 					resource = 
-						addPerson(resource, p, SptVocab.OWNED_BY, rdfData);
+						addPerson(resource, p, SptVocab.OWNED_BY);
 				}
 			}
 		}
@@ -148,12 +163,12 @@ public class LD4STempPlatfPropResource extends LD4SDataResource {
 			if (persons != null){
 				for (int ind=0; ind<persons.length ;ind++){
 					resource = 
-						addPerson(resource, persons[ind], SptVocab.WORN_BY, rdfData);
+						addPerson(resource, persons[ind], SptVocab.WORN_BY);
 				}
 			}
 		}
-		resource = crossResourcesAnnotation(ov, resource, rdfData);
-		return new Object[]{resource, rdfData};
+		resource = crossResourcesAnnotation(ov, resource);
+		return resource;
 	}
 
 

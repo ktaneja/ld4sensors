@@ -4,8 +4,9 @@ import java.util.IllegalFormatException;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
@@ -24,7 +25,7 @@ public class LD4SMPResource extends LD4SDataResource {
 	protected String resourceName = "Measurement Property";
 
 	/** RDF Data Model of this Service resource semantic annotation. */
-	protected OntModel rdfData = null;
+	protected Model rdfData = null;
 
 	/** Resource provided by this Service resource. */
 	protected MP ov = null;
@@ -40,15 +41,31 @@ public class LD4SMPResource extends LD4SDataResource {
 	 * @return model 
 	 * @throws Exception
 	 */
-	protected Object[] makeOVLinkedData() throws Exception {
-		Object[] resp = makeOVData();
+	protected Resource makeOVLinkedData() throws Exception {
+		Resource resource = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resp = addLinkedData((Resource)resp[0], Domain.ALL, this.context,(OntModel)resp[1]);
-		return resp;
+		resource = addLinkedData(resource, Domain.ALL, this.context);
+		return resource;
 	}
 
-	
+	/**
+	 * Creates main resources and additional related information
+	 * excluding linked data
+	 *
+	 * @param m_returned model which the resources to be created should be attached to
+	 * @param obj object containing the information to be semantically annotate
+	 * @param id resource identification
+	 * @return model 
+	 * @throws Exception
+	 */
+	protected Resource makeOVData() throws Exception {
+		Resource resource = createOVResource();
+		resource.addProperty(DCTerms.isPartOf,
+				this.ld4sServer.getHostName()+"void");
+		return resource;
+	}
+
 	/**
 	 * Creates the main resource
 	 * @param model
@@ -56,8 +73,7 @@ public class LD4SMPResource extends LD4SDataResource {
 	 * @return
 	 * @throws Exception 
 	 */
-	@Override
-	protected  Object[] createOVResource() throws Exception {
+	protected  Resource createOVResource() throws Exception {
 		Resource resource = null;
 		String subjuri = null;
 		if (resourceId != null){
@@ -78,7 +94,7 @@ public class LD4SMPResource extends LD4SDataResource {
 				resource.addProperty(SptVocab.UOM, 
 						rdfData.createResource(item));	
 			}else{
-				resource = addUom(resource, item, rdfData);
+				resource = addUom(resource, item);
 			}
 		}
 		try{
@@ -119,7 +135,7 @@ public class LD4SMPResource extends LD4SDataResource {
 							conditions[ind].predicate);
 				}
 				if (conditions[ind].uom != null){
-					bnode_resource = addUom(bnode_resource, conditions[ind].uom, rdfData);
+					bnode_resource = addUom(bnode_resource, conditions[ind].uom);
 				}
 				try{
 					if (conditions[ind].value != null){
@@ -141,8 +157,8 @@ public class LD4SMPResource extends LD4SDataResource {
 				}
 			}
 		}
-		resource = crossResourcesAnnotation(ov, resource, rdfData);
-		return new Object[]{resource, rdfData};
+		resource = crossResourcesAnnotation(ov, resource);
+		return resource;
 	}
 
 }
