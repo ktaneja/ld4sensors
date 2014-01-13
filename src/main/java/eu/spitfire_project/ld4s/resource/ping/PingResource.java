@@ -41,7 +41,6 @@ public class PingResource extends LD4SDataResource {
 		}else{
 			sb.append(LD4SConstants.PINGTEXT);
 		}
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime());
 		return sb.toString();
 	}
 

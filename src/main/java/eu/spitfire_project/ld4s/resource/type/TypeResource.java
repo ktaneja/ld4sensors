@@ -1,4 +1,4 @@
-package eu.spitfire_project.ld4s.resource.platform;
+package eu.spitfire_project.ld4s.resource.type;
 
 import java.io.UnsupportedEncodingException;
 
@@ -21,7 +21,7 @@ import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
  * @author Myriam Leggieri.
  *
  */
-public class PlatformResource extends LD4SPlatformResource implements LD4SApiInterface{
+public class TypeResource extends LD4STypeResource implements LD4SApiInterface{
 
 
 	// GET req:resource stored locally
@@ -142,7 +142,7 @@ public class PlatformResource extends LD4SPlatformResource implements LD4SApiInt
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 		try {
-			this.ov = new Platform(obj, this.ld4sServer.getHostName());
+			this.ov = new Type(obj, this.ld4sServer.getHostName());
 
 			if (ov.getRemote_uri() != null){
 				//if the preferred resource hosting is a remote one, PUT can not be used
@@ -198,7 +198,7 @@ public class PlatformResource extends LD4SPlatformResource implements LD4SApiInt
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 		try {
-			this.ov = new Platform(obj, this.ld4sServer.getHostName());
+			this.ov = new Type(obj, this.ld4sServer.getHostName());
 			if (ov.getRemote_uri() != null){
 				//if the preferred resource hosting server is a remote one, PUT can not be used
 				//(use POST instead) 
@@ -288,7 +288,7 @@ public class PlatformResource extends LD4SPlatformResource implements LD4SApiInt
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
-			this.ov = new Platform(obj, this.ld4sServer.getHostName());
+			this.ov = new Type(obj, this.ld4sServer.getHostName());
 			rdfData = (OntModel)makeOVLinkedData()[1];
 
 			// create a new resource in the database only if the preferred resource hosting server is
@@ -334,7 +334,7 @@ public class PlatformResource extends LD4SPlatformResource implements LD4SApiInt
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
-			this.ov = new Platform(obj, this.ld4sServer.getHostName());
+			this.ov = new Type(obj, this.ld4sServer.getHostName());
 			rdfData = (OntModel)makeOVLinkedData()[1];
 
 			// create a new resource in the database only if the preferred resource hosting server is

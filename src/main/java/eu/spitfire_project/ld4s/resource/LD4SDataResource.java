@@ -7,9 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,14 +35,14 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Options;
+import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.restlet.service.MetadataService;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -56,7 +54,6 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -68,7 +65,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.update.GraphStore;
@@ -81,18 +77,16 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import eu.spitfire_project.ld4s.dataset.TDBManager;
-import eu.spitfire_project.ld4s.network.lod_cloud.Context;
-import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
-import eu.spitfire_project.ld4s.network.lod_cloud.ElectricityTariffApi;
-import eu.spitfire_project.ld4s.network.lod_cloud.EncyclopedicApi;
-import eu.spitfire_project.ld4s.network.lod_cloud.GenericApi;
-import eu.spitfire_project.ld4s.network.lod_cloud.LocationApi;
-import eu.spitfire_project.ld4s.network.lod_cloud.PeopleApi;
-import eu.spitfire_project.ld4s.network.lod_cloud.Person;
-import eu.spitfire_project.ld4s.network.lod_cloud.SearchRouter;
-import eu.spitfire_project.ld4s.network.lod_cloud.UomApi;
-import eu.spitfire_project.ld4s.network.lod_cloud.WeatherApi;
+import eu.spitfire_project.ld4s.lod_cloud.Context;
+import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.lod_cloud.EncyclopedicApi;
+import eu.spitfire_project.ld4s.lod_cloud.GenericApi;
+import eu.spitfire_project.ld4s.lod_cloud.LocationApi;
+import eu.spitfire_project.ld4s.lod_cloud.PeopleApi;
+import eu.spitfire_project.ld4s.lod_cloud.Person;
+import eu.spitfire_project.ld4s.lod_cloud.SearchRouter;
+import eu.spitfire_project.ld4s.lod_cloud.UomApi;
+import eu.spitfire_project.ld4s.lod_cloud.WeatherApi;
 import eu.spitfire_project.ld4s.resource.link.Link;
 import eu.spitfire_project.ld4s.resource.sparql.SparqlResultsFormatter;
 import eu.spitfire_project.ld4s.server.Server;
@@ -103,17 +97,12 @@ import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.ProvVocab;
 import eu.spitfire_project.ld4s.vocabulary.RevVocab;
 import eu.spitfire_project.ld4s.vocabulary.SiocVocab;
-import eu.spitfire_project.ld4s.vocabulary.SptCtVocab;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 import eu.spitfire_project.ld4s.vocabulary.VoIDVocab;
 
 public abstract class LD4SDataResource extends ServerResource{
 	protected static enum SparqlType {SELECT, CONSTRUCT, UPDATE, DESCRIBE, ASK};
-
-
-	private static OntModel ontologyBaseModel = null;
-
 
 	/** Current user. */
 	protected User user;
@@ -135,6 +124,9 @@ public abstract class LD4SDataResource extends ServerResource{
 
 	/**  Preferred media type. */
 	protected MediaType requestedMedia;
+
+	/**  Content type. */
+	protected MediaType contentType;
 
 	//	/** Default URI for annotating unknown resources. */
 	//	protected String defaultUri = null;
@@ -158,7 +150,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	protected Representation entity = null;
 
 	/** Contextual criteria for link creation. */
-	protected eu.spitfire_project.ld4s.network.lod_cloud.Context context = null;
+	protected Context context = null;
 
 	/** Modality in which the user prefers to get a resource, i.e., linked with external data or not. */
 	protected boolean linked = true;
@@ -170,25 +162,86 @@ public abstract class LD4SDataResource extends ServerResource{
 
 	protected static HashMap<String, String> resource2namedGraph = null;
 
-	protected static Model energyModel = null;
 
+	@Put
+	public Representation put(String obj){
+		if (resourceId == null || resourceId.trim().compareTo("") == 0){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+
+		Representation ret = null;
+		OntModel rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+		rdfData.read(obj);
+		if (rdfData.isEmpty()){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+		// create a new resource in the database
+		if (store(rdfData, this.namedModel)){
+			setStatus(Status.SUCCESS_CREATED);	 
+			ret = serializeAccordingToReqMediaType(rdfData);
+		}else{
+			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
+		}
+		return ret;
+	}
+
+
+
+	@Post
+	public Representation post(String obj){
+
+		Representation ret = null;
+		OntModel rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+//		InputStream stream;
+//		try {
+//			stream = new ByteArrayInputStream(obj.getBytes("UTF-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+//			return null;
+//		}
+//		String lang = mediatypeToJenaLang(contentType);
+//		if (lang == null){
+//			setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+//			return null;
+//		}
+//		rdfData.read(stream, null, lang);
+
+		if (rdfData.isEmpty()){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+
+		// create a new resource in the database only if the preferred resource hosting server is
+		// the LD4S one
+
+		if (update(rdfData, this.namedModel)){
+			setStatus(Status.SUCCESS_OK);	 
+			ret = serializeAccordingToReqMediaType(rdfData);
+		}else{
+			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
+		}
+
+		return ret;
+	}
 
 	protected void initResource2NamedGraph(String baseHost){
+		String base = baseHost+"graph/";
 		resource2namedGraph = new HashMap<String, String>();
-		resource2namedGraph.put("ov", getResourceUri(baseHost, "graph", "ov"));
+		resource2namedGraph.put("ov", base+"ov");
 		/**datlink resources are the only resource among the 
 		ld4s enriched main ones, that gets generated while
 		annotated other resources. Then for logistics
 		reasons, they need to go in the generic named graph
 		rather than having their own named graph.**/
 		//		resource2namedGraph.put("link", base+"link");
-		resource2namedGraph.put("device", getResourceUri(baseHost, "graph", "device"));
-		resource2namedGraph.put("tpp", getResourceUri(baseHost, "graph", "tpp"));
-		resource2namedGraph.put("tps", getResourceUri(baseHost, "graph", "tps"));
-		resource2namedGraph.put("platform", getResourceUri(baseHost, "graph", "platform"));
-		resource2namedGraph.put("meas_capab", getResourceUri(baseHost, "graph", "meas_capab"));
-		resource2namedGraph.put("meas_prop", getResourceUri(baseHost, "graph", "meas_prop"));
-		resource2namedGraph.put("general", getResourceUri(baseHost, "graph", "general"));
+		resource2namedGraph.put("device", base+"device");
+		resource2namedGraph.put("tpp", base+"tpp");
+		resource2namedGraph.put("tps", base+"tps");
+		resource2namedGraph.put("platform", base+"platform");
+		resource2namedGraph.put("meas_capab", base+"meas_capab");
+		resource2namedGraph.put("meas_prop", base+"meas_prop");
 	}
 
 	/**
@@ -214,24 +267,8 @@ public abstract class LD4SDataResource extends ServerResource{
 		responseHeaders.add("Access-Control-Max-Age", "30");//when testing should be  shorter about 30 for server bigger is better
 	}
 
-	public static String getCurrentTime(){
-		String now = null;
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		//get current date time with Date()
-		Date date = new Date();
-		now = dateFormat.format(date);
-		return now;
-	}
 	@Override
 	protected void doInit() throws ResourceException {
-
-		this.uristr = this.getRequest().getResourceRef().toString();
-		this.ld4sServer = (Server) getContext().getAttributes().get("LD4Sensors");
-		LD4SConstants.setUomFile(this.ld4sServer.getServerProperties().get(ServerProperties.UOM_FILE_KEY));
-		logger = this.ld4sServer.getLogger();
-		logger.info("REQUEST "+ this.uristr +" PROCESSING START - "+LD4SDataResource.getCurrentTime());
-
-
 		/**
 		 * SECURITY ADD-on - start
 		 */
@@ -252,10 +289,14 @@ public abstract class LD4SDataResource extends ServerResource{
 		 * SECURITY ADD-on - end
 		 */
 
-		System.out.println("********ORIGINAL REQUEST*********"+getRequest().toString()+
+		/**
+		 * PRINT full request details and payload
+		 */
+		System.out.println("\n********ORIGINAL REQUEST:*********\n"+getRequest().toString()+
 				"\nHEADERS:"+getRequestAttributes());
+
 		//		try {
-		//			System.out.println("********PAYLOAD*********"+getRequestEntity().getText());
+		//			System.out.println("\n********PAYLOAD:*********\n"+getRequestEntity().getText());
 		//		} catch (IOException e1) {
 		//			// TODO Auto-generated catch block
 		//			e1.printStackTrace();
@@ -269,41 +310,43 @@ public abstract class LD4SDataResource extends ServerResource{
 		this.roles = getClientInfo().getRoles();
 		this.requestedMedia = selectMedia(getClientInfo().getAcceptedMediaTypes());
 		this.entity = getRequestEntity();
+		this.contentType = this.entity.getMediaType();
 		MetadataService ms = getMetadataService(); 
 		ms.addCommonExtensions(); 
 		ms.addExtension("ttl", MediaType.APPLICATION_RDF_TURTLE);
 		ms.addExtension("rdf", MediaType.APPLICATION_RDF_XML);
 		ms.addExtension("n3", MediaType.TEXT_RDF_N3);
-
-
+		//		getVariants().add(new Variant(new MediaType(LD4SConstants.MEDIA_TYPE_SPARQL_RESULTS)));
 
 		//		if (this.requestedMedia == null){
 		//			setStatusError("The requested Media Type " + requestedMedia + " is not supported .");
 		//		}
-
+		this.ld4sServer = (Server) getContext().getAttributes().get("LD4Sensors");
 		if (resource2namedGraph == null){
 			initResource2NamedGraph(this.ld4sServer.getHostName());
 			//			initResource2NamedGraph("http://192.168.56.1:8182/ld4s/");
 		}
 		this.resourceId = ((String) getRequest().getAttributes().get("resource_id"));
 		this.timestamp = (String) getRequest().getAttributes().get("timestamp");
-		this.generalNamedModel = getResourceUri(this.ld4sServer.getHostName(),"graph","general");
+		this.uristr = this.getRequest().getResourceRef().toString();
+		this.generalNamedModel = this.ld4sServer.getHostName()+"graph/general";
 		this.namedModel = getNamedModel(this.uristr);
 		if (this.namedModel == null){
 			this.namedModel = generalNamedModel ;
 		}
-		//		this.query = ((String) getRequest().getAttributes().get("query"));
-		//
-		//		if (this.query != null) {
-		//			try {
-		//				this.query = java.net.URLDecoder.decode(this.query, "UTF-8");
-		//			}
-		//			catch (UnsupportedEncodingException e) {
-		//				setStatusError("Error processing the query. "
-		//						+ "The URI has been encoded using an unsupported encoding scheme.", e);
-		//				return;
-		//			}
-		//		}
+
+		this.query = ((String) getRequest().getAttributes().get("query"));
+
+		if (this.query != null) {
+			try {
+				this.query = java.net.URLDecoder.decode(this.query, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e) {
+				setStatusError("Error processing the query. "
+						+ "The URI has been encoded using an unsupported encoding scheme.", e);
+				return;
+			}
+		}
 
 		//handle the linking criteria (context) when appended at the URI in a GET request.
 		try {
@@ -315,15 +358,8 @@ public abstract class LD4SDataResource extends ServerResource{
 			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to extract the linking criteria from the submitted query string.");
 			return;
 		}
-
-	
+		logger = this.ld4sServer.getLogger();
 	}
-
-	protected String getRuleFilePath(){
-		ServerProperties sp = this.ld4sServer.getServerProperties();
-		return sp.get(ServerProperties.RULES_FILE_KEY);
-	}
-	
 
 	public static String getNamedModel(String uri) {
 		Iterator<String> it = resource2namedGraph.keySet().iterator();
@@ -335,11 +371,9 @@ public abstract class LD4SDataResource extends ServerResource{
 				nm = resource2namedGraph.get(key);
 			}	
 		}
-		if (nm == null){
-			nm = resource2namedGraph.get("general");;
-		}
 		return nm;
 	}
+
 
 	/**
 	 *
@@ -468,177 +502,6 @@ public abstract class LD4SDataResource extends ServerResource{
 				LD4SConstants.MEDIA_TYPE_SPARQL_RESULTS), Language.ALL, CharacterSet.UTF_8);
 	}
 
-	private SparqlType getSparqlQueryType(String query){
-		SparqlType ret = null;
-
-		if (query.indexOf(SparqlType.SELECT.name()) != -1){
-			ret = SparqlType.SELECT;
-		}else if (query.indexOf(SparqlType.UPDATE.name()) != -1){
-			ret = SparqlType.UPDATE;
-		}else if (query.indexOf(SparqlType.ASK.name()) != -1){
-			ret = SparqlType.ASK;
-		}else if (query.indexOf(SparqlType.DESCRIBE.name()) != -1){
-			ret = SparqlType.DESCRIBE;
-		}else if (query.indexOf(SparqlType.CONSTRUCT.name()) != -1){
-			ret = SparqlType.CONSTRUCT;
-		}
-
-		return ret;
-	}
-
-	public Resource addEnergyProviderData(Resource res,
-			String date, String time, String location, String company){
-		//		if (energyModel == null){
-		//			return null;
-		//		}
-		//		StmtIterator it1 = null;
-		//		if (company != null){
-		//			if (company.startsWith("http://")){
-		//				it1 = energyModel.listStatements(null, 
-		//						energyModel.createProperty("http://spitfire-project.eu/ontology/ns/en/forCompany"), 
-		//						energyModel.createResource(company));
-		//			}else{
-		//				it1 = energyModel.listStatements(null, 
-		//						energyModel.createProperty("http://spitfire-project.eu/ontology/ns/en/forCompany"), 
-		//						energyModel.createLiteral(company));
-		//			}
-		//		}
-		//		if (it1 != null){
-		//			while (it1.hasNext()){
-		//				
-		//			}
-		//		}
-
-
-		String sparqlQuery = "prefix spt: <http://spitfire-project.eu/ontology/ns/> prefix " +
-				"xsd: <http://www.w3.org/2001/XMLSchema#> prefix en: <http://spitfire-project.eu/ontology/ns/en/>" +
-				"select ?price ?s {?s a en:TariffPlan ; en:forEnergy en:Electrical";
-		//		if (energyType != null){
-		//			sparqlQuery += energyType;
-		//		}else{
-		//			sparqlQuery += " ?entype ";
-		//		}
-		sparqlQuery += "; spt:uom \"€c/kWh\" en:covers ";
-		if (location != null){
-			sparqlQuery += location; 
-		}else{
-			sparqlQuery += " ?location";
-		}
-		sparqlQuery += ";";
-		if (company != null){
-			sparqlQuery += "en:byCompany "+company ;
-		}else{
-			sparqlQuery += "en:byCompany ?company " ;
-		}
-		sparqlQuery += "; en:price ?price ; en:dateRange ?dr ";
-		if (date != null){
-			sparqlQuery += 
-					"en:dayTimeRange ?dtr . ?dr en:fromDate ?dstart ; en:toDate ?dend ." +
-							"FILTER(?dend >= \""+date+"\"^^xsd:date) . FILTER(?dstart <= \""+date+"\"^^xsd:date) . }"; 
-		}
-		if (time != null){
-			sparqlQuery += " ?dtr en:fromDayTime ?dt1 ; en:toDayTime ?dt2 . " +
-					" ?dt1 en:fromTime ?tstart1 ; en:toTime ?tend1 .  ?dt2 en:fromTime ?tstart2 ; en:toTime ?tend2 . " +
-					"FILTER(?tstart2 >= \""+time+"\"^^xsd:date) . FILTER(?tstart1 <= \""+time+"\"^^xsd:time) . }";
-		}
-
-		Representation results = sparqlQueryExec(sparqlQuery);
-		try {
-			Document doc = deserializeDomDocument(results.getText());
-			NodeList nl = doc.getElementsByTagName("binding");
-			Element elem = null;
-			LinkedList<String> tariffPlans = new LinkedList<String>(),
-					prices = new LinkedList<String>();
-			String attr = null;
-			for (int i=0; i<nl.getLength() ;i++){
-				elem = (Element)nl.item(i);
-				attr = elem.getAttribute("name");
-				if (attr != null){
-					if (attr.compareTo("price") == 0){
-						prices.add(elem.getNodeValue());
-					}else if (attr.compareTo("s") == 0){
-						tariffPlans.add(elem.getNodeValue());
-						res.addProperty(res.getModel()
-								.createProperty("http://spitfire-project.eu/ontology/ns/en/tariffPlan"), elem.getNodeValue());
-					} 
-				}
-			}
-
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return res;
-	}
-
-
-	/**
-	 * 
-	 * @param queryString
-	 * @param type
-	 * @return Object[]{serialized results, values}
-	 */
-	protected Representation sparqlQueryExec(String queryString){
-		Representation ret = null;
-		QueryExecution qexec = null;
-		try {
-			initTDB();
-			this.dataset.begin(ReadWrite.READ) ;
-
-			SparqlType type = getSparqlQueryType(queryString);
-			if (type == null){
-				setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-				return null;
-			}
-
-			Query q = QueryFactory.create(queryString);
-			qexec = QueryExecutionFactory.create(q, this.dataset);
-
-			switch(type){
-			case SELECT:
-				ResultSet rs = qexec.execSelect();
-				//				embed the results in an XML doc
-				Object[] resp = SparqlResultsFormatter.xmlResults(rs);
-				ret = new StringRepresentation(serializeDomDocument((Document)resp[0]));
-
-				break;
-			case UPDATE:
-				boolean success = sparqlUpdateExec(this.query);
-				ret = new StringRepresentation(String.valueOf(success));
-
-				break;
-			case CONSTRUCT:
-				Model md = qexec.execConstruct();
-				ret = serializeAccordingToReqMediaType(md);
-
-				break;
-			case DESCRIBE:
-				md = qexec.execDescribe();
-				ret = serializeAccordingToReqMediaType(md);
-
-				break;
-			case ASK:
-				boolean ask = qexec.execAsk();
-				ret = new StringRepresentation(String.valueOf(ask));
-
-			default:
-				;
-			}
-
-		} finally { 
-			if (qexec != null)qexec.close();
-			if (dataset != null){
-				dataset.end() ;
-				closeTDB();
-			}
-		}
-
-		return ret;	
-	}
-
-
-
 
 	/**
 	 * Content negotiation: checks wether the client is accepted one of the supported media types
@@ -669,7 +532,10 @@ public abstract class LD4SDataResource extends ServerResource{
 						|| media.equals(MediaType.TEXT_RDF_N3) || media.equals(MediaType.APPLICATION_RDF_XML)
 						|| media.equals(MediaType.TEXT_RDF_NTRIPLES)
 						|| media.equals(MediaType.APPLICATION_RDF_TURTLE)
-						|| media.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON))
+						|| media.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON)
+						//					    || ((media.equals(MediaType.TEXT_XML) || media.getName().equals(
+						//				            LD4SConstants.MEDIA_TYPE_SPARQL_RESULTS)) && this.query != null)
+						) 
 				{
 					ret = media;
 				}
@@ -685,10 +551,10 @@ public abstract class LD4SDataResource extends ServerResource{
 	 *
 	 * @param model model.
 	 */
-	protected Model initModel(Model model, String rdfFileName) {
+	protected Model initModel(OntModel model, String rdfFileName) {
 		if (model == null) {
 			String schemapath = SptVocab.class.getResource(rdfFileName).getPath();
-			model = ModelFactory.createDefaultModel();
+			model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 			// use the FileManager to find the input file
 			java.io.InputStream in = FileManager.get().open(schemapath);
 			if (in == null) {
@@ -696,6 +562,7 @@ public abstract class LD4SDataResource extends ServerResource{
 			}
 			// read the RDF file
 			model.read(in, null);
+
 		}
 		return model;
 	}
@@ -756,18 +623,18 @@ public abstract class LD4SDataResource extends ServerResource{
 	 */
 	public static Model initVoIDModel() {
 		Model model = ModelFactory.createDefaultModel();
-		com.hp.hpl.jena.rdf.model.Resource ds = model.createResource(SptVocab.NS);
-		ds.addProperty(RDF.type, VoIDVocab.DATASET);
-		ds.addProperty(DC.title, "LD4Sensors");
-		ds.addProperty(DC.description,
+		com.hp.hpl.jena.rdf.model.Resource dataset = model.createResource(SptVocab.NS);
+		dataset.addProperty(RDF.type, VoIDVocab.DATASET);
+		dataset.addProperty(DC.title, "LD4Sensors");
+		dataset.addProperty(DC.description,
 				"Data about sensors, sensing devices in general and " +
 						"sensor measurements stored in the LD4Sensors Triple DB"
 						+ "published as Linked Data.");
-		ds.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/.*");
-		ds.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/sparql?query=.*");
-		ds.addProperty(DC.creator,
+		dataset.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/.*");
+		dataset.addProperty(VoIDVocab.URI_REGEX_PATTERN, ".*resource/ov/sparql?query=.*");
+		dataset.addProperty(DC.creator,
 				"http://myr.altervista.org/foaf.rdf#iammyr");
-		ds
+		dataset
 		.addProperty(
 				DC.publisher,
 				model
@@ -778,21 +645,46 @@ public abstract class LD4SDataResource extends ServerResource{
 						"LD4Sensors - Digital Enterprise Research Institute (DERI) - National University of Ireland, Galway at Galway")
 						.addProperty(FoafVocab.HOMEPAGE, "http://spitfire-project.eu/ld4s"));
 		/** The following subject URIs come from the UMBEL dataset (based upon OpenCyc). */
-		ds.addProperty(DC.subject, "http://umbel.org/umbel/sc/SoftwareProject");
-		ds.addProperty(DCTerms.accessRights, "http://www.gnu.org/copyleft/fdl.html");
-		ds.addProperty(VoIDVocab.SPARQL_ENDPOINT,
+		dataset.addProperty(DC.subject, "http://umbel.org/umbel/sc/SoftwareProject");
+		dataset.addProperty(DCTerms.accessRights, "http://www.gnu.org/copyleft/fdl.html");
+		dataset.addProperty(VoIDVocab.SPARQL_ENDPOINT,
 				"http://spitfire-project.eu/ld4s/ov/sparql?query=");
-		ds.addProperty(VoIDVocab.VOCABULARY, FoafVocab.NS);
-		ds.addProperty(VoIDVocab.VOCABULARY, SptVocab.NS);
-		ds.addProperty(VoIDVocab.VOCABULARY, SiocVocab.NS);
-		ds.addProperty(VoIDVocab.VOCABULARY, VoIDVocab.NS);
-		ds.addProperty(VoIDVocab.VOCABULARY, DC.NS);
-		ds.addProperty(VoIDVocab.VOCABULARY, OWL.NS);
-		ds.addProperty(VoIDVocab.VOCABULARY, DCTerms.NS);
-		ds.addProperty(VoIDVocab.VOCABULARY, "http://umbel.org/umbel/sc/");
-		
+		dataset.addProperty(VoIDVocab.VOCABULARY, FoafVocab.NS);
+		dataset.addProperty(VoIDVocab.VOCABULARY, SptVocab.NS);
+		dataset.addProperty(VoIDVocab.VOCABULARY, SiocVocab.NS);
+		dataset.addProperty(VoIDVocab.VOCABULARY, VoIDVocab.NS);
+		dataset.addProperty(VoIDVocab.VOCABULARY, DC.NS);
+		dataset.addProperty(VoIDVocab.VOCABULARY, OWL.NS);
+		dataset.addProperty(VoIDVocab.VOCABULARY, DCTerms.NS);
+		dataset.addProperty(VoIDVocab.VOCABULARY, "http://umbel.org/umbel/sc/");
 		return model;
 	}
+
+	/**
+	 * Creates main resources and additional related information
+	 * excluding linked data
+	 *
+	 * @param m_returned model which the resources to be created should be attached to
+	 * @param obj object containing the information to be semantically annotate
+	 * @param id resource identification
+	 * @return model 
+	 * @throws Exception
+	 */
+	protected Object[] makeOVData() throws Exception {
+		Object[] resp = createOVResource();
+		Resource resource = (Resource)resp[0]; 
+		resource.addProperty(DCTerms.isPartOf,
+				"http://"+this.ld4sServer.getHostName()+"void");
+		return resp;
+	}
+
+
+	protected Object[] createOVResource()  throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 	/**
 	 * Called when an error resulting from an exception is caught during processing.
@@ -832,31 +724,6 @@ public abstract class LD4SDataResource extends ServerResource{
 		return msg.replace(System.getProperty("line.separator"), LD4SConstants.SEPARATOR1_ID);
 	}
 
-	/**
-	 * Creates and returns a string representation of a given RDF model, using the specified RDF
-	 * serialization (N3, RDF/XML, etc.)
-	 *
-	 * @param model
-	 * @param relativeUriBase
-	 * @param lang
-	 * @return
-	 */
-	public static String deserializeRDFModel(Model model, String relativeUriBase, String lang) {
-		String ret = null;
-		java.io.OutputStream os = null;
-		// Serialize over an outputStream
-		os = new ByteArrayOutputStream();
-		model.write(os, lang, relativeUriBase);
-		ret = os.toString();
-		try {
-			os.close();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return ret;
-	}
 
 	/**
 	 * Creates and returns a string representation of a given RDF model, using the specified RDF
@@ -894,25 +761,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	 */
 	public static String getResourceUri(String host,
 			String type, String name) {
-		String address = host, start = "http://", tmp = "";
-		if (address.startsWith(start)){
-			address = address.substring(start.length());
-		}
-		int port_start = address.indexOf(":");
-		if (port_start != -1){
-			tmp =  address.substring(port_start);
-			address = address.substring(0, port_start);
-		}
-
-		try {
-			InetAddress inetAddr = InetAddress.getByName(address);
-			address = inetAddr.getCanonicalHostName();
-		}
-		catch (UnknownHostException e) {
-			System.out.println("Host not found: " + e.getMessage());
-		}
-
-		String uri = start + address + tmp + type +"/"+ name.toLowerCase();
+		String uri = host + type +"/"+ name.toLowerCase();
 
 		return uri;
 	}
@@ -922,43 +771,50 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * should be stored under the LD4S generic named model.  
 	 * @param model
 	 */
-	protected boolean storeHandler(Model model) {
-		boolean ret = false;
-		if (model == null){
-			return ret;
+	private OntModel handleGenericResources(Model model,
+			OntModel genericmodel) {
+		if (model == null || genericmodel == null){
+			return null;
 		}
 		StmtIterator rit = model.listStatements();
+		Resource res = null;
 		Statement st = null;
-		String namedmodel = null;
-		if (rit.hasNext()){
+		while (rit.hasNext()){
 			st = rit.next();
-			namedmodel = getNamedModel(st.getSubject().getURI());
+			res = st.getSubject();
+			//if the resource's uri is local to this LD4S instance
+			if (res.getURI() == null){//in case of blank nodes
+				genericmodel.add(st);
+			}else{
+				if (res.getURI().startsWith(this.ld4sServer.getHostName())){
+					//if the resource is not part of the linked data
+					//enriched set provided by LD4S
+					Iterator<String> it= 
+							resource2namedGraph.keySet().iterator();
+					while (it.hasNext() && 
+							!res.getURI().contains("/"+it.next()+"/"))
+						;
+					if (!it.hasNext()){
+						genericmodel.add(st);	
+					}								
+				}
+			}
 		}
-		OntModel tmp =  ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
-		tmp.add(ontologyBaseModel);
-		tmp.add(model);
-		ret = store(tmp, namedmodel);
-
-		return ret;
+		return genericmodel;
 	}
 
-	protected String getDatasetFolderPath(){
-		return ld4sServer.getServerProperties().getFoldername()+
-				LD4SConstants.SYSTEM_SEPARATOR+"tdb"
-				+LD4SConstants.SYSTEM_SEPARATOR+"LD4SDataset1";
-	}
-	
 	/**
 	 * Initialize a connection with the triple db
 	 */
-	protected void initTDB(){
+	private void initTDB(){
 		// Direct way: Make a TDB-backed dataset
-		String directory = getDatasetFolderPath() ;
+		String directory = ld4sServer.getServerProperties().getFoldername()+
+				LD4SConstants.SYSTEM_SEPARATOR+"tdb"
+				+LD4SConstants.SYSTEM_SEPARATOR+"LD4SDataset1" ;
 		File dirf = new File (directory);
 		if (!dirf.exists()){
 			dirf.mkdirs();
 		}
-
 		dataset = TDBFactory.createDataset(directory) ;
 		TDB.sync(dataset ) ;
 	}
@@ -976,14 +832,11 @@ public abstract class LD4SDataResource extends ServerResource{
 		}
 		return success;
 	}
-
 	/**
 	 * Close connection with the triple db
 	 */
-	protected void closeTDB(){
-		if (dataset != null){
-			dataset.close() ;
-		}
+	private void closeTDB(){
+		dataset.close() ;
 	}
 
 	/**
@@ -991,19 +844,31 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @param rdfData model to be stored
 	 * @return success
 	 */
-	private boolean store(Model rdfData, String namedModel){
+	protected boolean store(OntModel rdfData, String namedModel){
 		boolean ret = true;
 		//remove invalid entries from the model to be stored
-		rdfData = rdfData.removeAll(null, null, rdfData.createLiteral(""));
-		rdfData = rdfData.removeAll(null, null, rdfData.createLiteral("null"));
+		rdfData.removeAll(null, null, rdfData.createLiteral(""));
+		rdfData.removeAll(null, null, rdfData.createLiteral("null"));
+		//special handler for resources (out of the scope of the 
+		//requested ones
 		initTDB();
 		this.dataset.begin(ReadWrite.WRITE) ;		
 		try {
-
+			OntModel genericmodel =  ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+			genericmodel = handleGenericResources(rdfData, genericmodel);
+			rdfData.remove(genericmodel);
+			if (!dataset.containsNamedModel(generalNamedModel)){
+				dataset.addNamedModel(generalNamedModel, genericmodel);
+			}else{
+				OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+				model.add(dataset.getNamedModel(generalNamedModel));
+				model.add(genericmodel);
+			}
 			if (!dataset.containsNamedModel(namedModel)){
 				dataset.addNamedModel(namedModel, rdfData);
 			}else{
-				Model model = dataset.getNamedModel(namedModel) ;
+				OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+				model.add(dataset.getNamedModel(namedModel));
 				model.add(rdfData);
 			} 
 			dataset.commit() ;
@@ -1032,52 +897,56 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @return
 	 * @throws Exception
 	 */
-	public Resource addLinkedData(Resource resource,
-			Domain searchType, Context context) throws Exception {
+	public Object[] addLinkedData(Resource resource,
+			Domain searchType, Context context, OntModel res_model) throws Exception {
 		SearchRouter searchobj = null;
+		String host = "http://"+this.ld4sServer.getHostName();
 		switch(searchType){
 		case ALL:
-			searchobj = new GenericApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
-			break;
-		case ELECTRICITY_TARIFF:
-			searchobj = new ElectricityTariffApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
+			searchobj = new GenericApi(host, 
+					context, this.user, resource, res_model);
 			break;
 		case PEOPLE:
-			searchobj = new PeopleApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
+			searchobj = new PeopleApi(host, 
+					context, this.user, resource, res_model);
 			break;
 		case WEATHER:
-			searchobj = new WeatherApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
+			searchobj = new WeatherApi(host, 
+					context, this.user, resource, res_model);
 			break;
 		case LOCATION:
-			searchobj = new LocationApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
+			searchobj = new LocationApi(host, 
+					context, this.user, resource, res_model);
 			break;
 		case FEATURE: //searched in DBpedia ONLY
-			searchobj = new EncyclopedicApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
+			searchobj = new EncyclopedicApi(host, 
+					context, this.user, resource, res_model);
 			break;
 		case UNIT:
-			searchobj = new UomApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
+			searchobj = new UomApi(host, 
+					context, this.user, resource, res_model);
 			break;
 		default: //searched in cross-domain datasets
-			searchobj = new EncyclopedicApi(this.ld4sServer.getHostName(), 
-					context, this.user, resource);
+			searchobj = new EncyclopedicApi(host, 
+					context, this.user, resource, res_model);
 		}
-		Model model = searchobj.start();	
-
+		OntModel model = searchobj.start();
 		if (model != null){
 			store(model, namedModel);
 		}
-		return resource;
+		return new Object[]{resource, res_model};
 	}
 
+	protected String getRuleFilePath(){
+		ServerProperties sp = this.ld4sServer.getServerProperties();
+		return sp.get(ServerProperties.RULES_FILE_KEY);
+	}
 
-
+	protected String getDatasetFolderPath(){
+		return ld4sServer.getServerProperties().getFoldername()+
+				LD4SConstants.SYSTEM_SEPARATOR+"tdb"
+				+LD4SConstants.SYSTEM_SEPARATOR+"LD4SDataset1";
+	}
 
 	public static String removeBrackets(String string) {
 		if (string == null || string.trim().compareTo("") == 0){
@@ -1102,7 +971,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	}
 
 
-	protected Resource crossResourcesAnnotation(LD4SObject ov, Resource resource) throws Exception{
+	protected Resource crossResourcesAnnotation(LD4SObject ov, Resource resource, OntModel res_model) throws Exception{
 		String 
 		//check whether the specified subtype is a valid one,
 		item = ov.getType();
@@ -1136,7 +1005,7 @@ public abstract class LD4SDataResource extends ServerResource{
 							"http://www.ontologydesignpatterns.org/ont/dul/DUL.owl/hasLocation"), 
 							resource.getModel().createResource(item));	
 		}else {
-			resource = addLocation(resource, item, item1);
+			resource = addLocation(resource, item, item1, res_model);
 
 		}
 		item = ov.getResource_time();
@@ -1174,21 +1043,21 @@ public abstract class LD4SDataResource extends ServerResource{
 		Resource publisher_resource = null;
 		if (this.user.getIdentifier() != null){
 			person = new Person(user.getFirstName(), user.getLastName(), user.getName(), user.getEmail(), null, null, null);
-			publisher_resource = addPerson(resource, person, DC.publisher);
+			publisher_resource = addPerson(resource, person, DC.publisher, res_model);
 		}
 		person = ov.getAuthor();
 		if (person != null){
 			if (publisher_resource != null){
-				addPerson(publisher_resource, person, ProvVocab.ACTED_ON_BEHALF_OF);
+				addPerson(publisher_resource, person, ProvVocab.ACTED_ON_BEHALF_OF, res_model);
 			}
-			addPerson(resource, person, ProvVocab.WAS_GENERATED_BY);
+			addPerson(resource, person, ProvVocab.WAS_GENERATED_BY, res_model);
 		}
 		return resource;
 	}
 
 
 
-	protected Resource addWeatherForecast(Resource resource) throws Exception{
+	protected Resource addWeatherForecast(Resource resource, OntModel res_model) throws Exception{
 		String id = null;		
 		Date[] dates = this.context.getTime_range(); 
 		String[] location_coords = this.context.getLocation_coords();
@@ -1208,21 +1077,22 @@ public abstract class LD4SDataResource extends ServerResource{
 			throw new Exception("Unable to link with an external weather forecast resource" +
 					"because of a wrongly specified time range");
 		}
-		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "res/weather_forecast", id);
-		Resource item_resource = resource.getModel().createResource(item_uri);
+		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/weather_forecast", id);
+		Resource item_resource = res_model.createResource(item_uri);
 		Context con = new Context(this.ld4sServer.getHostName());
 		con.setTime_range(dates);
 		con.setLocation(location);
 		con.setLocation_coords(location_coords);
-		item_resource = addLinkedData(item_resource, Domain.WEATHER, con);
+		item_resource = (Resource)addLinkedData(item_resource, Domain.WEATHER, con, res_model)[0];
 		resource.addProperty(SptVocab.WEATHER_FORECAST, item_resource);
 		return resource;
 	}
 
-	protected Resource addLocation(Resource resource, String location_name, String[] location_coords){
+	protected Resource addLocation(Resource resource, String location_name, String[] location_coords,
+			OntModel res_model){
 		String item_uri = null;
 		if (location_name != null){
-			item_uri = getResourceUri(this.ld4sServer.getHostName(), "res/location", location_name);
+			item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/location", location_name);
 		}else if (location_coords != null && location_coords.length > 0){
 			String lc = "";
 			for (int i =0;i<location_coords.length;i++){
@@ -1231,16 +1101,16 @@ public abstract class LD4SDataResource extends ServerResource{
 					lc += "_";
 				}
 			}
-			item_uri = getResourceUri(this.ld4sServer.getHostName(), "res/location", lc);
+			item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/location", lc);
 		}else{
 			return resource;
 		}
-		Resource item_resource = resource.getModel().createResource(item_uri);
+		Resource item_resource = res_model.createResource(item_uri);
 		Context con = new Context(this.ld4sServer.getHostName());
 		con.setLocation(location_name);
 		con.setLocation_coords(location_coords);
 		try {
-			item_resource = addLinkedData(item_resource, Domain.LOCATION, con);
+			item_resource = (Resource)addLinkedData(item_resource, Domain.LOCATION, con, res_model)[0];
 			if (item_resource != null){
 				resource.addProperty(
 						resource.getModel().createProperty(
@@ -1291,15 +1161,15 @@ public abstract class LD4SDataResource extends ServerResource{
 		////	}
 	}
 
-	protected Resource addFoi(Resource resource, String foi) throws Exception{
+	protected Resource addFoi(Resource resource, String foi, OntModel res_model) throws Exception{
 		if (foi.contains("weather")){
-			resource = addWeatherForecast(resource);
+			resource = addWeatherForecast(resource, res_model);
 		}else{
-			String item_uri = getResourceUri(this.ld4sServer.getHostName(), "res/property", foi);
+			String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/property", foi);
 			Resource item_resource = resource.getModel().createResource(item_uri);
 			Context con = new Context(this.ld4sServer.getHostName());
 			con.setThing(foi);
-			item_resource = addLinkedData(item_resource, Domain.FEATURE, con);
+			item_resource = (Resource)addLinkedData(item_resource, Domain.FEATURE, con, res_model)[0];
 			if (item_resource != null){
 				resource.addProperty(SsnVocab.FEATURE_OF_INTEREST, item_resource);
 			}
@@ -1312,40 +1182,28 @@ public abstract class LD4SDataResource extends ServerResource{
 			com.hp.hpl.jena.rdf.model.Resource resource, 
 			java.lang.String observed_property,
 			com.hp.hpl.jena.rdf.model.Property prop, 
-			java.lang.String foi, String date,
-			String time, String company, String country)
+			java.lang.String foi, OntModel res_model)
 					throws java.lang.Exception{
-		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "res/property", observed_property);
-		Resource item_resource = resource.getModel().createResource(item_uri);
+		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/property", observed_property);
+		Resource item_resource = res_model.createResource(item_uri);
 		Context con = new Context(this.ld4sServer.getHostName());
 		con.setThing(observed_property);
 		con.setAdditionalTerms(new String[][]{
 				{"", foi}
 		});
-
-		if (observed_property.contains("PowerConsumption")
-				|| observed_property.contains("powerconsumption")){
-			con.setDate(date);
-			con.setCompany(company);
-			con.setTime(time);
-			con.setCountry(country);
-			item_resource = addLinkedData(item_resource, Domain.ELECTRICITY_TARIFF, con);
-		}else{
-			item_resource = addLinkedData(item_resource, Domain.FEATURE, con);	
-		}
-
+		item_resource = (Resource)addLinkedData(item_resource, Domain.FEATURE, con, res_model)[0];
 		if (item_resource != null){
 			resource.addProperty(prop, item_resource);
 		}
 		return resource;
 	}
 
-	protected Resource addUom(Resource resource, String uom) throws Exception{
-		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "res/uom", uom);
+	protected Resource addUom(Resource resource, String uom, OntModel res_model) throws Exception{
+		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/uom", uom);
 		Resource item_resource = resource.getModel().createResource(item_uri);
 		Context con = new Context(this.ld4sServer.getHostName());
 		con.setThing(uom);
-		item_resource = addLinkedData(item_resource, Domain.UNIT, con);
+		item_resource = (Resource)addLinkedData(item_resource, Domain.UNIT, con, res_model)[0];
 		if (item_resource != null){
 			resource.addProperty(SptVocab.UOM, item_resource);
 		}
@@ -1430,10 +1288,10 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @return resource representing the person
 	 * @throws Exception
 	 */
-	protected Resource addPerson(Resource resource, Person item, Property prop) throws Exception{
+	protected Resource addPerson(Resource resource, Person item, Property prop, OntModel res_model) throws Exception{
 		String id = null;		
-		if (item.getEmailSha1() != null){
-			id = item.getEmailSha1();
+		if (item.getEmail() != null && item.getEmail().trim().compareTo("") != 0){
+			id = URLEncoder.encode(item.getEmail(), "utf-8");
 		}else if (item.getWeblog() != null && item.getWeblog().trim().compareTo("") != 0){
 			id = URLEncoder.encode(item.getWeblog(), "utf-8");
 		}else if (item.getHomepage() != null && item.getHomepage().trim().compareTo("") != 0){
@@ -1446,66 +1304,107 @@ public abstract class LD4SDataResource extends ServerResource{
 		}else{
 			return null;
 		}
-		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "res/people", id);
+		String item_uri = getResourceUri(this.ld4sServer.getHostName(), "resource/people", id);
 		Resource item_resource = resource.getModel().createResource(item_uri);
-
-		if (item.getEmailSha1() != null){
-			item_resource.addProperty(FOAF.mbox_sha1sum, item.getEmailSha1());
-		}else if (item.getWeblog() != null && item.getWeblog().trim().compareTo("") != 0){
-			item_resource.addProperty(FOAF.weblog, item.getWeblog());
-		}else if (item.getHomepage() != null && item.getHomepage().trim().compareTo("") != 0){
-			item_resource.addProperty(FOAF.homepage, item.getHomepage());
-		}else if (item.getNickname() != null && item.getNickname().trim().compareTo("") != 0){
-			item_resource.addProperty(FOAF.nick, item.getNickname());
-		}else if (item.getFirstname() != null && item.getFirstname().trim().compareTo("") != 0){
-			item_resource.addProperty(FOAF.firstName, item.getFirstname());
-		}else if (item.getSurname() != null && item.getSurname().trim().compareTo("") != 0){
-			item_resource.addProperty(FOAF.family_name, item.getSurname());
-		}
-
-
 		Context con = new Context(this.ld4sServer.getHostName());
 		con.setPerson(item);
-		item_resource = addLinkedData(item_resource, Domain.PEOPLE, con);
+		item_resource = (Resource)addLinkedData(item_resource, Domain.PEOPLE, con, res_model)[0];
 		if (item_resource != null){
 			resource.addProperty(prop, item_resource);
 		}
 		return item_resource;
 	}
 
+	private void printModel(Model model, String name){
+		StmtIterator it = model.listStatements();
+		System.out.println("****MODEL named "+name);
+		Statement st = null;
+		RDFNode object = null;
+		while (it.hasNext()){
+			st = it.next();
+			System.out.print(st.getSubject().getURI()+" ");
+			System.out.print(st.getPredicate().getURI()+" ");
+			object = st.getObject();
+			if (object.isLiteral()){
+				System.out.print(((Literal)object).getLexicalForm()+" ");
+			}else if (object.isResource()){
+				System.out.print(((Resource)object).getURI()+" ");
+			}else{
+				System.out.print("<some object> ");
+			}
+		}
+	}
 
+	private SparqlType getSparqlQueryType(String query){
+		SparqlType ret = null;
+		if (query.startsWith(SparqlType.SELECT.name())){
+			ret = SparqlType.SELECT;
+		}else if (query.startsWith(SparqlType.UPDATE.name())){
+			ret = SparqlType.UPDATE;
+		}else if (query.startsWith(SparqlType.ASK.name())){
+			ret = SparqlType.ASK;
+		}else if (query.startsWith(SparqlType.DESCRIBE.name())){
+			ret = SparqlType.DESCRIBE;
+		}else if (query.startsWith(SparqlType.CONSTRUCT.name())){
+			ret = SparqlType.CONSTRUCT;
+		}
+		
+		return ret;
+	}
 
-	protected Object sparqlQueryExec(String queryString, 
-			SparqlType type){
-		Object ret = null;
+	/**
+	 * 
+	 * @param queryString
+	 * @param type
+	 * @return Object[]{serialized results, values}
+	 */
+	protected Representation sparqlQueryExec(String queryString){
+		Representation ret = null;
 		QueryExecution qexec = null;
 		try {
-			Query query = QueryFactory.create(queryString);
 			initTDB();
 			this.dataset.begin(ReadWrite.READ) ;
-			//the following MUST be changed to query against eventually specified named graphs
-			Model model = null;
-			if (this.namedModel.endsWith("general")){
-				model = dataset.getDefaultModel() ;
-			}else{
-				model = dataset.getNamedModel(this.namedModel);
+			
+			SparqlType type = getSparqlQueryType(queryString);
+			if (type == null){
+				setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+				return null;
 			}
-			qexec = QueryExecutionFactory.create(query, model);
+			
+			Query q = QueryFactory.create(queryString);
+			qexec = QueryExecutionFactory.create(q, this.dataset);
+			
 			switch(type){
-			case SELECT: 		
-				ret = qexec.execSelect();
+			case SELECT:
+				ResultSet rs = qexec.execSelect();
+				//				embed the results in an XML doc
+				Object[] resp = SparqlResultsFormatter.xmlResults(rs);
+				ret = new StringRepresentation(serializeDomDocument((Document)resp[0]));
+
+				break;
+			case UPDATE:
+				boolean success = sparqlUpdateExec(this.query);
+				ret = new StringRepresentation(String.valueOf(success));
+
 				break;
 			case CONSTRUCT:
-				ret = qexec.execConstruct();
+				Model md = qexec.execConstruct();
+				ret = serializeAccordingToReqMediaType(md);
+
 				break;
 			case DESCRIBE:
-				ret = qexec.execDescribe();
+				md = qexec.execDescribe();
+				ret = serializeAccordingToReqMediaType(md);
+
 				break;
 			case ASK:
-				ret = qexec.execAsk();
+				boolean ask = qexec.execAsk();
+				ret = new StringRepresentation(String.valueOf(ask));
+
 			default:
-				ret = null;
+				;
 			}
+
 		} finally { 
 			if (qexec != null)qexec.close();
 			if (dataset != null)dataset.end() ;
@@ -1601,14 +1500,14 @@ public abstract class LD4SDataResource extends ServerResource{
 		//			     proc.execute() ;
 	}
 
-	protected Model retrieve (String uri, String namedModel){
+	protected OntModel retrieve (String uri, String namedModel){
 		if (uri == null){
 			return null;
 		}
 		if (namedModel == null){
 			namedModel = generalNamedModel;
 		}
-		Model ret = ModelFactory.createDefaultModel();
+		OntModel ret = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		ret.createResource(uri);
 		initTDB();
 		this.dataset.begin(ReadWrite.READ) ;
@@ -1633,34 +1532,40 @@ public abstract class LD4SDataResource extends ServerResource{
 		return ret;
 	}
 
+	protected String mediatypeToJenaLang(MediaType mediatype){
+		String jenalang = null;
+		if (mediatype == null){
+			jenalang = MediaType.APPLICATION_RDF_XML.getName();
+		}
+		if (mediatype.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON)) {
+			jenalang = LD4SConstants.LANG_RDFJSON;
+		}
+		else if (mediatype.equals(MediaType.APPLICATION_RDF_XML)) {
+			jenalang = LD4SConstants.LANG_RDFXML;
+		}
+		else if (mediatype.equals(MediaType.TEXT_RDF_NTRIPLES)) {
+			jenalang = LD4SConstants.LANG_NTRIPLE;
+		}else if (mediatype.equals(MediaType.TEXT_ALL) 
+				|| mediatype.equals(MediaType.TEXT_RDF_N3)
+				|| mediatype.equals(MediaType.TEXT_PLAIN)
+				|| mediatype.equals(MediaType.APPLICATION_RDF_TURTLE)
+				|| mediatype.equals(MediaType.APPLICATION_ALL)
+				|| mediatype.equals(MediaType.ALL)
+				){		
+			jenalang = LD4SConstants.LANG_TURTLE;
+		}
+		return jenalang;
+	}
+
 	protected Representation serializeAccordingToReqMediaType(Model rdfData){
 		String str_rdfData = null;
-		if (requestedMedia == null){
-			requestedMedia = MediaType.APPLICATION_RDF_XML;
-		}
-		if (requestedMedia.getName().equalsIgnoreCase(LD4SConstants.MEDIA_TYPE_RDF_JSON)) {
-			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
-					LD4SConstants.LANG_RDFJSON);
-		}
-		else if (requestedMedia.equals(MediaType.APPLICATION_RDF_XML)) {
-			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
-					LD4SConstants.LANG_RDFXML);
-		}
-		else if (requestedMedia.equals(MediaType.TEXT_RDF_NTRIPLES)) {
-			str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE,
-					LD4SConstants.LANG_NTRIPLE);
-		}else if (requestedMedia.equals(MediaType.TEXT_ALL) 
-				|| requestedMedia.equals(MediaType.TEXT_RDF_N3)
-				|| requestedMedia.equals(MediaType.APPLICATION_RDF_TURTLE)
-				|| requestedMedia.equals(MediaType.APPLICATION_ALL)
-				|| requestedMedia.equals(MediaType.ALL)
-				)			
-		{
-			str_rdfData = serializeRDFModel(rdfData, null, LD4SConstants.LANG_TURTLE);
-		}else{
+		String lang =  mediatypeToJenaLang(this.requestedMedia);
+		if (lang == null){
 			setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
 			return null;
-		}
+		}		
+		str_rdfData = serializeRDFModel(rdfData, LD4SConstants.RESOURCE_URI_BASE, lang);
+
 		Representation ret = getStringRepresentationFromRdf(str_rdfData, requestedMedia);
 		try {
 			this.getLogger().info("***RESPONSE***" +ret.getText());
@@ -1686,7 +1591,7 @@ public abstract class LD4SDataResource extends ServerResource{
 		Statement st = null;
 		Resource subj = null;
 		Literal lit = null;
-		Model vocab = ModelFactory.createDefaultModel();
+		OntModel vocab = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 
 		//in the ld4s vocabulary
 		initModel(vocab, "ld4s.rdf");
@@ -1775,7 +1680,7 @@ public abstract class LD4SDataResource extends ServerResource{
 	 * @param rdfData model containing the subj-pred couples to be updated in their values
 	 * @return success
 	 */
-	protected boolean update(Model rdfData, String namedModel){
+	protected boolean update(OntModel rdfData, String namedModel){
 		delete(rdfData, namedModel);
 		return store(rdfData, namedModel);
 	}
@@ -1803,32 +1708,15 @@ public abstract class LD4SDataResource extends ServerResource{
 		//		testSparqlPrint(namedModel);
 		return ret;
 	}
-	
-	public static void printDataset(String queryString, String datasetFolderPath){
-		ResultSet results = TDBManager.search(queryString, datasetFolderPath);
 
-		QuerySolution qs = null; 
-		Resource rs = null;
-		while ( results.hasNext() ) {
-			qs = results.next();     
-			rs = qs.getResource( "?s" );
-			if (rs != null){
-				System.out.println("?s="+rs.asResource().getURI());
-			}
-			rs = qs.getResource( "?p" );
-			if (rs != null){
-				System.out.println("?p="+rs.asResource().getURI());
-			}
-			RDFNode nod = qs.get("?o" );
-			if (nod != null){
-				System.out.print("?o=");
-				if (nod.isLiteral()){
-					System.out.println(nod.asLiteral());	
-				}else if (nod.isResource()){
-					System.out.println(nod.asResource().getURI());
-				}
-			}
-			System.out.println("");
-		}
+
+
+	public static String getCurrentTime(){
+		String now = null;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		//get current date time with Date()
+		Date date = new Date();
+		now = dateFormat.format(date);
+		return now;
 	}
 }

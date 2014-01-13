@@ -2,10 +2,10 @@ package eu.spitfire_project.ld4s.resource.sparql;
 
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.junit.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -24,20 +24,23 @@ public class TestSparqlEndpoint extends LD4STestHelper{
 	 */
 	@Test
 	public void testSelect() throws Exception {
-		String filters = "PREFIX spt: <http://spitfire-project.eu/ontology/ns/> SELECT * {GRAPH ?g {?x a ?t}}"; 
-//	+ "SELECT * { GRAPH ?g {?x ?y ?z} } LIMIT 10";
-//		filters = URLEncoder.encode(filters, "utf-8");
+		String filters = "SELECT * " +
+				"{" +
+				"GRAPH <http://localhost:8182/ld4s/graph/device> " +
+//					"<http://localhost:8182/ld4s/link/http%3a%2f%2flocalhost%3a8182%2fld4s%2fov%2fx12_red+dress>" +
+						"{?x ?y ?z}" 
+					+ "}" 
+				+"LIMIT 10";
+		filters = URLEncoder.encode(filters, "utf-8");
 		ClientResource cr = new ClientResource(
-				"http://localhost:8182/ld4s/sparql");
+				"http://localhost:8182/ld4s/sparql/"+filters);
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
 		List<Preference<MediaType>> accepted = new LinkedList<Preference<MediaType>>();
 		accepted.add(new Preference<MediaType>(MediaType.APPLICATION_RDF_XML));
 		cr.getClientInfo().setAcceptedMediaTypes(accepted);
-		JSONObject json = new JSONObject();
-		json.append("query", filters);
-		Representation resp = cr.post(json);
+		Representation resp = cr.get();
 		System.out.println("RESPONSE to the SPARQL QUERY***\n"+resp.getText());
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            

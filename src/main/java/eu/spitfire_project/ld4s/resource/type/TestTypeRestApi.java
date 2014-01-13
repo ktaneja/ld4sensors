@@ -1,4 +1,4 @@
-package eu.spitfire_project.ld4s.resource.ov;
+package eu.spitfire_project.ld4s.resource.type;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,40 +9,57 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
-import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
 import eu.spitfire_project.ld4s.test.LD4STestHelper;
 
-public class TestOVRestApi extends LD4STestHelper {
+public class TestTypeRestApi extends LD4STestHelper {
 	/** Resource ID necessary to store locally. */
-	protected String resourceId = "x12y";
+	protected String resourceId = "a12b";
 
 	/** LD4S currently running server host. */
-	protected String local_uri = "http://localhost:8182/ld4s/ov/";
+	protected String local_uri = "http://localhost:8182/ld4s/device/";
 
 	/** Resource URI necessary in case of remote resource hosting server. */
-	protected String remote_uri = "http://www.example.org/ov/remotex12y";
+	protected String remote_uri = "http://www.example.org/device/remotea12b";
 
-	/** Milliseconds shift from the base time as a resource creation time point. */
-	protected String resource_time = "22846";
-	
-//	protected String serialized_rdf = "<http://www.example.org/ov/remotex12y>      a       <http://spitfire-project.eu/ontology/ns/OV> ;      <http://purl.org/NET/corelf#rt>              \"22846\"^^<http://www.w3.org/2001/XMLSchema#long> ;      <http://purl.org/dc/terms/isPartOf>              \"127.0.1.1:8182/ld4s/void\" ;      <http://spitfire-project.eu/ontology/ns/tEnd>              \"10321\"^^<http://www.w3.org/2001/XMLSchema#long> ;      <http://spitfire-project.eu/ontology/ns/tStart>              \"5800\"^^<http://www.w3.org/2001/XMLSchema#long> ;      <http://spitfire-project.eu/ontology/ns/value>              \"12.4\"^^<http://www.w3.org/2001/XMLSchema#double> , \"21.9\"^^<http://www.w3.org/2001/XMLSchema#double> , \"24.5\"^^<http://www.w3.org/2001/XMLSchema#double> , \"88.7\"^^<http://www.w3.org/2001/XMLSchema#double> .";
-//	protected MediaType contentType = MediaType.APPLICATION_RDF_TURTLE;
-	
-	protected String serialized_rdf = "<?xml version=\"1.0\"?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:ns=\"http://spitfire-project.eu/ontology/ns/\" xmlns:corelf=\"http://purl.org/NET/corelf#\" xmlns:terms=\"http://purl.org/dc/terms/\">	<ns:OV rdf:about=\"http://localhost:8182/ld4s/ov/x12y\">		<corelf:bt rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">12-08-23T19:03Z</corelf:bt>		<corelf:rt rdf:datatype=\"http://www.w3.org/2001/XMLSchema#long\">22846</corelf:rt>		<terms:isPartOf>127.0.1.1:8182/ld4s/void</terms:isPartOf>		<ns:tEnd rdf:datatype=\"http://www.w3.org/2001/XMLSchema#long\">10321</ns:tEnd>		<ns:tStart rdf:datatype=\"http://www.w3.org/2001/XMLSchema#long\">5800</ns:tStart>		<ns:value rdf:datatype=\"http://www.w3.org/2001/XMLSchema#double\">24.5</ns:value>	</ns:OV></rdf:RDF>";
-	protected MediaType contentType = MediaType.APPLICATION_RDF_XML;
+	/** Milliseconds shift from the base time. */
+	protected String base_datetime = "12-08-28T19:03Z";
 
-	/** Observed values. */
-	protected String[] values = new String[]{"12.4", "21.9", "88.7", "24.5"};
+	/** Base OV host name. */
+	protected String base_ov_name = "http://www.example1.org/ov/";
+
+	/** Base host name. */
+	protected String base_name = "http://www.example2.org/device/";
+
+	/** Observed Property. */
+	protected String observed_property = 
+//		"http://www.example3.org/prop/temperature12";
+//		"area";
+		"temperature";
+
+	/** Temporarily: to enhance the link search for the observed property. */
+	protected String foi = "room";
+	
+	/** Preferred type. */
+	protected String type = "temperature sensor";
+	
+	/** Unit of Measurement. */
+	protected String uom = 
+//		"section";
+		"centigrade";
+	
+	/** Observed Value IDs. */
+	protected String[] values = new String[]{"a12b", "x12y", "c23d", "e45f"};
+	
+	/** Temporal Sensor Property IDs. */
+	protected String[] tsprops = new String[]{"id123", "id456", "id789", "id101"};
 
 	/** User-defined criteria for linking. */
 	protected String filters = "d=crossdomain%20OR%20geography" +
@@ -59,9 +76,7 @@ public class TestOVRestApi extends LD4STestHelper {
 //	/** Java object contatining the above data. */
 //	protected OV ov = null;
 
-/**
- * {"start_range":"","resource_time":1347615696000,"end_range":"","context":"","uri":"http://urn:wisebed:ctitestbed:0x712"}
- */
+
 	private void initJson(boolean isRemote, boolean isEnriched){
 		this.json = new JSONObject();
 		try {
@@ -75,22 +90,50 @@ public class TestOVRestApi extends LD4STestHelper {
 			}else{
 				json.append("context", null);
 			}
-//			json.append("uri", "http://urn:wisebed:ctitestbed:0x712");
-			json.append("resource_time", resource_time);
-//			json.append("resource_time", "1347615696000");
-			json.append("base_time", base_datetime);
-			json.append("start_range", start_range);
-//			json.append("start_range", "");
-			json.append("end_range", end_range);
-			//json.append("end_range", "");
-			//json.append("context", "");
+			json.append("base_datetime", base_datetime);
+			json.append("base_name", base_name);
+			json.append("base_ov_name", base_ov_name);
+			json.append("observed_property", observed_property);
+			json.append("foi", foi);
+			json.append("uom", uom);
+			json.append("type", type);
+			JSONObject obj = new JSONObject();
+			if (author.getFirstname() != null){
+				obj.append("firstname", author.getFirstname());
+			}
+			if (author.getSurname() != null){
+				obj.append("surname", author.getSurname());
+			}
+			if (author.getEmail() != null){
+				obj.append("email", author.getEmail());
+			}
+			if (author.getHomepage() != null){
+				obj.append("homepage", author.getHomepage());
+			}
+			if (author.getNickname() != null){
+				obj.append("nickname", author.getNickname());
+			}
+			if (author.getWeblog() != null){
+				obj.append("weblog", author.getWeblog());
+			}
+			json.append("author", obj);
 			JSONArray vals = new JSONArray();
 			for (int i=0; i<values.length ;i++){
 				vals.put(values[i]);
 			}
-			json.append("values", vals);
+			vals = new JSONArray();
+			for (int i=0; i<tsprops.length ;i++){
+				vals.put(tsprops[i]);
+			}
+			json.append("tsproperties", vals);
+			vals = new JSONArray();
+			for (int i=0; i<locations.length ;i++){
+				vals.put(locations[i]);
+			}
+			json.append("locations", vals);
+			json.append("location-name", location_name);
+			json.append("location-coords", location_coords);
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -108,11 +151,19 @@ public class TestOVRestApi extends LD4STestHelper {
 			form.set("context", null);
 		}
 		form.set("base_datetime", base_datetime);
-		form.set("resource_time", resource_time);
-		form.set("start_range", start_range);
-		form.set("end_range", end_range);
+		form.set("base_name", base_name);
+		form.set("base_ov_name", base_ov_name);
+		form.set("observed_property", observed_property);
+		form.set("uom", uom);
+		form.set("type", type);
+		for (int i=0; i<locations.length ;i++){
+			form.set("locations", locations[i]);
+		}
 		for (int i=0; i<values.length ;i++){
-			form.set("values", values[i]);
+			form.set("observation_values", values[i]);
+		}
+		for (int i=0; i<tsprops.length ;i++){
+			form.set("tsproperties", tsprops[i]);
 		}
 	}
 	
@@ -147,17 +198,13 @@ public class TestOVRestApi extends LD4STestHelper {
 		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
 				//user_password);
 		//cr.setChallengeResponse(authentication);
-		List<Preference<MediaType>> accepted = new LinkedList<Preference<MediaType>>();
-		accepted.add(new Preference<MediaType>(MediaType.APPLICATION_RDF_XML));
-		cr.getClientInfo().setAcceptedMediaTypes(accepted);
-		Representation response = cr.put(json); 
-		
+		Representation response = cr.put(json);
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());
 		assertTrue(status.isSuccess());
 		
 		String rdf = response.getText();
-		System.out.println("\n\n\n==============\nTesting OV JSON PUT- " 
+		System.out.println("\n\n\n==============\nTesting DEVICE JSON PUT- " 
 				+"(annotation to be stored locally) "
 				+ "sent : "+json
 				+local_uri+resourceId+"==============\n"+rdf);
@@ -180,7 +227,7 @@ public class TestOVRestApi extends LD4STestHelper {
 				//user_password);
 		//cr.setChallengeResponse(authentication);
 		Representation response = cr.put(form); 
-		
+		System.out.println(response.getText());
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());
 		assertTrue(status.isSuccess());
@@ -199,18 +246,17 @@ public class TestOVRestApi extends LD4STestHelper {
 		System.out.println("Test Put - JSON payload");
 		initJson(false, false); 
 		ClientResource cr = new ClientResource(local_uri+resourceId);
-//		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
-//				//user_password);
-//		//cr.setChallengeResponse(authentication);
+		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
+				//user_password);
+		//cr.setChallengeResponse(authentication);
 		Representation response = cr.put(json); 
-		
+		System.out.println(response.getText());
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());
 		assertTrue(status.isSuccess());
 		
-		
 		String rdf = response.getText();
-		System.out.println("\n\n\n==============\nTesting OV JSON PUT " +
+		System.out.println("\n\n\n==============\nTesting DEVICE JSON PUT " +
 				"(annotation to be soterd locally)\n"
 				+ "sent : "+json
 				+local_uri+resourceId+"==============\n"+rdf);
@@ -228,20 +274,19 @@ public class TestOVRestApi extends LD4STestHelper {
 	public void testGet() throws Exception {
 		System.out.println("Test Get");
 		ClientResource cr = new ClientResource(local_uri+resourceId);
-//		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
-//				//user_password);
-//		//cr.setChallengeResponse(authentication);
+		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
+				//user_password);
+		//cr.setChallengeResponse(authentication);
 		List<Preference<MediaType>> accepted = new LinkedList<Preference<MediaType>>();
 		accepted.add(new Preference<MediaType>(MediaType.APPLICATION_RDF_TURTLE));
 		cr.getClientInfo().setAcceptedMediaTypes(accepted);
 		Representation resp = cr.get();
-		
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
 		assertTrue(status.isSuccess());
 		
 		String rdf = resp.getText();
-		System.out.println("\n\n\n==============\nTesting OV GET - "
+		System.out.println("\n\n\n==============\nTesting DEVICE GET - "
 				+local_uri+resourceId+"==============\n"+rdf);
 	}
 
@@ -262,12 +307,13 @@ public class TestOVRestApi extends LD4STestHelper {
 		accepted.add(new Preference<MediaType>(MediaType.APPLICATION_RDF_TURTLE));
 		cr.getClientInfo().setAcceptedMediaTypes(accepted);
 		Representation resp = cr.get();
+
 		Status status = cr.getStatus();
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
 		assertTrue(status.isSuccess());
 		
 		String rdf = resp.getText();
-		System.out.println("\n\n\n==============\nTesting OV LD GET - " 
+		System.out.println("\n\n\n==============\nTesting DEVICE LD GET - " 
 				+ "sent : "+json
 				+local_uri+resourceId+"?"+filters+"==============\n"+rdf);
 	}
@@ -289,8 +335,10 @@ public class TestOVRestApi extends LD4STestHelper {
 		resource.remove();
 
 		Status status = cr.getStatus();
+		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
+		assertTrue(status.isSuccess());
 		
-		System.out.println("\n\n\n==============\nTesting OV DELETE - "
+		System.out.println("\n\n\n==============\nTesting DEVICE DELETE - "
 				+local_uri+resourceId+"==============");
 		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
 		assertTrue(status.isSuccess());
@@ -338,11 +386,10 @@ public class TestOVRestApi extends LD4STestHelper {
 		assertTrue(status.isSuccess());
 		
 		String rdf = resp.getText();
-		System.out.println("\n\n\n==============\nTesting OV LD JSON POST - " 
+		System.out.println("\n\n\n==============\nTesting DEVICE LD JSON POST - " 
 				+"(annotation to be stored locally) "
 				+ "sent : "+json
 				+local_uri+resourceId+"==============\n"+rdf);
-		
 	}
 
 	/**
@@ -366,41 +413,12 @@ public class TestOVRestApi extends LD4STestHelper {
 		assertTrue(status.isSuccess());
 		
 		String rdf = resp.getText();
-		System.out.println("\n\n\n==============\nTesting OV JSON POST " +
+		System.out.println("\n\n\n==============\nTesting DEVICE JSON POST " +
 				"(annotation to be soterd remotely)\n"
 				+ "sent : "+json
 				+local_uri+"==============\n"+rdf);
 	}
 
-	
-	/**
-	 * Test POST {host}/ov
-	 * requirement: rdf serialization as a string payload
-	 *
-	 * @throws Exception If problems occur.
-	 */
-	@Test
-	public void testRDFPostRemoteResource() throws Exception {
-		System.out.println("Test POST remote and with no external links - JSON payload");
-		System.out.println(serialized_rdf);		 
-		ClientResource cr = new ClientResource(local_uri);
-		//ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, user, 
-				//user_password);
-		//cr.setChallengeResponse(authentication);
-		StringRepresentation sr = new StringRepresentation(serialized_rdf, contentType, Language.ALL, CharacterSet.UTF_8);
-		Representation resp = cr.post(sr);
-		Status status = cr.getStatus();
-		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
-		assertTrue(status.isSuccess());
-		
-		String rdf = resp.getText();
-		System.out.println("\n\n\n==============\nTesting OV Serialized RDF POST " +
-				"(annotation to be soterd remotely)\n"
-				+ "sent : "+serialized_rdf
-				+local_uri+"==============\n"+rdf);
-	}
-	
-	
 	/**
 	 * Test POST {host}/ov
 	 * requirement: resource stored remotely + Linked Data enrichment
@@ -421,7 +439,7 @@ public class TestOVRestApi extends LD4STestHelper {
 		assertTrue(status.isSuccess());
 		
 		String rdf = resp.getText();
-		System.out.println("\n\n\n==============\nTesting OV LD JSON POST - " 
+		System.out.println("\n\n\n==============\nTesting DEVICE LD JSON POST - " 
 				+"(annotation to be stored remotely) "
 				+ "sent : "+json
 				+local_uri+"==============\n"+rdf);

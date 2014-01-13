@@ -43,7 +43,7 @@ public class OtherResource extends LD4SDataResource {
 			ret = null;
 		}
 
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
+		return ret;
   }
 
 }

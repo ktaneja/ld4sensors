@@ -7,8 +7,8 @@ import org.restlet.data.Form;
 
 import com.hp.hpl.jena.ontology.OntClass;
 
-import eu.spitfire_project.ld4s.network.lod_cloud.Context;
-import eu.spitfire_project.ld4s.network.lod_cloud.Person;
+import eu.spitfire_project.ld4s.lod_cloud.Context;
+import eu.spitfire_project.ld4s.lod_cloud.Person;
 import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 
 
@@ -66,12 +66,6 @@ public abstract class LD4SObject{
 	
 	/** Milliseconds shift from the base time as a reading collection time point. */
 	private String time = null;
-	
-	private String conTime = null;
-	private String conLocation = null;
-	private String conDate = null;
-	private String conCompany = null;
-	private String conCountry = null;
 
 	protected abstract void initDefaultType(); 
 	protected abstract void initAcceptedTypes(); 
@@ -80,32 +74,14 @@ public abstract class LD4SObject{
 	public abstract void setStoredRemotely(boolean storedRemotely);
 	public abstract boolean isStoredRemotely();
 	public abstract boolean isStoredRemotely(String localUri);
-	public abstract void setLink_criteria(Context link_criteria);
+	public void setLink_criteria(Context link_criteria){
+		this.link_criteria = link_criteria;
+	}
 	public abstract Context getLink_criteria();
 	public abstract void setLink_criteria(String link_criteria, String localhost)throws Exception ;
 
 	public LD4SObject(JSONObject json) throws JSONException{
 		if (json != null){
-			if (json.has("con"+LD4SConstants.JSON_SEPARATOR+"country")){
-				this.setConCountry(LD4SDataResource.removeBrackets(
-						json.getString("con"+LD4SConstants.JSON_SEPARATOR+"country")));
-			}
-			if (json.has("con"+LD4SConstants.JSON_SEPARATOR+"company")){
-				this.setConCompany(LD4SDataResource.removeBrackets(
-						json.getString("con"+LD4SConstants.JSON_SEPARATOR+"company")));
-			}
-			if (json.has("con"+LD4SConstants.JSON_SEPARATOR+"location")){
-				this.setConLocation(LD4SDataResource.removeBrackets(
-						json.getString("con"+LD4SConstants.JSON_SEPARATOR+"location")));
-			}
-			if (json.has("con"+LD4SConstants.JSON_SEPARATOR+"time")){
-				this.setConTime(LD4SDataResource.removeBrackets(
-						json.getString("con"+LD4SConstants.JSON_SEPARATOR+"time")));
-			}
-			if (json.has("con"+LD4SConstants.JSON_SEPARATOR+"date")){
-				this.setConDate(LD4SDataResource.removeBrackets(
-						json.getString("con"+LD4SConstants.JSON_SEPARATOR+"date")));
-			}
 			if (json.has("base"+LD4SConstants.JSON_SEPARATOR+"datetime")){
 				this.setBase_datetime(LD4SDataResource.removeBrackets(
 						json.getString("base"+LD4SConstants.JSON_SEPARATOR+"datetime")));
@@ -163,7 +139,9 @@ public abstract class LD4SObject{
 	}
 	
 	protected void setType(String type) {
+		//if the type exists
 		this.pref_type = type;
+		//otherwise create a new one
 	}
 
 	public String getType() {
@@ -203,6 +181,10 @@ public abstract class LD4SObject{
 		this.setSpace(locations);
 		initAcceptedTypes();
 		initDefaultType();
+	}
+	
+	public LD4SObject(){
+		
 	}
 
 	public void setEnd_range(String end_range) {
@@ -395,36 +377,6 @@ public abstract class LD4SObject{
 	}
 	public String[] getCoords() {
 		return coords;
-	}
-	public String getConTime() {
-		return conTime;
-	}
-	public void setConTime(String conTime) {
-		this.conTime = conTime;
-	}
-	public String getConLocation() {
-		return conLocation;
-	}
-	public void setConLocation(String conLocation) {
-		this.conLocation = conLocation;
-	}
-	public String getConDate() {
-		return conDate;
-	}
-	public void setConDate(String conDate) {
-		this.conDate = conDate;
-	}
-	public String getConCompany() {
-		return conCompany;
-	}
-	public void setConCompany(String conCompany) {
-		this.conCompany = conCompany;
-	}
-	public String getConCountry() {
-		return conCountry;
-	}
-	public void setConCountry(String conCountry) {
-		this.conCountry = conCountry;
 	}
 
 }

@@ -8,11 +8,12 @@ import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
-import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 
 /**
  * Resource representing an observation value.
@@ -57,7 +58,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 			if (!this.context.isEmpty()){
 				//how it should be: add the already existing links iff their context 
 				//matches with the requested one search for new links
-				rdfData = addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context).getModel();
+				rdfData = (OntModel)addLinkedData(rdfData.getResource(uristr), Domain.ALL, this.context, rdfData)[1];
 			}
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}
@@ -66,58 +67,58 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 			ret = null;
 		}
 
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
+		return ret;
 	}
 
 
-//	/**
-//	 * Create and store a new Observation Value resource as Linked Data
-//	 * from the submitted content. 
-//	 * This resource MUST be stored in the LD4S TDB.
-//	 * This resource MUST not be enriched with Linked Data since this would modify the initial
-//	 * submitted content significantly (use POST instead).
-//	 *
-//	 *@param obj information to be semantically annotated and stored
-//	 */
-//	@Put
-//	public Representation put(OV ldobj){
-//		if (resourceId == null || resourceId.trim().compareTo("") == 0){
-//			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-//			return null;
-//		}
-//		this.ov = ldobj;
-//
-//		if (ov.getRemote_uri() != null){
-//			//if the preferred resource hosting is a remote one, PUT can not be used
-//			//(use POST instead) 
-//			if (this.ov.isStoredRemotely(ld4sServer.getHostName())){
-//				setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-//				return null;
-//			}			
-//		}
-//
-//		Representation ret = null;
-//		rdfData = ModelFactory.createDefaultModel();
-//		super.initModel(rdfData,"spitfire.rdf");
-//		logger.fine(resourceName + " LD4S: Now building LD4S.");
-//		try {
-//			rdfData = makeOVData().getModel();
-//		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}		
-//		// create a new resource in the database
-//		if (store(rdfData, this.namedModel)){
-//			setStatus(Status.SUCCESS_CREATED);	
-//			ret = serializeAccordingToReqMediaType(rdfData);
-//		}else{
-//			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
-//		}
-//		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
-//	}
+	//	/**
+	//	 * Create and store a new Observation Value resource as Linked Data
+	//	 * from the submitted content. 
+	//	 * This resource MUST be stored in the LD4S TDB.
+	//	 * This resource MUST not be enriched with Linked Data since this would modify the initial
+	//	 * submitted content significantly (use POST instead).
+	//	 *
+	//	 *@param obj information to be semantically annotated and stored
+	//	 */
+	//	@Put
+	//	public Representation put(OV ldobj){
+	//		if (resourceId == null || resourceId.trim().compareTo("") == 0){
+	//			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+	//			return null;
+	//		}
+	//		this.ov = ldobj;
+	//
+	//		if (ov.getRemote_uri() != null){
+	//			//if the preferred resource hosting is a remote one, PUT can not be used
+	//			//(use POST instead) 
+	//			if (this.ov.isStoredRemotely(ld4sServer.getHostName())){
+	//				setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+	//				return null;
+	//			}			
+	//		}
+	//
+	//		Representation ret = null;
+	//		rdfData = ModelFactory.createDefaultModel();
+	//		super.initModel(rdfData,"spitfire.rdf");
+	//		logger.fine(resourceName + " LD4S: Now building LD4S.");
+	//		try {
+	//			rdfData = makeOVData().getModel();
+	//		} catch (UnsupportedEncodingException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		} catch (JSONException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		}		
+	//		// create a new resource in the database
+	//		if (store(rdfData, this.namedModel)){
+	//			setStatus(Status.SUCCESS_CREATED);	
+	//			ret = serializeAccordingToReqMediaType(rdfData);
+	//		}else{
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
+	//		}
+	//		return ret;
+	//	}
 
 	// PUT req: resource stored locally + no Linked Data enrichment
 	/**
@@ -137,7 +138,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 		}
 
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 		try {
@@ -152,7 +153,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 				}			
 			}
 			try {
-				rdfData = makeOVData().getModel();
+				rdfData = (OntModel)makeOVData()[1];
 			}  catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -161,7 +162,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
 			}		
 			// create a new resource in the database
-			if (storeHandler(rdfData)){
+			if (store(rdfData, this.namedModel)){
 				setStatus(Status.SUCCESS_CREATED);
 				ret = serializeAccordingToReqMediaType(rdfData);
 			}else{
@@ -173,7 +174,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 					+e1.getMessage());
 			return null;
 		}
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
+		return ret;
 	}
 
 	/**
@@ -193,7 +194,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 		}
 
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now building LD4S.");
 		try {
@@ -207,7 +208,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 				}			
 			}
 			try {
-				rdfData = makeOVData().getModel();
+				rdfData = (OntModel)makeOVData()[1];
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -224,54 +225,56 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 		}
 
 		// create a new resource in the database
-		if (storeHandler(rdfData)){
+		if (store(rdfData, this.namedModel)){
 			setStatus(Status.SUCCESS_CREATED);	 
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}else{
 			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
 		}
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
+		return ret;
 	}
 
-//	/**
-//	 * Update a stored Observation Value resource
-//	 * with the information sent 
-//	 *
-//	 *@param obj information to store
-//	 */
-//	@Post
-//	public Representation post(OV ldobj){
-//		this.ov = ldobj;
-//		Representation ret = null;
-//		rdfData = ModelFactory.createDefaultModel();
-//		super.initModel(rdfData,"spitfire.rdf");
-//		logger.fine(resourceName + " LD4S: Now updating.");
-//		try {
-//			rdfData = makeOVLinkedData().getModel();
-//
-//			// create a new resource in the database only if the preferred resource hosting server is
-//			// the LD4S one
-//			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
-//				if (update(rdfData, this.namedModel)){
-//					setStatus(Status.SUCCESS_OK);	 
-//					ret = serializeAccordingToReqMediaType(rdfData);
-//				}else{
-//					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
-//				}
-//			}else{
-//				setStatus(Status.SUCCESS_OK);	 
-//				ret = serializeAccordingToReqMediaType(rdfData);
-//			}
-//		}  catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}catch (JSONException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}		
-//
-//		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
-//	}
+	
+
+	//	/**
+	//	 * Update a stored Observation Value resource
+	//	 * with the information sent 
+	//	 *
+	//	 *@param obj information to store
+	//	 */
+	//	@Post
+	//	public Representation post(OV ldobj){
+	//		this.ov = ldobj;
+	//		Representation ret = null;
+	//		rdfData = ModelFactory.createDefaultModel();
+	//		super.initModel(rdfData,"spitfire.rdf");
+	//		logger.fine(resourceName + " LD4S: Now updating.");
+	//		try {
+	//			rdfData = makeOVLinkedData().getModel();
+	//
+	//			// create a new resource in the database only if the preferred resource hosting server is
+	//			// the LD4S one
+	//			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
+	//				if (update(rdfData, this.namedModel)){
+	//					setStatus(Status.SUCCESS_OK);	 
+	//					ret = serializeAccordingToReqMediaType(rdfData);
+	//				}else{
+	//					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
+	//				}
+	//			}else{
+	//				setStatus(Status.SUCCESS_OK);	 
+	//				ret = serializeAccordingToReqMediaType(rdfData);
+	//			}
+	//		}  catch (UnsupportedEncodingException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		}catch (JSONException e) {
+	//			e.printStackTrace();
+	//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+	//		}		
+	//
+	//		return ret;
+	//	}
 
 	/**
 	 * Update a stored Observation Value resource
@@ -283,12 +286,12 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 	public Representation post(Form obj){
 		//if an host has not been set then the LD4S service one has to be assigned
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
 			this.ov = new OV(obj, this.ld4sServer.getHostName());
-			rdfData = makeOVLinkedData().getModel();
+			rdfData = (OntModel)makeOVLinkedData()[1];
 
 			// create a new resource in the database only if the preferred resource hosting server is
 			// the LD4S one
@@ -317,7 +320,7 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 		}		
 
 
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
+		return ret;
 	}
 
 	/**
@@ -329,12 +332,12 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 	@Override
 	public Representation post(JSONObject obj){
 		Representation ret = null;
-		rdfData = ModelFactory.createDefaultModel();
+		rdfData = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM_MICRO_RULE_INF);
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
 			this.ov = new OV(obj, this.ld4sServer.getHostName());
-			rdfData = makeOVLinkedData().getModel();
+			rdfData = (OntModel)makeOVLinkedData()[1];
 
 			// create a new resource in the database only if the preferred resource hosting server is
 			// the LD4S one
@@ -363,9 +366,11 @@ public class OVResource extends LD4SOVResource implements LD4SApiInterface{
 		}
 
 
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
+		return ret;
 	}
 
+
+	
 	// DELETE req: resource stored locally
 	/**
 	 * Delete an already store Observation Value resource 

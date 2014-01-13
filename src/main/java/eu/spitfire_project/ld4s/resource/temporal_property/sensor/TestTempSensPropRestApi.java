@@ -159,8 +159,6 @@ public class TestTempSensPropRestApi extends LD4STestHelper {
 		assertTrue(status.isSuccess());
 		
 		response.release();	
-		cr.release();
-		
 	}
 	
 	/**

@@ -6,7 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import eu.spitfire_project.ld4s.network.lod_cloud.Context;
+import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
 import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;

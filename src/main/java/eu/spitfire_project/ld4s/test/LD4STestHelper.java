@@ -2,13 +2,14 @@ package eu.spitfire_project.ld4s.test;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.restlet.representation.Representation;
+import org.restlet.Client;
+import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.Role;
 
-import eu.spitfire_project.ld4s.network.lod_cloud.Person;
+import eu.spitfire_project.ld4s.lod_cloud.Person;
 import eu.spitfire_project.ld4s.server.Server;
 import eu.spitfire_project.ld4s.server.ServerProperties;
 
@@ -18,7 +19,6 @@ import eu.spitfire_project.ld4s.server.ServerProperties;
  * @author Myriam Leggieri
  */
 public class LD4STestHelper {
-	
 	/** The admin username. */
 	protected static final String admin = "admin";
 	/** The admin password. */
@@ -53,6 +53,21 @@ public class LD4STestHelper {
 //			"Ioannis", "Chatzigiannakis", null, null, null, null, null);
 			"Manfred", "Hauswirth", null, null, null, null, null);
 	
+	protected MediaType media = new MediaType("application/rdf+json");
+	
+	
+	protected ClientResource initClient(Protocol protocol, int timeout, String uri){
+		Client client = new Client(protocol);
+
+		client.setConnectTimeout(timeout);
+
+		ClientResource cr = new ClientResource(uri);
+
+		cr.setNext(client);
+
+		return cr;
+	}
+	
 	
 
 	/**
@@ -66,12 +81,10 @@ public class LD4STestHelper {
 	 * Starts the server going for these tests.
 	 * @throws Exception If problems occur setting up the server.
 	 */
-	@BeforeClass 
-	public static void setupServer() throws Exception {
+	@BeforeClass public static void setupServer() throws Exception {
 		// Create a testing version of the Ld4S.
-//		LD4STestHelper.ld4sServer = Server.newInstance();
+		LD4STestHelper.ld4sServer = Server.newInstance();
 	}
-	
 
 	/**
 	 * Returns the hostname associated with this LD4S test server.

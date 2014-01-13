@@ -1,18 +1,8 @@
 package eu.spitfire_project.ld4s.resource.sparql;
 
-import java.io.UnsupportedEncodingException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.Put;
 
-import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 
 /**
@@ -21,7 +11,7 @@ import eu.spitfire_project.ld4s.resource.LD4SDataResource;
  * @author Myriam Leggieri <iammyr@email.com>
  *
  */
-public class SparqlResource extends LD4SDataResource implements LD4SApiInterface{
+public class SparqlResource extends LD4SDataResource{
 
 
 	private String resourceName = "Sparql Request";
@@ -36,18 +26,9 @@ public class SparqlResource extends LD4SDataResource implements LD4SApiInterface
 	 * @return The resource representation.
 	 */
 	@Override
-	public Representation post(JSONObject obj) {
+	public Representation get() {
 		Representation ret = null;
-		logger.fine(resourceName + " LD4S: Now querying.");
-		try {
-			this.query = java.net.URLDecoder.decode(LD4SDataResource.removeBrackets(obj.getString("query")), "UTF-8");
-		} catch (JSONException e1) {
-			setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST, " The SPARQL query must be included in the JSON field named 'query' in a JSON payload."));
-			e1.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
+		logger.fine(resourceName + " execution: Starting");
 		try {
 			logger.fine(resourceName + " : Requesting answer");
 			logRequest(resourceName);
@@ -63,51 +44,10 @@ public class SparqlResource extends LD4SDataResource implements LD4SApiInterface
 		}
 		catch (Exception e) {
 			setStatusError("Error answering the " + resourceName + " - LD4S.", e);
-			e.printStackTrace();
 			ret = null;
 		}
 
-		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
-	}
-
-	@Override
-	@Get	
-	public Representation get(){
-		setStatus(new Status(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, " only POST is allowed."));
-		return null;
-	}
-
-
-	@Override
-	@Put
-	public Representation put(Form obj) {
-		setStatus(new Status(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, " only POST is allowed."));
-		return null;
-	}
-
-
-
-	@Override
-	@Put
-	public Representation put(JSONObject obj) {
-		setStatus(new Status(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, " only POST is allowed."));
-		return null;
-	}
-
-
-
-	@Override
-	@Post
-	public Representation post(Form obj) {
-		setStatus(new Status(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, " only POST is allowed."));
-		return null;
-	}
-
-
-	@Override
-	@Delete
-	public void remove() {
-		setStatus(new Status(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, " only POST is allowed."));
+		return ret;
 	}
 	
 }

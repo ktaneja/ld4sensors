@@ -1,11 +1,10 @@
 package eu.spitfire_project.ld4s.resource.ov;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 
-import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
+import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 
@@ -20,7 +19,7 @@ public class LD4SOVResource extends LD4SDataResource {
 	protected String resourceName = "Observation Value";
 	
 	/** RDF Data Model of this Service resource semantic annotation. */
-	protected Model rdfData = null;
+	protected OntModel rdfData = null;
 	
 	/** Resource provided by this Service resource. */
 	protected OV ov = null;
@@ -36,30 +35,15 @@ public class LD4SOVResource extends LD4SDataResource {
 	 * @return model 
 	 * @throws Exception
 	 */
-	protected Resource makeOVLinkedData() throws Exception {
-		Resource resource = makeOVData();
+	protected Object[] makeOVLinkedData() throws Exception {
+		Object[] resp = makeOVData();
 		//set the linking criteria
 		this.context = ov.getLink_criteria();
-		resource = addLinkedData(resource, Domain.ALL, this.context);
-		return resource;
+		resp = addLinkedData((Resource)resp[0], Domain.ALL, this.context, (OntModel)resp[1]);
+		return resp;
 	}
 	
-	/**
-	 * Creates main resources and additional related information
-	 * excluding linked data
-	 *
-	 * @param m_returned model which the resources to be created should be attached to
-	 * @param obj object containing the information to be semantically annotate
-	 * @param id resource identification
-	 * @return model 
-	 * @throws Exception
-	 */
-	protected Resource makeOVData() throws Exception {
-		Resource resource = createOVResource();
-		resource.addProperty(DCTerms.isPartOf,
-				this.ld4sServer.getHostName()+"void");
-		return resource;
-	}
+	
 
 	/**
 	 * Creates the main resource
@@ -68,7 +52,8 @@ public class LD4SOVResource extends LD4SDataResource {
 	 * @return
 	 * @throws Exception 
 	 */
-	protected  Resource createOVResource() throws Exception {
+	@Override
+	protected  Object[] createOVResource() throws Exception {
 		Resource resource = null;
 		String subjuri = null;
 		if (resourceId != null){
@@ -88,18 +73,13 @@ public class LD4SOVResource extends LD4SDataResource {
 				}
 			}			
 		}
-		String item = ov.getSensor_id();
-		if (item != null && item.trim().compareTo("")!=0){
-			if (item.startsWith("http://")){
-				resource.addProperty(SptVocab.OUT_OF, 
-						rdfData.createResource(item));	
-			}else{
-				resource.addProperty(SptVocab.OUT_OF, item);
-			}
-		}
-		resource = crossResourcesAnnotation(ov, resource);
-		return resource;
+		resource = crossResourcesAnnotation(ov, resource, rdfData);
+		return new Object[]{resource, rdfData};
 	}
+
+	
+
+
 
 		  
 

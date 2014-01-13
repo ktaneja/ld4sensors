@@ -18,11 +18,11 @@ public class ReasonerManager {
 
 	private static Model ontologyBaseModel = null;
 
-	private static final String SPT_SOURCE = "http://spitfire-project.eu/ontology.rdf";
+	private static final String SPT_SOURCE = "http://spitfire-project.eu/ontology.owl";
 
-	private static final String SPTSN_SOURCE = "http://spitfire-project.eu/sn.rdf";
+	private static final String SPTSN_SOURCE = "http://spitfire-project.eu/sn.owl";
 
-	private static final String SPTCT_SOURCE = "http://spitfire-project.eu/ct.rdf";
+	private static final String SPTCT_SOURCE = "http://spitfire-project.eu/ct.owl";
 
 
 
@@ -45,22 +45,22 @@ public class ReasonerManager {
 	private static Model getOntologyBase(){
 		if (ontologyBaseModel == null) {
 			ontologyBaseModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-//			if (isUriAccessible(SPT_SOURCE)) {
+			if (isUriAccessible(SPT_SOURCE)) {
 //				ontologyBaseModel.read(SPT_SOURCE, "RDF/XML");
-//			}else{
-
+				ontologyBaseModel.read(SPT_SOURCE, "N3");
+			}else{
 				ontologyBaseModel.read("file:///home/iammyr/spt-new.owl", "N3");
-//			}
-//			if (isUriAccessible(SPTSN_SOURCE)) {
-//				ontologyBaseModel.read(SPTSN_SOURCE, "RDF/XML");
-//			}else{
+			}
+			if (isUriAccessible(SPTSN_SOURCE)) {
+				ontologyBaseModel.read(SPTSN_SOURCE, "N3");
+			}else{
 				ontologyBaseModel.read("file:///home/iammyr/sn-new.owl", "N3");
-//			}
-//			if (isUriAccessible(SPTCT_SOURCE)) {
-//				ontologyBaseModel.read(SPTCT_SOURCE, "RDF/XML");
-//			}else{
+			}
+			if (isUriAccessible(SPTCT_SOURCE)) {
+				ontologyBaseModel.read(SPTCT_SOURCE, "N3");
+			}else{
 				ontologyBaseModel.read("file:///home/iammyr/ct-new.owl", "N3");
-//			}
+			}
 		}
 		return ontologyBaseModel;
 	}

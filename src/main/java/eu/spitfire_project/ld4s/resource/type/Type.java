@@ -1,4 +1,4 @@
-package eu.spitfire_project.ld4s.resource.device;
+package eu.spitfire_project.ld4s.resource.type;
 
 import java.io.Serializable;
 
@@ -30,7 +30,7 @@ spt:out <obval11204id> .
  * @author Myriam Leggieri <iammyr@email.com>
  *
  */
-public class Device extends LD4SObject  implements Serializable{
+public class Type extends LD4SObject  implements Serializable{
 
 	/**
 	 * 
@@ -40,48 +40,38 @@ public class Device extends LD4SObject  implements Serializable{
 	/** Temporarily (to enhance the link search): Feature of Interest. */
 	private String foi = null;
 
-
 	/** Unit of Measurement. */
 	private String unit_of_measurement = null;
 
 	/** Observed Property. */
 	private String observed_property = null;
 
-	/** Base host name. */
-	private String base_name = null;
-	
-	/** Base OV host name. */
-	private String base_ov_name = null;
+	/** Measurement Capability URIs. */
+	private String[] meas_capabs = null;
 
-	/** Temporal Sensor Properties IDs (same base name than the main resource). */
-	private String[] tsproperties = null;
+	private String base_name;
 
-	/** OV IDs (ov base name). */
-	private String[] values = null;
+	private String base_ov_name;
+
+	private String[] tsproperties;
 
 
-
-	public Device(String host, String[] values, String uom,
-			String op, String bn, String bovn, String criteria, String localhost,
-			String base_datetime, String start_range, String end_range, 
-			String[] locations) 
+	public Type(String host, String uom,
+			String foi, String observed_prop, 
+			String[] capabilities) 
 	throws Exception{
-		super(base_datetime, start_range, end_range,locations);
+		super();
 		this.setRemote_uri(host);
-		this.setValues(values);
 		this.setUnit_of_measurement(uom);
-		this.setObserved_property(op);
-		this.setBase_name(bn);
-		this.setBase_ov_name(bovn);
-		this.setLink_criteria(criteria, localhost);
+		this.setObserved_property(observed_prop);
+		this.setFoi(foi);
+		this.setMeasurementCapabilities(capabilities);
 	}
 
-	public Device(JSONObject json, String localhost) throws Exception {
+	
+
+	public Type(JSONObject json, String localhost) throws Exception {
 		super(json);
-		if (json.has("uri")){
-			this.setRemote_uri(LD4SDataResource.removeBrackets(
-					json.getString("uri")));
-		}
 		if (json.has("uom")){
 			this.setUnit_of_measurement(LD4SDataResource.removeBrackets(
 					json.getString("uom")));
@@ -94,29 +84,16 @@ public class Device extends LD4SObject  implements Serializable{
 			this.setFoi(LD4SDataResource.removeBrackets(
 					json.getString("foi")));
 		}
-		if (json.has("base"+LD4SConstants.JSON_SEPARATOR+"name")){
-			this.setBase_name(LD4SDataResource.removeBrackets(
-					json.getString("base"+LD4SConstants.JSON_SEPARATOR+"name")));
-		}
-		
-		if (json.has("base"+LD4SConstants.JSON_SEPARATOR+"ov"+LD4SConstants.JSON_SEPARATOR+"name")){
-			this.setBase_ov_name(LD4SDataResource.removeBrackets(
-					json.getString("base"+LD4SConstants.JSON_SEPARATOR+"ov"+LD4SConstants.JSON_SEPARATOR+"name")));
-		}
-		if (json.has("observation"+LD4SConstants.JSON_SEPARATOR+"values")){
-			this.setValues(json.getJSONArray("observation"+LD4SConstants.JSON_SEPARATOR+"values"));
-		}
-		if (json.has("tsproperties")){
-			this.setTsproperties(json.getJSONArray("tsproperties"));
+		if (json.has("measurement"+LD4SConstants.JSON_SEPARATOR+"capabilities")){
+			this.setMeasurementCapabilities(json.getJSONArray("measurement"+LD4SConstants.JSON_SEPARATOR+"capabilities"));
 		}
 		if (json.has("context")){
 			this.setLink_criteria(json.getString("context"), localhost);
 		}
 	}
 
-	
 
-	public Device (Form form, String localhost) throws Exception {
+	public Type (Form form, String localhost) throws Exception {
 		super(form);
 		this.setValues(form.getValuesArray("observation"+LD4SConstants.JSON_SEPARATOR+"values"));
 		this.setTsproperties(form.getValuesArray("tsproperties"));
@@ -135,33 +112,25 @@ public class Device extends LD4SObject  implements Serializable{
 				form.getFirstValue("context"), localhost);
 	}
 
-
-	@Override
-	public String getRemote_uri() {
-		return remote_uri;
+	private void setValues(String[] valuesArray) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
-	@Override
-	public void setRemote_uri(String host) {
-		this.remote_uri = host;
-	}
 
-	public void setValues(String[] values) {
-		this.values = values;
-	}
-
-	public void setValues(JSONArray jvalues) throws JSONException {
-		String[] values = new String[jvalues.length()];
-		for (int i=0; i< jvalues.length(); i++){
-			values[i] = jvalues.get(i).toString();
+	private void setMeasurementCapabilities(JSONArray jsonArray) throws JSONException {
+		String[] values = new String[jsonArray.length()];
+		for (int i=0; i< jsonArray.length(); i++){
+			values[i] = jsonArray.get(i).toString();
 		}
-		setValues(values);
+		setMeasurementCapabilities(values);
+	}
+	
+	private void setMeasurementCapabilities(String[] capabilities) {
+		this.meas_capabs = capabilities;		
 	}
 
-	public String[] getValues() {
-		return values;
-	}
 
 	@Override
 	public void setStoredRemotely(boolean storedRemotely) {
@@ -278,6 +247,29 @@ public class Device extends LD4SObject  implements Serializable{
 
 	public String getFoi() {
 		return foi;
+	}
+
+
+
+	@Override
+	public String getRemote_uri() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public void setRemote_uri(String resourceHost) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public String[] getValues() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

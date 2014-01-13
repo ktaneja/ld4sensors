@@ -4,7 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Form;
 
-import eu.spitfire_project.ld4s.network.lod_cloud.Context;
+import eu.spitfire_project.ld4s.lod_cloud.Context;
 import eu.spitfire_project.ld4s.resource.LD4SObject;
 
 public class FeatureOfInterest extends LD4SObject{
