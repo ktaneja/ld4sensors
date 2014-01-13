@@ -71,7 +71,7 @@ public class TestDeviceRestApi extends LD4STestHelper {
 	"OVER(AND(floor,garden,OR(metro,train),sky))" +
 	"&th=OR(red,AND(cotton,tshirt),tissue,dress)";
 
-	/** JSONObject contatining the above data. */
+	/** JSONObject containing the above data. */
 	protected JSONObject json = null;
 
 	/** Form contatining the above data. */

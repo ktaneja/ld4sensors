@@ -22,36 +22,45 @@ public class ReasonerManager {
 
 	private static final String SPTSN_SOURCE = "http://spitfire-project.eu/sn.rdf";
 
+	private static final String SPTCT_SOURCE = "http://spitfire-project.eu/ct.rdf";
+
 
 
 	public static Reasoner createReasoner(String ruleFilePath){
 		Reasoner reasoner = null;
 		if (ruleFilePath != null){
-			ontologyBaseModel = initOntologyBase();
- 
+			ontologyBaseModel = getOntologyBase();
+
 			Model m = ModelFactory.createDefaultModel();
 			Resource configuration = m.createResource();
 			configuration.addProperty(ReasonerVocabulary.PROPruleMode, "hybrid");
-			if (ruleFilePath != null) {
-				configuration.addProperty(ReasonerVocabulary.PROPruleSet, ruleFilePath);
-			}
+			configuration.addProperty(ReasonerVocabulary.PROPruleSet, ruleFilePath);
+
 
 			reasoner= GenericRuleReasonerFactory.theInstance().create(configuration).bindSchema(ontologyBaseModel);
-		}else{
-			reasoner = null;
 		}
 		return reasoner;
 	}
 
-	private static Model initOntologyBase(){
+	private static Model getOntologyBase(){
 		if (ontologyBaseModel == null) {
 			ontologyBaseModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-			if (isUriAccessible(SPT_SOURCE)) {
-				ontologyBaseModel.read(SPT_SOURCE, "RDF/XML");
-			}
-			if (isUriAccessible(SPTSN_SOURCE)) {
-				ontologyBaseModel.read(SPTSN_SOURCE, "RDF/XML");
-			}
+//			if (isUriAccessible(SPT_SOURCE)) {
+//				ontologyBaseModel.read(SPT_SOURCE, "RDF/XML");
+//			}else{
+
+				ontologyBaseModel.read("file:///home/iammyr/spt-new.owl", "N3");
+//			}
+//			if (isUriAccessible(SPTSN_SOURCE)) {
+//				ontologyBaseModel.read(SPTSN_SOURCE, "RDF/XML");
+//			}else{
+				ontologyBaseModel.read("file:///home/iammyr/sn-new.owl", "N3");
+//			}
+//			if (isUriAccessible(SPTCT_SOURCE)) {
+//				ontologyBaseModel.read(SPTCT_SOURCE, "RDF/XML");
+//			}else{
+				ontologyBaseModel.read("file:///home/iammyr/ct-new.owl", "N3");
+//			}
 		}
 		return ontologyBaseModel;
 	}

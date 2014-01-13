@@ -4,19 +4,29 @@ import java.util.LinkedList;
 
 public class NetworkAddress {
 
-	private LinkedList<String> gatewayAddresses = new LinkedList<String>();
+	private LinkedList<String> gatewayAddresses = null;
 
 	private String localAddress = null;
 
-
+	public NetworkAddress(String gatewayAddress, String localAddress){
+		this((LinkedList<String>)null, localAddress);
+		addGatewayAddress(gatewayAddress);
+	}
+	
+	public NetworkAddress(){
+		this((LinkedList<String>)null, null);	
+	}
+	
 	public NetworkAddress(LinkedList<String> gatewayAddresses, String localAddress){
-		this.setGatewayAddresses(gatewayAddresses);
+		if (gatewayAddresses != null){
+			this.setGatewayAddresses(gatewayAddresses);
+		}else{
+			this.setGatewayAddresses(new LinkedList<String>());
+		}
 		this.setLocalAddress(localAddress);
 	}
 
-	public NetworkAddress(){
-		new NetworkAddress(null, null);	
-	}
+	
 
 	public LinkedList<String> getGatewayAddresses() {
 		return gatewayAddresses;
@@ -26,7 +36,7 @@ public class NetworkAddress {
 		this.gatewayAddresses = gatewayAddresses;
 	}
 	
-	public void setGatewayAddresses(String gatewayAddress) {
+	public void addGatewayAddress(String gatewayAddress) {
 		this.gatewayAddresses.add(gatewayAddress);
 	}
 

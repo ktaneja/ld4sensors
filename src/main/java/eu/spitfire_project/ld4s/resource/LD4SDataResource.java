@@ -56,6 +56,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -80,6 +81,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import eu.spitfire_project.ld4s.dataset.TDBManager;
 import eu.spitfire_project.ld4s.network.lod_cloud.Context;
 import eu.spitfire_project.ld4s.network.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.network.lod_cloud.ElectricityTariffApi;
@@ -101,6 +103,7 @@ import eu.spitfire_project.ld4s.vocabulary.LD4SConstants;
 import eu.spitfire_project.ld4s.vocabulary.ProvVocab;
 import eu.spitfire_project.ld4s.vocabulary.RevVocab;
 import eu.spitfire_project.ld4s.vocabulary.SiocVocab;
+import eu.spitfire_project.ld4s.vocabulary.SptCtVocab;
 import eu.spitfire_project.ld4s.vocabulary.SptVocab;
 import eu.spitfire_project.ld4s.vocabulary.SsnVocab;
 import eu.spitfire_project.ld4s.vocabulary.VoIDVocab;
@@ -318,7 +321,7 @@ public abstract class LD4SDataResource extends ServerResource{
 
 	protected String getRuleFilePath(){
 		ServerProperties sp = this.ld4sServer.getServerProperties();
-		return sp.get(ServerProperties.RULES_FILE_PROPERTY_KEY);
+		return sp.get(ServerProperties.RULES_FILE_KEY);
 	}
 	
 
@@ -1799,5 +1802,33 @@ public abstract class LD4SDataResource extends ServerResource{
 		}
 		//		testSparqlPrint(namedModel);
 		return ret;
+	}
+	
+	public static void printDataset(String queryString, String datasetFolderPath){
+		ResultSet results = TDBManager.search(queryString, datasetFolderPath);
+
+		QuerySolution qs = null; 
+		Resource rs = null;
+		while ( results.hasNext() ) {
+			qs = results.next();     
+			rs = qs.getResource( "?s" );
+			if (rs != null){
+				System.out.println("?s="+rs.asResource().getURI());
+			}
+			rs = qs.getResource( "?p" );
+			if (rs != null){
+				System.out.println("?p="+rs.asResource().getURI());
+			}
+			RDFNode nod = qs.get("?o" );
+			if (nod != null){
+				System.out.print("?o=");
+				if (nod.isLiteral()){
+					System.out.println(nod.asLiteral());	
+				}else if (nod.isResource()){
+					System.out.println(nod.asResource().getURI());
+				}
+			}
+			System.out.println("");
+		}
 	}
 }

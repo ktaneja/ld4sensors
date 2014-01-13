@@ -3,6 +3,13 @@ package eu.spitfire_project.ld4s.vocabulary;
 import eu.spitfire_project.ld4s.server.ServerProperties;
 
 public class LD4SConstants {
+	
+	public static final String URI_LIGHT = "http://dbpedia.org/resource/Light";
+	public static final String URI_TEMP = "http://dbpedia.org/resource/Temperature";
+	public static final String URI_ACCELEROMETER = "http://dbpedia.org/resource/Accelerometer";
+	public static final String URI_PIR = "http://dbpedia.org/resource/Motion_(physics)";
+	public static final String URI_PIR1 = "http://spitfire-project.eu/ontology/ns/ct/Motion";
+	
 	  public static final String SINDICE_VOCAB = "http://sindice.com/vocab/fields#";
 	  public static final String SINDICE_SEARCH_VOCAB = "http://sindice.com/vocab/search#";
 

@@ -15,6 +15,8 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
@@ -23,7 +25,7 @@ import eu.spitfire_project.ld4s.resource.sparql.SparqlResultsFormatter;
 
 public class TDBManager {
 
-	
+
 
 
 	/**
@@ -69,19 +71,18 @@ public class TDBManager {
 		dataset.begin(ReadWrite.WRITE) ;		
 		try {
 			Model modelOfInterest = null;
-			
-			if (!dataset.containsNamedModel(namedGraphUri)){				
+			if (dataset.containsNamedModel(namedGraphUri)){
+				modelOfInterest = dataset.getNamedModel(namedGraphUri);
+			}else{
 				modelOfInterest = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-				dataset.addNamedModel(namedGraphUri, modelOfInterest);				
-			}else{
-				modelOfInterest = dataset.getNamedModel(namedGraphUri) ;
-			} 
+			}		
+			modelOfInterest.add(rdfData);
 			if (reasoner != null){
-				modelOfInterest.add(ModelFactory.createInfModel(reasoner, rdfData));
-			}else{
-				modelOfInterest.add(rdfData);
+				modelOfInterest = ModelFactory.createInfModel(reasoner, modelOfInterest);
+//				System.out.println("****PRINTING THE INFERRED MODEL JUST ABOUT TO BE STORED");
+//				printModel(modelOfInterest);
 			}
-			
+			dataset.addNamedModel(namedGraphUri, modelOfInterest);
 			dataset.commit() ;
 
 		}catch(Exception e){
@@ -95,6 +96,39 @@ public class TDBManager {
 		return ret; 
 	}
 
+	/**
+	 * Store the given model in the triple db
+	 * @param rdfData model to be stored
+	 * @return success
+	 */
+	public static boolean delete(Model triplesToDelete, String namedGraphUri, String datasetFolderPath){
+		boolean ret = true;
+
+		Dataset dataset = initTDB(datasetFolderPath);
+		dataset.begin(ReadWrite.WRITE) ;		
+		try {
+			Model modelOfInterest = null;
+
+			if (!dataset.containsNamedModel(namedGraphUri)){				
+				ret = false;
+			}else{
+				modelOfInterest = dataset.getNamedModel(namedGraphUri);
+				modelOfInterest.remove(triplesToDelete);
+				dataset.addNamedModel(namedGraphUri, modelOfInterest);
+			} 
+			dataset.commit() ;
+		}catch(Exception e){
+			e.printStackTrace();
+			ret = false;
+
+		}  finally { 
+			dataset.end() ;
+			closeTDB(dataset);
+		}
+		return ret; 
+	}
+
+
 	public static Model open(String subjectUri, String namedGraphUri, String datasetFolderPath){
 		Model ret = ModelFactory.createDefaultModel();
 
@@ -104,7 +138,7 @@ public class TDBManager {
 			Model modelOfInterest = dataset.getNamedModel(namedGraphUri) ;
 			ret. add(modelOfInterest.listStatements(modelOfInterest.createResource(subjectUri), 
 					null, (RDFNode)null));
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 			ret = null;
@@ -116,15 +150,15 @@ public class TDBManager {
 		return ret; 
 	}
 
-	
-	
+
+
 	public static ResultSet search(String queryString, String datasetFolderPath){
 		ResultSet ret = null;
 		if (queryString == null || datasetFolderPath == null){
 			return null;
 		}
 		Query query = QueryFactory.create(queryString);
-		
+
 		Dataset dataset = initTDB(datasetFolderPath);
 		dataset.begin(ReadWrite.READ) ;		
 		try {
@@ -145,9 +179,26 @@ public class TDBManager {
 	public static Document formatSearchResults(ResultSet rs){
 		return (Document)SparqlResultsFormatter.xmlResults(rs)[0];
 	}
-	
-	
 
+
+	public static void printModel(Model m){
+		StmtIterator it = m.listStatements();
+		Statement st = null;
+		RDFNode nod = null;
+		while (it.hasNext()){
+			st = it.next();
+			System.out.println("subject="+st.getSubject().getURI());
+			System.out.println("predicate="+st.getPredicate().getURI());
+			nod = st.getObject();
+			if (nod != null){
+				if(nod.isResource()){
+					System.out.println("object="+nod.asResource().getURI());
+				}else{
+					System.out.println("subject="+nod.asLiteral());
+				}
+			}
+		}
+	}
 
 
 }

@@ -2,6 +2,7 @@ package eu.spitfire_project.ld4s.resource.actuator_decision;
 
 import java.io.Serializable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,7 +20,13 @@ public class ActuatorDecision extends LD4SObject  implements Serializable{
 	private String applicationDomain = null;
 
 	/** Optional actions that the actuator can apply on the property of focus. **/
-	private String decisionOption = null;
+	private String[] decisionOptions = null;
+	
+	/** Latitude for the actuator */
+	private String latitude = null;
+	
+	/** Longitude for the actuator */
+	private String longitude = null;
 
 
 	/**
@@ -27,7 +34,7 @@ public class ActuatorDecision extends LD4SObject  implements Serializable{
 	 */
 	private static final long serialVersionUID = 5222281425211809256L;
 
-	public ActuatorDecision(JSONObject json, String localhost) throws JSONException {
+	public ActuatorDecision(JSONObject json) throws JSONException {
 		super(json);
 		if (json.has("actuator"+LD4SConstants.JSON_SEPARATOR+"property")){
 			this.setActuatorProperty(LD4SDataResource.removeBrackets(
@@ -37,9 +44,17 @@ public class ActuatorDecision extends LD4SObject  implements Serializable{
 			this.setApplicationDomain(LD4SDataResource.removeBrackets(
 					json.getString("application"+LD4SConstants.JSON_SEPARATOR+"domain")));
 		}
+		if (json.has("latitude")){
+			this.setLatitude(LD4SDataResource.removeBrackets(
+					json.getString("latitude")));
+		}
+		if (json.has("longitude")){
+			this.setLongitude(LD4SDataResource.removeBrackets(
+					json.getString("longitude")));
+		}
 		if (json.has("decision"+LD4SConstants.JSON_SEPARATOR+"options")){
-			this.setActuatorProperty(LD4SDataResource.removeBrackets(
-					json.getString("decision"+LD4SConstants.JSON_SEPARATOR+"options")));
+			this.setDecisionOptions(
+					json.getJSONArray("decision"+LD4SConstants.JSON_SEPARATOR+"options"));
 		}
 	}
 
@@ -115,17 +130,41 @@ public class ActuatorDecision extends LD4SObject  implements Serializable{
 	public void setApplicationDomain(String applicationDomain) {
 		this.applicationDomain = applicationDomain;
 	}
-
-	public String getDecisionOption() {
-		return decisionOption;
+	
+	public void setDecisionOptions (JSONArray jvalues) throws JSONException {
+			String[] values = new String[jvalues.length()];
+			for (int i=0; i< jvalues.length(); i++){
+				values[i] = jvalues.get(i).toString();
+			}
+			setDecisionOptions(values);
 	}
 
-	public void setDecisionOption(String decisionOption) {
-		this.decisionOption = decisionOption;
+	public String[] getDecisionOptions() {
+		return decisionOptions;
+	}
+
+	public void setDecisionOptions(String[] decisionOptions) {
+		this.decisionOptions = decisionOptions;
 	}
 
 	public void setActuatorProperty(String actuatorProperty) {
 		this.actuatorProperty = actuatorProperty;
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 
 

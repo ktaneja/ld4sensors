@@ -119,7 +119,11 @@ public class BasicCoapClientChannel extends BasicCoapChannel implements CoapClie
 
 	@Override
 	public void lostConnection(boolean notReachable, boolean resetByServer) {
-		client.onConnectionFailed(this, notReachable, resetByServer);		
+		try{
+			client.onConnectionFailed(this, notReachable, resetByServer);
+		}catch(RuntimeException e){
+			e.printStackTrace();
+		}
 
 	}
 	

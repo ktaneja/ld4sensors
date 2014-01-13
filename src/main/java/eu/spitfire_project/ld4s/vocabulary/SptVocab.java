@@ -1,5 +1,6 @@
 package eu.spitfire_project.ld4s.vocabulary;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -7,6 +8,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.TransitiveProperty;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 	/**
@@ -158,12 +160,31 @@ import com.hp.hpl.jena.rdf.model.Resource;
 	  public static final ObjectProperty IS_CROSS = m_model
       .createObjectProperty(NS+"isTopicFor");
 	  
+	  public static final DatatypeProperty IP_DEVICE = m_model
+			  .createDatatypeProperty(NS+"ipDevice");
+	  public static final DatatypeProperty IP_SENSOR = m_model
+			  .createDatatypeProperty(NS+"ipSensor");
+	  public static final DatatypeProperty IP_GATE = m_model
+			  .createDatatypeProperty(NS+"ipGate");
+	  public static final DatatypeProperty DEVICE_ID = m_model
+			  .createDatatypeProperty(NS+"deviceId");
+	  public static final Property TIME = m_model
+			  .createDatatypeProperty(NS+"time");
+	  
+	  public static final DatatypeProperty SPACE = m_model
+			  .createDatatypeProperty(NS+"space");
+	  public static final DatatypeProperty TOT_AREAS = m_model
+			  .createDatatypeProperty(NS+"totAreas");
+	  
 	  public static final ObjectProperty TITLE = m_model
       .createObjectProperty(NS+"title");
 	  public static final ObjectProperty START_TIME = m_model
       .createObjectProperty(NS+"tStart");
 	  public static final ObjectProperty END_TIME = m_model
       .createObjectProperty(NS+"tEnd");
+	  
+	  public static final ObjectProperty ACTUATED_PROPERTY_P = m_model
+		      .createObjectProperty(NS+"actuatedProperty");
 	  
 	  public static OntProperty getInverse(OntProperty prop){
 		  return prop.getInverse();
@@ -183,6 +204,11 @@ import com.hp.hpl.jena.rdf.model.Resource;
       .createClass(SptVocab.NS+"DataLink");
 	  public static final OntClass LINKREVIEW = m_model
       .createClass(NS+"LinkReview");
+	  
+	  public static final OntClass ACTUATED_PROPERTY = m_model
+		      .createClass(NS+"ActuatedProperty");
+	  public static final OntClass ACTUATOR = m_model
+		      .createClass(NS+"Actuator");
 	  
 	  
 	  public static final ObjectProperty GATEWAY_ADDRESS= m_model

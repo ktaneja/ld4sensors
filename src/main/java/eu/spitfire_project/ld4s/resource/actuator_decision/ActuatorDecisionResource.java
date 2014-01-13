@@ -1,6 +1,6 @@
 package eu.spitfire_project.ld4s.resource.actuator_decision;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,17 +13,19 @@ import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.realcraft.coapsensors.SensorAddress;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.reasoner.Reasoner;
 
 import eu.spitfire_project.ld4s.dataset.TDBManager;
-import eu.spitfire_project.ld4s.network.NetworkAddress;
 import eu.spitfire_project.ld4s.network.sensor_network.SensorNetworkManager;
-import eu.spitfire_project.ld4s.reasoner.ReasonerManager;
+import eu.spitfire_project.ld4s.reasoner.DecisionSupport;
 import eu.spitfire_project.ld4s.reasoner.NetworkDeviceFilter;
+import eu.spitfire_project.ld4s.reasoner.ReasonerManager;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
+import eu.spitfire_project.ld4s.server.ServerProperties;
 
-public class ActuatorDecisionResource extends LD4SDataResource implements LD4SApiInterface{
+public class ActuatorDecisionResource extends LD4SActuatorDecisionResource implements LD4SApiInterface{
 	/** Service resource name. */
 	protected String resourceName = "Actuator Decision";
 
@@ -33,7 +35,9 @@ public class ActuatorDecisionResource extends LD4SDataResource implements LD4SAp
 	/** Resource provided by this Service resource. */
 	protected ActuatorDecision ov = null;
 
-	
+	protected int port = 5683;
+
+
 	@Override
 	@Get
 	public Representation get() {
@@ -50,19 +54,19 @@ public class ActuatorDecisionResource extends LD4SDataResource implements LD4SAp
 			//get all the resource information from the Triple DB
 			logger.fine(resourceName + " LD4S: Requesting data");
 			logRequest(resourceName, resourceId);
-			
+
 			rdfData = retrieve(this.uristr, this.namedModel);
-			
+
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}
 		catch (Exception e) {
 			setStatusError("Error creating " + resourceName + "  LD4S.", e);
 			ret = null;
 		}
-		
+
 		logger.info("REQUEST "+ this.uristr +" PROCESSING END - "+LD4SDataResource.getCurrentTime()); return ret;
 	}
-	
+
 	@Override
 	@Put
 	public Representation put(Form obj) {
@@ -87,48 +91,80 @@ public class ActuatorDecisionResource extends LD4SDataResource implements LD4SAp
 	@Post
 	public Representation post(JSONObject obj) {
 		Representation ret = null;
-		
+
 		logger.fine(resourceName + " LD4S: Now updating.");
+		String currentDecisionUri = null;
 		try {
-			this.ov = new ActuatorDecision(obj, this.ld4sServer.getHostName());
-			
+			this.ov = new ActuatorDecision(obj);
+
 			//1. scan the network (for now, use an hard-coded list of addresses --> NetworkManager)
 			//for network devices' rdf descriptions
-			SensorNetworkManager netman = new SensorNetworkManager(this.ld4sServer.getHostName());
+			SensorNetworkManager netman = new SensorNetworkManager(this.ld4sServer.getUri(),
+					this.ld4sServer.getServerProperties()
+					.get(ServerProperties.SENSORS_RDF_DIR_KEY));
 			Model descriptions = netman.sourceDiscovery();
-			
+
 			//2. store the descriptions locally applying the inference
-			if (!TDBManager.store(descriptions, ReasonerManager.createReasoner(getRuleFilePath()), 
-					netman.getNamedGraphUri(), getDatasetFolderPath())){
+			//Testing: inference of 
+			//location (sensor02 nearby dericafe)
+			//type (sensor02 type motiondev; sensor01 type noisedev)
+			//property target (volume target people; noise target people)
+			currentDecisionUri = netman.getNamedGraphUri();
+			Reasoner customReasoner = ReasonerManager.createReasoner(getRuleFilePath());
+			String datasetFolderPath = getDatasetFolderPath();
+			if (!TDBManager.store(descriptions, customReasoner, 
+					currentDecisionUri, datasetFolderPath)){
 				logger.severe("Unable to store the RDF descriptions " +
 						"collected from the network in the local TDB");
 			}
-				
-			//3. filter out the network devices whose triples do not match certain criteria ( --> SettingMapper)
+//			LD4SDataResource.printDataset("select ?s {graph <"+currentDecisionUri+"> {?s ?p ?o}}", getDatasetFolderPath());
+			
+			Model actuatorInputModel = getActuatorInputAsRdf(this.ov, currentDecisionUri);
+			if (!TDBManager.store(actuatorInputModel, customReasoner, 
+					currentDecisionUri, datasetFolderPath)){
+				logger.severe("Unable to store the RDF descriptions " +
+						"collected from the network in the local TDB");
+			}
+			
+			//3. filter out the network devices whose triples do not match certain criteria
 			Model filteredSensors = NetworkDeviceFilter.applyFilter(this.ov, 
-					netman.getNamedGraphUri(), getDatasetFolderPath());
+					currentDecisionUri, getDatasetFolderPath());
+
+			//4. get the latest readings
+			//for each address in the model
+			HashMap<Resource, String> source2Reading = null;
+			if ((source2Reading = netman.getSensorsLatestReading(filteredSensors, currentDecisionUri, getDatasetFolderPath(), port)) == null){
+				setStatus(Status.SERVER_ERROR_INTERNAL, "Could not collect any sensor reading necessary to start the decision support procedure.");
+				return null;
+			}
+			String latestReading = null;
+			for (Resource res : source2Reading.keySet()){
+				latestReading = source2Reading.get(res);
+				//5. store the reading under this-decision-labelled named graph
+				//Testing: inference of
+				//presence/absence
+				Model rdfObservedValue = getLatestReadingAsRdf(latestReading, res);
+				TDBManager.store(rdfObservedValue, 
+						customReasoner, 
+						currentDecisionUri, datasetFolderPath);
+
+			}
 			
-			//4. consult the rule set to decide what to do with the eventual filtered sensors latest readings
 			
-			
-			
-			//I might later decide to store an RDF representation of the generated decision-making support:
+			//6. consult the rule set based on the coapResourcePath and all the collected 
+			//readings, in order to select a choice
+			rdfData = DecisionSupport.getChoice(getRuleFilePath(), 
+					currentDecisionUri, getDatasetFolderPath());
 			//rdfData = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 			//rdfData = makeOVLinkedData().getModel();
 
-			// create a new resource in the database only if the preferred resource hosting server is
-			// the LD4S one
-			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
-				if (update(rdfData, this.namedModel)){
-					setStatus(Status.SUCCESS_OK);	 
-					ret = serializeAccordingToReqMediaType(rdfData);
-				}else{
-					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
-				}
-			}else{
-				setStatus(Status.SUCCESS_OK);	 
-				ret = serializeAccordingToReqMediaType(rdfData);
+			//store the final decision only for archival purposes
+			if (!TDBManager.store(rdfData, null, currentDecisionUri, datasetFolderPath)){
+				logger.fine("Unable to store the final decision in the Triple DB");
 			}
+			setStatus(Status.SUCCESS_OK);
+			ret = serializeAccordingToReqMediaType(rdfData);
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -147,7 +183,7 @@ public class ActuatorDecisionResource extends LD4SDataResource implements LD4SAp
 	@Delete
 	public void remove() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

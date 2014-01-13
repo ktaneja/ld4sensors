@@ -24,10 +24,11 @@ public class ServerProperties {
 	public final static Role ADMINISTRATOR = new Role("admin", "administrator");
 	public final static Role ANONYMOUS= new Role("anonymous", "anonymous");
 	
-	public static final String RULES_FILE_PROPERTY_KEY = "rules.file";
-	public static final String RULES_FILE_PROPERTY = "rules.txt";
-
-
+	public static final String RULES_FILE_KEY = "ld4s.rules.file";
+	public static final String SENSORS_RDF_DIR_KEY = "ld4s.sensors.rdf.dir";
+	
+	
+	
 	public static String SERVER = "http://0.0.0.0";
 	public static final int PORT = 8182;
 	public static final String CONTEXT_ROOT = "ld4s";
@@ -95,9 +96,15 @@ public class ServerProperties {
 	 * @throws Exception if errors occur.
 	 */
 	private void initializeProperties() throws Exception {
-		String userDir = System.getProperty("user.dir");
-		String propFile = getFoldername()+LD4SConstants.SYSTEM_SEPARATOR
-		+"ld4s.properties";
+		String propFile = getFoldername()+LD4SConstants.SYSTEM_SEPARATOR+"ld4s.properties",
+		userDir = System.getProperty("user.dir");
+		String SENSORS_RDF_DIR_DEFAULT = System.getProperty("user.dir") + LD4SConstants.SYSTEM_SEPARATOR+".ld4s"+
+		LD4SConstants.SYSTEM_SEPARATOR+"sensors-rdf";
+		String UOM_FILE_DEFAULT = System.getProperty("user.dir") + LD4SConstants.SYSTEM_SEPARATOR+".ld4s"+
+		LD4SConstants.SYSTEM_SEPARATOR+"uom"+LD4SConstants.SYSTEM_SEPARATOR+"ucum-essence.xml";
+		String RULES_FILE_DEFAULT = System.getProperty("user.dir") + LD4SConstants.SYSTEM_SEPARATOR+".ld4s"+
+		LD4SConstants.SYSTEM_SEPARATOR+"rules.txt";
+		
 		this.properties = new Properties();
 		// Set defaults
 		properties.setProperty(HOSTNAME_KEY, InetAddress.getLocalHost().getHostAddress());
@@ -105,8 +112,13 @@ public class ServerProperties {
 		properties.setProperty(PORT_KEY, String.valueOf(PORT));
 		properties.setProperty(CONTEXT_ROOT_KEY, CONTEXT_ROOT);
 		properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
-		properties.setProperty(RDF_DIR_KEY, userDir + "/.ld4s/rdf");
-		properties.setProperty(UOM_FILE_KEY, userDir + "/.ld4s/uom/"+"ucum-essence.xml");
+		
+		properties.setProperty(RDF_DIR_KEY, userDir + LD4SConstants.SYSTEM_SEPARATOR+".ld4s"+
+				LD4SConstants.SYSTEM_SEPARATOR+"rdf");
+		properties.setProperty(SENSORS_RDF_DIR_KEY, SENSORS_RDF_DIR_DEFAULT);
+		properties.setProperty(UOM_FILE_KEY, UOM_FILE_DEFAULT);
+		properties.setProperty(RULES_FILE_KEY, RULES_FILE_DEFAULT);
+		
 		properties.setProperty(TEST_PORT_KEY, "9875");
 		properties.setProperty(TEST_HOSTNAME_KEY, "0.0.0.0");
 		properties.setProperty(FRONTSIDECACHE_ENABLED, "true");
@@ -114,7 +126,7 @@ public class ServerProperties {
 		//	    properties.setProperty(CACHE_MAX_LIFE, "365");
 		//	    properties.setProperty(CACHE_CAPACITY, "500000");
 		properties.setProperty(ADMIN_EMAIL_KEY, "admin");
-		properties.setProperty(RULES_FILE_PROPERTY_KEY, RULES_FILE_PROPERTY);
+		
 		FileInputStream stream = null;
 		try {
 			stream = new FileInputStream(propFile);

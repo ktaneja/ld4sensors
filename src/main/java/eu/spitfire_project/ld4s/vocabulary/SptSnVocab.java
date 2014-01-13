@@ -104,8 +104,7 @@ public class SptSnVocab {
 	  // /////////////////////////
 
 	  public  SptSnVocab(){
-		  ENTERTAINMENT.addProperty(RDFS.subClassOf, APPLICATION_DOMAIN);
-		  MUSIC.addProperty(RDFS.subClassOf, ENTERTAINMENT);
+		 
 		  SMARTPHONE.addProperty(RDFS.subClassOf, SsnVocab.SENSING_DEVICE);
 		  
 	  }
