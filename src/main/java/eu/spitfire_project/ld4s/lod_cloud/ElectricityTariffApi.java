@@ -8,7 +8,6 @@ import java.net.URL;
 
 import org.restlet.security.User;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -28,8 +27,8 @@ public class ElectricityTariffApi extends SearchRouter {
 	private static final String dataSourcePath = "http://spitfire-project.eu/energy.rdf"; 
 
 	public ElectricityTariffApi(String baseHost, Context context, User author,
-			Resource from_resource, OntModel from_model) {
-		super(baseHost, context, author, from_resource, from_model);
+			Resource from_resource) {
+		super(baseHost, context, author, from_resource);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -126,11 +125,12 @@ public class ElectricityTariffApi extends SearchRouter {
 	}
 
 	@Override
-	public OntModel start() throws Exception {
+	public Model start() throws Exception {
+		Model fmodel = from_resource.getModel();
 		String query = buildQueryString();
 		Model model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 		if (!isUriAccessible(dataSourcePath)){
-			return from_model;
+			return fmodel;
 		}
 		model.read(dataSourcePath, "RDF/XML");
 		QueryExecution qex = null;
@@ -151,7 +151,7 @@ public class ElectricityTariffApi extends SearchRouter {
 		    Literal vprice = row.getLiteral("price");
 		    Literal vuom = row.getLiteral("uom");
 		    
-		    from_model.add(createLink(vplan.getURI(), vprice.getString(), vuom.getString()));
+		    fmodel.add(createLink(vplan.getURI(), vprice.getString(), vuom.getString()));
 		    
 		    System.out.println(vplan.getURI()+" has price "+vprice.getString());
 		    
@@ -164,7 +164,7 @@ public class ElectricityTariffApi extends SearchRouter {
 				
 			}
 		}
-		return from_model;
+		return fmodel;
 	}
 
 }
