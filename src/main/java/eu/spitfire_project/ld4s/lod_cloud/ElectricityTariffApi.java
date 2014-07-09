@@ -8,6 +8,10 @@ import java.net.URL;
 
 import org.restlet.security.User;
 
+<<<<<<< HEAD
+=======
+import com.hp.hpl.jena.ontology.OntModel;
+>>>>>>> da2f4f743229bf005465b4b662cb939ca5b73288
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -27,8 +31,13 @@ public class ElectricityTariffApi extends SearchRouter {
 	private static final String dataSourcePath = "http://spitfire-project.eu/energy.rdf"; 
 
 	public ElectricityTariffApi(String baseHost, Context context, User author,
+<<<<<<< HEAD
 			Resource from_resource) {
 		super(baseHost, context, author, from_resource);
+=======
+			Resource from_resource, OntModel from_model) {
+		super(baseHost, context, author, from_resource, from_model);
+>>>>>>> da2f4f743229bf005465b4b662cb939ca5b73288
 		// TODO Auto-generated constructor stub
 	}
 
@@ -125,12 +134,20 @@ public class ElectricityTariffApi extends SearchRouter {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public Model start() throws Exception {
 		Model fmodel = from_resource.getModel();
 		String query = buildQueryString();
 		Model model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 		if (!isUriAccessible(dataSourcePath)){
 			return fmodel;
+=======
+	public OntModel start() throws Exception {
+		String query = buildQueryString();
+		Model model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+		if (!isUriAccessible(dataSourcePath)){
+			return from_model;
+>>>>>>> da2f4f743229bf005465b4b662cb939ca5b73288
 		}
 		model.read(dataSourcePath, "RDF/XML");
 		QueryExecution qex = null;
@@ -151,7 +168,11 @@ public class ElectricityTariffApi extends SearchRouter {
 		    Literal vprice = row.getLiteral("price");
 		    Literal vuom = row.getLiteral("uom");
 		    
+<<<<<<< HEAD
 		    fmodel.add(createLink(vplan.getURI(), vprice.getString(), vuom.getString()));
+=======
+		    from_model.add(createLink(vplan.getURI(), vprice.getString(), vuom.getString()));
+>>>>>>> da2f4f743229bf005465b4b662cb939ca5b73288
 		    
 		    System.out.println(vplan.getURI()+" has price "+vprice.getString());
 		    
@@ -164,7 +185,14 @@ public class ElectricityTariffApi extends SearchRouter {
 				
 			}
 		}
+<<<<<<< HEAD
 		return fmodel;
 	}
 
 }
+=======
+		return from_model;
+	}
+
+}
+>>>>>>> da2f4f743229bf005465b4b662cb939ca5b73288
