@@ -2,6 +2,8 @@ package eu.spitfire_project.ld4s.resource.device;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
@@ -14,6 +16,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -21,6 +24,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
+import eu.spitfire_project.ld4s.resource.LD4SDataResource;
+import eu.spitfire_project.ld4s.resource.LD4SDataResource.SparqlType;
 import eu.spitfire_project.ld4s.server.Server;
 
 /**
@@ -337,7 +342,6 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	 */
 	@Override
 	public Representation post(JSONObject obj){
-		registerDevice();
 		Representation ret = null;
 		
 		rdfData = ModelFactory.createDefaultModel();
@@ -379,47 +383,58 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		return ret;
 	}
 	
-	
-	
-	
-
 
 	
 
 	private void registerDevice() {
+		List<String> dataTypes = getDataTypesOfDevice();
 		
+		//Create a column family in Cassandra
+		//Store information about the device and its key in the DB (which DB?)
+		//generate a Unique Identifier
+		//Send to the client
 		
-		Model model = ModelFactory.createDefaultModel();
-		
-		//model.read(new File("/Users/Kunal/Documents/sensor_metadata.rdf").toURL().toString(), "RDF/XML");
-		System.out.println(model);
-		
-		
-		// Create a new query
-		String queryString = 
+		for (String dataType : dataTypes) {
 			
-			"SELECT * " +//?name ?type " +
-			"FROM NAMED <http://10.1.175.81:8080/ld4s/graph/>" +
-			" WHERE {" + 
-			"?a ?p ?sensor.\n"
-			//+ " ?sensor <http://spitfire-project.eu/ontology/ns/uom>  ?uom. \n"
-			//+ " ?uom <http://spitfire-project.eu/ontology/ns/hasMember>  ?member. "
-			//+ " ?member <http://spitfire-project.eu/ontology/ns/type> ?type. "
-			//+ " OPTIONAL { ?member <http://spitfire-project.eu/ontology/ns/name> ?name. }"
-			+ "" + 
-			"      } LIMIT 10";
-		queryString = "SELECT  * " +
-				"FROM NAMED <http://10.1.175.81:8080/ld4s/graph/ov> " +
-					"WHERE { ?x ?y ?z } LIMIT   10";
-
-		Object res = sparqlExec(queryString, SparqlType.SELECT);
+		}
 		
-		ResultSet results = (ResultSet) res;
-				// Output query results	
-		ResultSetFormatter.out(System.out, results);
-
-
 		
+	}
+
+
+	private List<String> getDataTypesOfDevice() {
+		List<String> dataTypes = new ArrayList<String>();
+		String resourceURI = "http://" + Server.getHostName() + "device/" + resourceId;
+		
+		String queryString = 
+				"SELECT ?name ?type " +
+				" WHERE {" + 
+				"<" + resourceURI + ">" + " <http://spitfire-project.eu/ontology/ns/has_sensor> ?sensor.\n"
+				+ " ?sensor <http://spitfire-project.eu/ontology/ns/uom>  ?uom. \n"
+				+ " ?uom <http://spitfire-project.eu/ontology/ns/hasMember>  ?member. \n"
+				+ " ?member <http://spitfire-project.eu/ontology/ns/type> ?type. \n"
+				+ " OPTIONAL { ?member <http://spitfire-project.eu/ontology/ns/name> ?name. }"
+				+ "" + 
+				"      } LIMIT 10";
+		try {
+			queryString = URLDecoder.decode(queryString, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+		Object answer = sparqlExec(queryString, SparqlType.SELECT);
+		Model m = ((ResultSet)answer).getResourceModel();
+		QueryExecution qe = QueryExecutionFactory.create(queryString, m);
+		ResultSet results = qe.execSelect();
+		
+		while(results.hasNext()){
+			QuerySolution qs = results.next();
+			dataTypes.add(qs.get("name") + ":" + qs.get("type"));
+			System.out.println(qs.get("name") + " " + qs.get("type"));
+		}
+		return dataTypes;
 	}
 
 

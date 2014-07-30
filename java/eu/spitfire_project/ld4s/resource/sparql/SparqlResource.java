@@ -1,15 +1,22 @@
 package eu.spitfire_project.ld4s.resource.sparql;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.engine.ResultSetStream;
 
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
+import eu.spitfire_project.ld4s.resource.LD4SDataResource.SparqlType;
 
 /**
  * Resource representing a SPARQL query
