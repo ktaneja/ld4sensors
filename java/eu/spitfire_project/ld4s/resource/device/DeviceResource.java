@@ -400,7 +400,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 			
 			"SELECT * " +//?name ?type " +
 			"FROM NAMED <http://10.1.175.81:8080/ld4s/graph/>" +
-			" WHERE {" +
+			" WHERE {" + 
 			"?a ?p ?sensor.\n"
 			//+ " ?sensor <http://spitfire-project.eu/ontology/ns/uom>  ?uom. \n"
 			//+ " ?uom <http://spitfire-project.eu/ontology/ns/hasMember>  ?member. "
