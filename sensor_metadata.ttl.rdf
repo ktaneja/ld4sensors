@@ -1,0 +1,68 @@
+@prefix : <http://10.1.175.81/ld4s/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ssn: <http://purl.oclc.org/NET/ssnx/ssn#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix muo: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dul: <http://www.loa-cnr.it/ontologies/DUL.owl#> .
+@prefix ao: <http://purl.org/ontology/ao/associationontology.html#> .
+@prefix qudt: <http://qudt.org/1.1/schema/qudt#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix base: <http://spitfire-project.eu/ontology/ns/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+
+
+<http://10.1.175.81/ld4s/resource/device/cpu_sensor>
+	a 	ssn:sensor;
+	base:obs
+           <http://10.1.175.81/ld4s/resource/property/cpu_usage>;
+    base:uom
+        	<http://localhost:8182/ld4s/resource/uom/percentage>;
+    ssn:MeasurementCapability
+    	 	<http://10.1.175.81/ld4s/resource/meas_capab/standard_capability> .
+
+
+
+<http://10.1.175.81/ld4s/resource/device/memory_sensor>
+	a 	ssn:sensor;
+	base:obs
+           <http://10.1.175.81/ld4s/resource/property/memory_usage>;
+    base:uom
+           <http://localhost:8182/ld4s/resource/uom/percentage>;
+    ssn:MeasurementCapability
+    	 	<http://10.1.175.81/ld4s/resource/meas_capab/standard_capability> .
+
+
+<http://10.1.175.81/ld4s/resource/uom/percentage>
+	a 	base:type;
+	base:hasMember
+           [ 
+           		base:type xsd:double
+           ].
+
+<http://10.1.175.81/ld4s/resource/uom/3dvector>
+	a 	base:type;
+	base:hasMember
+           [ 
+            	base:type xsd:double;
+            	base:name X;
+           ];
+    base:hasMember
+           [ 
+            	base:type xsd:double;
+            	base:name Y;
+           ];
+    base:hasMember
+           [ 
+            	base:type xsd:double;
+            	base:name Z;
+           ].
+
+    
+    
+
+
+
