@@ -12,6 +12,16 @@ import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 
+
+
+
+
+
+
+import com.accenture.techlabs.sensordata.dao.SensorDAO;
+import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
+import com.accenture.techlabs.sensordata.dao.SensorDataType;
+import com.accenture.techlabs.sensordata.dao.SensorDataType.Type;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -387,27 +397,26 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	
 
 	private void registerDevice() {
-		List<String> dataTypes = getDataTypesOfDevice();
+		SensorDataType dataType = getDataTypesOfDevice();
+		SensorDAO sensorDAO = SensorDAOFactory.getSensorDAO(SensorDAOFactory.TIMESERIES);
+		sensorDAO.createTable(resourceId, dataType);
 		
 		//Create a column family in Cassandra
 		//Store information about the device and its key in the DB (which DB?)
 		//generate a Unique Identifier
 		//Send to the client
 		
-		for (String dataType : dataTypes) {
-			
-		}
+		
 		
 		
 	}
 
 
-	private List<String> getDataTypesOfDevice() {
-		List<String> dataTypes = new ArrayList<String>();
+	private SensorDataType getDataTypesOfDevice() {
 		String resourceURI = "http://" + Server.getHostName() + "device/" + resourceId;
 		
 		String queryString = 
-				"SELECT ?name ?type " +
+				"SELECT ?sensor ?name ?type " +
 				" WHERE {" + 
 				"<" + resourceURI + ">" + " <http://spitfire-project.eu/ontology/ns/has_sensor> ?sensor.\n"
 				+ " ?sensor <http://spitfire-project.eu/ontology/ns/uom>  ?uom. \n"
@@ -428,13 +437,23 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		Model m = ((ResultSet)answer).getResourceModel();
 		QueryExecution qe = QueryExecutionFactory.create(queryString, m);
 		ResultSet results = qe.execSelect();
-		
+		SensorDataType dataType = new SensorDataType();
 		while(results.hasNext()){
 			QuerySolution qs = results.next();
-			dataTypes.add(qs.get("name") + ":" + qs.get("type"));
-			System.out.println(qs.get("name") + " " + qs.get("type"));
+			String sensor = qs.get("sensor").asResource().getLocalName();
+			String name = null;
+			if(qs.get("name") != null)
+				name = qs.get("name").asResource().getLocalName(); 
+			Type type = getType(qs.get("type").asResource().getLocalName());
+			dataType.addMember(sensor, name, type);
 		}
-		return dataTypes;
+		return dataType;
+	}
+
+
+	private Type getType(String xsdType) {
+		
+		return Type.DOUBLE;
 	}
 
 
