@@ -1,15 +1,15 @@
 package eu.spitfire_project.ld4s.resource.device;
 
-import java.io.File;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 
 
@@ -18,24 +18,22 @@ import org.restlet.representation.Representation;
 
 
 
-import com.accenture.techlabs.sensordata.dao.SensorDAO;
+
+
+
+import com.accenture.techlabs.sensordata.dao.SensorDataDAO;
 import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
-import com.accenture.techlabs.sensordata.dao.SensorDataType;
-import com.accenture.techlabs.sensordata.dao.SensorDataType.Type;
-import com.hp.hpl.jena.query.Query;
+import com.accenture.techlabs.sensordata.model.SensorDataType;
+import com.accenture.techlabs.sensordata.model.SensorDataType.Type;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
-import eu.spitfire_project.ld4s.resource.LD4SDataResource;
-import eu.spitfire_project.ld4s.resource.LD4SDataResource.SparqlType;
 import eu.spitfire_project.ld4s.server.Server;
 
 /**
@@ -94,54 +92,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	}
 
 
-//	/**
-//	 * Create and store a new Observation Value resource as Linked Data
-//	 * from the submitted content. 
-//	 * This resource MUST be stored in the LD4S TDB.
-//	 * This resource MUST not be enriched with Linked Data since this would modify the initial
-//	 * submitted content significantly (use POST instead).
-//	 *
-//	 *@param obj information to be semantically annotated and stored
-//	 */
-//	@Put
-//	public Representation put(OV ldobj){
-//		if (resourceId == null || resourceId.trim().compareTo("") == 0){
-//			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-//			return null;
-//		}
-//		this.ov = ldobj;
-//
-//		if (ov.getRemote_uri() != null){
-//			//if the preferred resource hosting is a remote one, PUT can not be used
-//			//(use POST instead) 
-//			if (this.ov.isStoredRemotely(ld4sServer.getHostName())){
-//				setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-//				return null;
-//			}			
-//		}
-//
-//		Representation ret = null;
-//		rdfData = ModelFactory.createDefaultModel();
-//		super.initModel(rdfData,"spitfire.rdf");
-//		logger.fine(resourceName + " LD4S: Now building LD4S.");
-//		try {
-//			rdfData = makeOVData().getModel();
-//		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}		
-//		// create a new resource in the database
-//		if (store(rdfData, this.namedModel)){
-//			setStatus(Status.SUCCESS_CREATED);	
-//			ret = serializeAccordingToReqMediaType(rdfData);
-//		}else{
-//			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to store in the Trple DB");
-//		}
-//		return ret;
-//	}
+
 
 	// PUT req: resource stored locally + no Linked Data enrichment
 	/**
@@ -257,45 +208,6 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		return ret;
 	}
 
-//	/**
-//	 * Update a stored Observation Value resource
-//	 * with the information sent 
-//	 *
-//	 *@param obj information to store
-//	 */
-//	@Post
-//	public Representation post(OV ldobj){
-//		this.ov = ldobj;
-//		Representation ret = null;
-//		rdfData = ModelFactory.createDefaultModel();
-//		super.initModel(rdfData,"spitfire.rdf");
-//		logger.fine(resourceName + " LD4S: Now updating.");
-//		try {
-//			rdfData = makeOVLinkedData().getModel();
-//
-//			// create a new resource in the database only if the preferred resource hosting server is
-//			// the LD4S one
-//			if (resourceId != null || !this.ov.isStoredRemotely(ld4sServer.getHostName())){
-//				if (update(rdfData, this.namedModel)){
-//					setStatus(Status.SUCCESS_OK);	 
-//					ret = serializeAccordingToReqMediaType(rdfData);
-//				}else{
-//					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
-//				}
-//			}else{
-//				setStatus(Status.SUCCESS_OK);	 
-//				ret = serializeAccordingToReqMediaType(rdfData);
-//			}
-//		}  catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}catch (JSONException e) {
-//			e.printStackTrace();
-//			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-//		}		
-//
-//		return ret;
-//	}
 
 	/**
 	 * Update a stored Observation Value resource
@@ -358,6 +270,9 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
+			
+			String uuid = registerDevice();
+			obj.append("uuid",uuid);
 			this.ov = new Device(obj, Server.getHostName());
 			rdfData = makeOVLinkedData().getModel();
 
@@ -365,10 +280,15 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 			// the LD4S one
 			if (resourceId != null || !this.ov.isStoredRemotely(Server.getHostName())){
 				
+				
 				if (update(rdfData, this.namedModel)){
-					registerDevice();
+					
+					
 					setStatus(Status.SUCCESS_OK);
-					ret = serializeAccordingToReqMediaType(rdfData);
+					//ret = serializeAccordingToReqMediaType(rdfData);
+					JSONObject response = new JSONObject();
+					response.append("uuid", uuid);
+					ret = new JsonRepresentation(response); 
 				}else{
 					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
 				}
@@ -388,30 +308,28 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 					+e.getMessage());
 			return null;
 		}
-
-
 		return ret;
 	}
 	
 
 	
 
-	private void registerDevice() {
+	private String registerDevice() {
 		SensorDataType dataType = getDataTypesOfDevice();
-		SensorDAO sensorDAO = SensorDAOFactory.getSensorDAO(SensorDAOFactory.TIMESERIES);
+		SensorDataDAO sensorDAO = SensorDAOFactory.getSensorDAO(SensorDAOFactory.SENSOR_TIMESERIES);
+		
+		String uuid = getUniqueIdentifier();
 		sensorDAO.createTable(resourceId, dataType);
 		
-		//Create a column family in Cassandra
-		//Store information about the device and its key in the DB (which DB?)
-		//generate a Unique Identifier
-		//Send to the client
-		
-		
-		
-		
+		return uuid;
 	}
 
 
+	private String getUniqueIdentifier() {
+		UUID uuid = UUID.randomUUID();
+		return uuid.toString();
+	}
+	
 	private SensorDataType getDataTypesOfDevice() {
 		String resourceURI = "http://" + Server.getHostName() + "device/" + resourceId;
 		

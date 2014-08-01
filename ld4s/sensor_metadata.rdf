@@ -1,69 +1,59 @@
-@prefix : <techlabs.accenture.com/ld4s> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix ssn: <http://purl.oclc.org/NET/ssnx/ssn#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix muo: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dul: <http://www.loa-cnr.it/ontologies/DUL.owl#> .
-@prefix ao: <http://purl.org/ontology/ao/associationontology.html#> .
-@prefix qudt: <http://qudt.org/1.1/schema/qudt#> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix base: <http://spitfire-project.eu/ontology/ns/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix acn: <techlabs.accenture.com/ld4s> .
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns="http://10.1.175.98:8080/ld4s/"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:ssn="http://purl.oclc.org/NET/ssnx/ssn#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:dul="http://www.loa-cnr.it/ontologies/DUL.owl#"
+	xmlns:ao="http://purl.org/ontology/ao/associationontology.html#"
+	xmlns:qudt="http://qudt.org/1.1/schema/qudt#"
+	xmlns:prov="http://www.w3.org/ns/prov#"
+	xmlns:base="http://spitfire-project.eu/ontology/ns/">
 
+<!--rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/device/VM/Qian-Demo_gui">
+	<rdf:type rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#device"/>
+	<foaf:name>Qian-Demo_gui</foaf:name>
+	<hasSensor xmlns="http://10.1.175.98:8080/ld4s/resource/property/" rdf:resource="http://10.1.175.98:8080/ld4s/resource/device/cpu_sensor"/>
+	<hasSensor xmlns="http://10.1.175.98:8080/ld4s/resource/property/" rdf:resource="http://10.1.175.98:8080/ld4s/resource/device/memory_sensor"/>
+	<prov:wasGeneratedBy rdf:resource="http://10.1.175.98:8080/ld4s/resource/people/QianZhu"/>
+	<dul:hasLocation rdf:resource="http://10.1.175.98:8080/ld4s/resource/location/37.3333_121.9000"/>
+</rdf:Description>
+-->
+<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/device/cpu_sensor">
+	<rdf:type rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#sensor"/>
+	<base:obs rdf:resource="http://10.1.175.98:8080/ld4s/resource/property/cpu_usage"/>
+	<base:uom rdf:resource="http://10.1.175.98:8080/ld4s/resource/uom/percentage"/>
+	<ssn:MeasurementCapability rdf:resource="http://10.1.175.98:8080/ld4s/resource/meas_capab/standard_capability"/>
+</rdf:Description>
 
+<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/device/memory_sensor">
+	<rdf:type rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#sensor"/>
+	<base:obs rdf:resource="http://10.1.175.98:8080/ld4s/resource/property/memory_usage"/>
+	<base:uom rdf:resource="http://10.1.175.98:8080/ld4s/resource/uom/percentage"/>
+	<ssn:MeasurementCapability rdf:resource="http://10.1.175.98:8080/ld4s/resource/meas_capab/standard_capability"/>
+</rdf:Description>
 
-<http://10.1.175.81/ld4s/resource/device/cpu_sensor>
-	a 	ssn:sensor;
-	base:obs
-           <http://10.1.175.81/ld4s/resource/property/cpu_usage>;
-    base:uom
-        	<http://localhost:8182/ld4s/resource/uom/percentage>;
-    ssn:MeasurementCapability
-    	 	<http://10.1.175.81/ld4s/resource/meas_capab/standard_capability> .
+<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/uom/percentage">
+	<rdf:type rdf:resource="http://spitfire-project.eu/ontology/ns/type"/>
+</rdf:Description>
 
+<rdf:Description rdf:nodeID="node18t16ms4ex31379">
+	<base:type rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+</rdf:Description>
 
+<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/uom/percentage">
+	<base:hasMember rdf:nodeID="node18t16ms4ex31379"/>
+</rdf:Description>
 
-<http://10.1.175.81/ld4s/resource/device/memory_sensor>
-	a 	ssn:sensor;
-	base:obs
-           <http://10.1.175.81/ld4s/resource/property/memory_usage>;
-    base:uom
-           <http://localhost:8182/ld4s/resource/uom/percentage>;
-    ssn:MeasurementCapability
-    	 	<http://10.1.175.81/ld4s/resource/meas_capab/standard_capability> .
+<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/uom/3dvector">
+	<rdf:type rdf:resource="http://spitfire-project.eu/ontology/ns/type"/>
+</rdf:Description>
 
+<rdf:Description rdf:nodeID="node18t16ms4ex31380">
+	<base:type rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+</rdf:Description>
 
-<http://10.1.175.81/ld4s/resource/uom/percentage>
-	a 	base:type;
-	base:hasMember
-           [ 
-           		base:type xsd:double
-           ].
-
-<http://10.1.175.81/ld4s/resource/uom/3dvector>
-	a 	base:type;
-	base:hasMember
-           [ 
-            	base:type xsd:double;
-            	base:name X;
-           ];
-    base:hasMember
-           [ 
-            	base:type xsd:double;
-            	base:name Y;
-           ];
-    base:hasMember
-           [ 
-            	base:type xsd:double;
-            	base:name Z;
-           ].
-
-    
-    
-
-
-
+</rdf:RDF>

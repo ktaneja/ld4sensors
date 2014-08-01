@@ -62,8 +62,18 @@ public class Device extends LD4SObject  implements Serializable{
 	
 	/** List of sensor this device has */
 	private String[] sensors = null;
+	
+	private String UUID = null;
 
 
+
+	public String getUUID() {
+		return UUID;
+	}
+
+	public void setUUID(String uUID) {
+		UUID = uUID;
+	}
 
 	public Device(String host, String[] values, String uom,
 			String op, String bn, String bovn, String criteria, String localhost,
@@ -119,6 +129,9 @@ public class Device extends LD4SObject  implements Serializable{
 		if(json.has("type")){
 			this.setType(json.getString("type"));
 		}
+		if(json.has("uuid")){
+			this.setUUID(json.getString("uuid"));
+		}
 	}
 
 	
@@ -142,6 +155,8 @@ public class Device extends LD4SObject  implements Serializable{
 				form.getFirstValue("context"), localhost);
 	}
 
+
+	
 
 	@Override
 	public String getRemote_uri() {

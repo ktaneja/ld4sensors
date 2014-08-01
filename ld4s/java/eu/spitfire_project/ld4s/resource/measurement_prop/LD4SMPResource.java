@@ -69,7 +69,7 @@ public class LD4SMPResource extends LD4SDataResource {
 	/**
 	 * Creates the main resource
 	 * @param model
-	 * @param value
+	 * @param observation
 	 * @return
 	 * @throws Exception 
 	 */

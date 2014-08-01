@@ -217,6 +217,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
 		      .createObjectProperty(NS+"sensorAddress");
 	  public static final ObjectProperty HAS_SENSOR = m_model
 		      .createObjectProperty(NS+"has_sensor");
+	  public static final ObjectProperty UUID = m_model
+		      .createObjectProperty(NS+"uuid");
 	  
 	  // Vocabulary individuals
 	  // /////////////////////////

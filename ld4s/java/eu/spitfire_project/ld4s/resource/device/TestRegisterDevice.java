@@ -113,48 +113,12 @@ public class TestRegisterDevice extends LD4STestHelper{
 		ClientResource cr;
 		Representation resp;
 		Status status;
-		/*
-		resourceId = "cpu_sensor"; 
-		observed_property = "http://10.1.175.81/ld4s/resource/property/cpu_usage";
-		uom = "http://localhost:8182/ld4s/resource/uom/percentage";
-		capability = "http://10.1.175.81/ld4s/resource/meas_capab/standard_capability";
-		type = "CPU Sensor";
-		location_coords = "37.3333_121.9000";
-		//location = "San Jose, CA";
-		
-		initJson(false, false);
-		System.out.println(json.toString());		 
-		cr = new ClientResource(local_uri+resourceId);
-		resp = cr.post(json);
-		status = cr.getStatus();
-		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
-		assertTrue(status.isSuccess());
-		
-		resourceId = "memory_sensor"; 
-		observed_property = "http://10.1.175.81/ld4s/resource/property/memory_usage";
-		uom = "http://localhost:8182/ld4s/resource/uom/percentage";
-		capability = "http://10.1.175.81/ld4s/resource/meas_capab/standard_capability";
-		type = "Memory Sensor";
-		
-		initJson(false, false);
-		System.out.println(json.toString());	
-		cr = new ClientResource(local_uri+resourceId);
-		resp = cr.post(json);
-		status = cr.getStatus();
-		System.out.println(status.getCode()+ " - "+cr.getStatus().getDescription());            
-		assertTrue(status.isSuccess());
-		
-		observed_property = null;
-		uom = null;
-		capability = null;
-		*/
+
 		local_uri = "http://10.1.175.98:8080/ld4s/device/";
 		resourceId = "VM_Qian-Demo_gui";
 		hasSensors = new String[2];
 		hasSensors[0] = "http://10.1.175.98:8080/ld4s/resource/device/cpu_sensor";
 		hasSensors[1] = "http://10.1.175.98:8080/ld4s/resource/device/memory_sensor";
-		observed_property = "http://10.1.175.98:8080/ld4s/resource/property/memory_usage";
-		//uom = "http://10.1.175.98:8080/ld4s/resource/uom/percentage";
 		type = "Virtual Machine";
 		owner = "http://10.1.175.98:8080/ld4s/resource/people/QianZhu";
 		location_coords = "37.3333_121.9000";

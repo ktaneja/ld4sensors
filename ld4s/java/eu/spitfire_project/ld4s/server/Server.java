@@ -8,6 +8,8 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
+import com.accenture.sensordata.api.DeviceObservationDataResource;
+
 import eu.spitfire_project.ld4s.cache.FrontSideCache;
 import eu.spitfire_project.ld4s.dataset.VocabVoIDResource;
 import eu.spitfire_project.ld4s.resource.actuator_decision.ActuatorDecisionResource;
@@ -331,6 +333,8 @@ public class Server extends Application{
 				// ACTUATOR DECISION SUPPORT
 				router.attach("/actuator/decision", ActuatorDecisionResource.class);
 				router.attach("/actuator/decision/", ActuatorDecisionResource.class);
+				
+				router.attach("/postdata", DeviceObservationDataResource.class);
 		
 
 		return router;

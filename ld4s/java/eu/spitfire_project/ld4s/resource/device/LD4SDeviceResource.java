@@ -119,6 +119,19 @@ public class LD4SDeviceResource extends LD4SDataResource {
 				resource = addUom(resource, item);
 			}
 		}
+		
+		item = ov.getUUID();
+		if (item != null && item.trim().compareTo("")!=0){
+			
+			if (item.startsWith("http://")){
+				resource.addProperty(SptVocab.UUID, 
+						rdfData.createResource(item));	
+			}else{
+				resource.addProperty(SptVocab.UUID, item);
+			}	
+			
+		}
+		
 		String[] tprops = ov.getTsproperties();
 		if (tprops != null){
 			for (int i=0; i<tprops.length ;i++){
