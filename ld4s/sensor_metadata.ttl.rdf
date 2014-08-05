@@ -1,4 +1,4 @@
-@prefix : <http://10.1.175.81/ld4s/> .
+@prefix : <http://192.168.1.65:8080/ld4s/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -15,35 +15,35 @@
 
 
 
-<http://10.1.175.81/ld4s/resource/device/cpu_sensor>
+<http://192.168.1.65:8080/ld4s/resource/device/cpu_sensor>
 	a 	ssn:sensor;
 	base:obs
-           <http://10.1.175.81/ld4s/resource/property/cpu_usage>;
+           <http://192.168.1.65:8080/ld4s/resource/property/cpu_usage>;
     base:uom
-        	<http://localhost:8182/ld4s/resource/uom/percentage>;
+        	<http://192.168.1.65:8080/ld4s/resource/uom/percentage>;
     ssn:MeasurementCapability
-    	 	<http://10.1.175.81/ld4s/resource/meas_capab/standard_capability> .
+    	 	<http://192.168.1.65:8080/ld4s/resource/meas_capab/standard_capability> .
 
 
 
-<http://10.1.175.81/ld4s/resource/device/memory_sensor>
+<http://192.168.1.65:8080/ld4s/resource/device/memory_sensor>
 	a 	ssn:sensor;
 	base:obs
-           <http://10.1.175.81/ld4s/resource/property/memory_usage>;
+           <http://192.168.1.65:8080/ld4s/resource/property/memory_usage>;
     base:uom
-           <http://localhost:8182/ld4s/resource/uom/percentage>;
+           <http://192.168.1.65:8080/ld4s/resource/uom/percentage>;
     ssn:MeasurementCapability
-    	 	<http://10.1.175.81/ld4s/resource/meas_capab/standard_capability> .
+    	 	<http://192.168.1.65:8080/ld4s/resource/meas_capab/standard_capability> .
 
 
-<http://10.1.175.81/ld4s/resource/uom/percentage>
+<http://192.168.1.65:8080/ld4s/resource/uom/percentage>
 	a 	base:type;
 	base:hasMember
            [ 
            		base:type xsd:double
            ].
 
-<http://10.1.175.81/ld4s/resource/uom/3dvector>
+<http://192.168.1.65:8080/ld4s/resource/uom/3dvector>
 	a 	base:type;
 	base:hasMember
            [ 

@@ -12,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
+import eu.spitfire_project.ld4s.server.Server;
 
 /**
  * Resource representing an observation value.
@@ -286,7 +287,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LD4S: Now updating.");
 		try {
-			this.ov = new Device(obj, this.ld4sServer.getHostName());
+			this.ov = new Device(obj, Server.getHostName());
 			rdfData = makeOVLinkedData().getModel();
 
 			// create a new resource in the database only if the preferred resource hosting server is

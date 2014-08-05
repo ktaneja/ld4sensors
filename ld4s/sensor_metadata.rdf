@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF
-	xmlns="http://10.1.175.98:8080/ld4s/"
+	xmlns="http://192.168.1.65:8080/ld4s/"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
@@ -13,46 +13,45 @@
 	xmlns:prov="http://www.w3.org/ns/prov#"
 	xmlns:base="http://spitfire-project.eu/ontology/ns/">
 
-<!--rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/device/VM/Qian-Demo_gui">
-	<rdf:type rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#device"/>
-	<foaf:name>Qian-Demo_gui</foaf:name>
-	<hasSensor xmlns="http://10.1.175.98:8080/ld4s/resource/property/" rdf:resource="http://10.1.175.98:8080/ld4s/resource/device/cpu_sensor"/>
-	<hasSensor xmlns="http://10.1.175.98:8080/ld4s/resource/property/" rdf:resource="http://10.1.175.98:8080/ld4s/resource/device/memory_sensor"/>
-	<prov:wasGeneratedBy rdf:resource="http://10.1.175.98:8080/ld4s/resource/people/QianZhu"/>
-	<dul:hasLocation rdf:resource="http://10.1.175.98:8080/ld4s/resource/location/37.3333_121.9000"/>
-</rdf:Description>
--->
-<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/device/cpu_sensor">
+
+<rdf:Description rdf:about="http://192.168.1.65:8080/ld4s/device/VM_Qian-Demo_gui">
+    <rdf:type rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#Device"/>
+    <base:has_sensor rdf:resource="http://192.168.1.65:8080/ld4s/resource/device/cpu_sensor"/>
+    <base:has_sensor rdf:resource="http://192.168.1.65:8080/ld4s/resource/device/memory_sensor"/>
+    <base:uuid>["c6d4ebc6-8e74-434f-aa01-1b1eb1044061"]</base:uuid>
+  </rdf:Description>
+
+<rdf:Description rdf:about="http://192.168.1.65:8080/ld4s/resource/device/cpu_sensor">
 	<rdf:type rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#sensor"/>
-	<base:obs rdf:resource="http://10.1.175.98:8080/ld4s/resource/property/cpu_usage"/>
-	<base:uom rdf:resource="http://10.1.175.98:8080/ld4s/resource/uom/percentage"/>
-	<ssn:MeasurementCapability rdf:resource="http://10.1.175.98:8080/ld4s/resource/meas_capab/standard_capability"/>
+	<base:obs rdf:resource="http://192.168.1.65:8080/ld4s/resource/property/cpu_usage"/>
+	<base:uom rdf:resource="http://192.168.1.65:8080/ld4s/resource/uom/percentage"/>
+	<ssn:MeasurementCapability rdf:resource="http://192.168.1.65:8080/ld4s/resource/meas_capab/standard_capability"/>
 </rdf:Description>
 
-<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/device/memory_sensor">
+<rdf:Description rdf:about="http://192.168.1.65:8080/ld4s/resource/device/memory_sensor">
 	<rdf:type rdf:resource="http://purl.oclc.org/NET/ssnx/ssn#sensor"/>
-	<base:obs rdf:resource="http://10.1.175.98:8080/ld4s/resource/property/memory_usage"/>
-	<base:uom rdf:resource="http://10.1.175.98:8080/ld4s/resource/uom/percentage"/>
-	<ssn:MeasurementCapability rdf:resource="http://10.1.175.98:8080/ld4s/resource/meas_capab/standard_capability"/>
+	<base:obs rdf:resource="http://192.168.1.65:8080/ld4s/resource/property/memory_usage"/>
+	<base:uom rdf:resource="http://192.168.1.65:8080/ld4s/resource/uom/percentage"/>
+	<ssn:MeasurementCapability rdf:resource="http://192.168.1.65:8080/ld4s/resource/meas_capab/standard_capability"/>
 </rdf:Description>
 
-<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/uom/percentage">
+<rdf:Description rdf:about="http://192.168.1.65:8080/ld4s/resource/uom/percentage">
 	<rdf:type rdf:resource="http://spitfire-project.eu/ontology/ns/type"/>
 </rdf:Description>
 
-<rdf:Description rdf:nodeID="node18t16ms4ex31379">
+<rdf:Description rdf:nodeID="node18t16ms4ex35422">
 	<base:type rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
 </rdf:Description>
 
-<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/uom/percentage">
-	<base:hasMember rdf:nodeID="node18t16ms4ex31379"/>
+<rdf:Description rdf:about="http://192.168.1.65:8080/ld4s/resource/uom/percentage">
+	<base:hasMember rdf:nodeID="node18t16ms4ex35422"/>
 </rdf:Description>
 
-<rdf:Description rdf:about="http://10.1.175.98:8080/ld4s/resource/uom/3dvector">
+<rdf:Description rdf:about="http://192.168.1.65:8080/ld4s/resource/uom/3dvector">
 	<rdf:type rdf:resource="http://spitfire-project.eu/ontology/ns/type"/>
 </rdf:Description>
 
-<rdf:Description rdf:nodeID="node18t16ms4ex31380">
+<rdf:Description rdf:nodeID="node18t16ms4ex35423">
 	<base:type rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
 </rdf:Description>
 

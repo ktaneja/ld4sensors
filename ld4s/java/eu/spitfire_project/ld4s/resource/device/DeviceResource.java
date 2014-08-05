@@ -23,8 +23,8 @@ import org.restlet.representation.Representation;
 
 import com.accenture.techlabs.sensordata.dao.SensorDataDAO;
 import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
-import com.accenture.techlabs.sensordata.model.SensorDataType;
-import com.accenture.techlabs.sensordata.model.SensorDataType.Type;
+import com.accenture.techlabs.sensordata.model.DeviceDataType;
+import com.accenture.techlabs.sensordata.model.DeviceDataType.Type;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -264,6 +264,8 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	 */
 	@Override
 	public Representation post(JSONObject obj){
+		System.out.println("Working Directory = " +
+	              System.getProperty("user.dir"));
 		Representation ret = null;
 		
 		rdfData = ModelFactory.createDefaultModel();
@@ -315,7 +317,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	
 
 	private String registerDevice() {
-		SensorDataType dataType = getDataTypesOfDevice();
+		DeviceDataType dataType = getDataTypesOfDevice();
 		SensorDataDAO sensorDAO = SensorDAOFactory.getSensorDAO(SensorDAOFactory.SENSOR_TIMESERIES);
 		
 		String uuid = getUniqueIdentifier();
@@ -330,7 +332,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		return uuid.toString();
 	}
 	
-	private SensorDataType getDataTypesOfDevice() {
+	private DeviceDataType getDataTypesOfDevice() {
 		String resourceURI = "http://" + Server.getHostName() + "device/" + resourceId;
 		
 		String queryString = 
@@ -355,7 +357,7 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 		Model m = ((ResultSet)answer).getResourceModel();
 		QueryExecution qe = QueryExecutionFactory.create(queryString, m);
 		ResultSet results = qe.execSelect();
-		SensorDataType dataType = new SensorDataType();
+		DeviceDataType dataType = new DeviceDataType();
 		while(results.hasNext()){
 			QuerySolution qs = results.next();
 			String sensor = qs.get("sensor").asResource().getLocalName();

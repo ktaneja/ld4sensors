@@ -1,7 +1,5 @@
 package com.accenture.sensordata.api;
 
-import javax.media.j3d.Sensor;
-
 import org.json.JSONObject;
 import org.restlet.data.Form;
 import org.restlet.ext.json.JsonRepresentation;
@@ -12,8 +10,9 @@ import com.accenture.techlabs.sensordata.dao.SensorDataDAO;
 import com.google.gson.Gson;
 
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
+import eu.spitfire_project.ld4s.resource.LD4SDataResource;
 
-public class DeviceObservationDataResource implements LD4SApiInterface {
+public class DeviceObservationDataResource extends LD4SDataResource implements LD4SApiInterface {
 
 	@Override
 	public Representation get() {

@@ -27,6 +27,7 @@ public class TestRegisterDevice extends LD4STestHelper{
 	protected String resourceId ;
 
 	/** LD4S currently running server host. */
+	private String localIP = "192.168.1.65:8080";
 	protected String local_uri = "http://localhost:8080/ld4s/device/";
 	
 	protected String base_uri = "http://localhost:8080/ld4s/";
@@ -114,13 +115,13 @@ public class TestRegisterDevice extends LD4STestHelper{
 		Representation resp;
 		Status status;
 
-		local_uri = "http://10.1.175.98:8080/ld4s/device/";
+		local_uri = "http://" + localIP + "/ld4s/device/";
 		resourceId = "VM_Qian-Demo_gui";
 		hasSensors = new String[2];
-		hasSensors[0] = "http://10.1.175.98:8080/ld4s/resource/device/cpu_sensor";
-		hasSensors[1] = "http://10.1.175.98:8080/ld4s/resource/device/memory_sensor";
+		hasSensors[0] = localIP + "/ld4s/resource/device/cpu_sensor";
+		hasSensors[1] = localIP + "/ld4s/resource/device/memory_sensor";
 		type = "Virtual Machine";
-		owner = "http://10.1.175.98:8080/ld4s/resource/people/QianZhu";
+		owner = localIP + "/ld4s/resource/people/QianZhu";
 		location_coords = "37.3333_121.9000";
 		
 		initJson(false, false);
