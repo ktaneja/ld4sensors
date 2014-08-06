@@ -1,0 +1,999 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:provider="http://techlabs.accenture.com/provider#"
+    xmlns:policy="http://techlabs.accenture.com/policy#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:infra="http://techlabs.accenture.com/infra#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:org="http://techlabs.accenture.com/org#"
+    xmlns:util="http://techlabs.accenture.com/util#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://techlabs.accenture.com/infra">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://spinrdf.org/spin"/>
+  </owl:Ontology>
+  <owl:Ontology rdf:about="#">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Created with TopBraid Composer</owl:versionInfo>
+  </owl:Ontology>
+  <owl:Class rdf:ID="AWS">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="CloudProvider"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#EC2InstanceType">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#InstanceType"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Delete">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="LifeCycleInterface"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#Regulation">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/policy#MandatoryPolicy"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="AWSS3">
+    <rdfs:subClassOf rdf:resource="#AWS"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AWSEC2Instance">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Compute"/>
+    </rdfs:subClassOf>
+    <infra:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >99.9</infra:availability>
+  </owl:Class>
+  <owl:Class rdf:ID="MacOS">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OS"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#LifeCycleInterface">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="RootInterface"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/org#Organization">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ChefSolo">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Chef"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#AvailabilityZone">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#AWS"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/org#ACN">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/org#Organization"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCESharedCore">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEInstanceType"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Start">
+    <rdfs:subClassOf rdf:resource="#LifeCycleInterface"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LinuxBased">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Implementation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Debian">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Linux"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Env">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Storage">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Infrastructure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/util#Mapping">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MySQLForMMS">
+    <infra:version rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >5.5</infra:version>
+    <infra:root_password rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >root</infra:root_password>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="MySQL"/>
+    </rdfs:subClassOf>
+    <infra:port rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3306</infra:port>
+  </owl:Class>
+  <owl:Class rdf:ID="TPGWDatabase">
+    <infra:db_user rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >root</infra:db_user>
+    <infra:db_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >tpgw</infra:db_name>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="MySQLDatabase"/>
+    </rdfs:subClassOf>
+    <infra:db_password rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >root</infra:db_password>
+    <infra:db_port rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3306</infra:db_port>
+  </owl:Class>
+  <owl:Class rdf:ID="Platform">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="RootNode"/>
+    </rdfs:subClassOf>
+    <owl:hasKey rdf:parseType="Resource">
+      <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+      >version</rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >name</rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </rdf:rest>
+    </owl:hasKey>
+  </owl:Class>
+  <owl:Class rdf:ID="MMS_DB_Schema">
+    <infra:file_ext rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sql</infra:file_ext>
+    <infra:target_folder rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >/tmp</infra:target_folder>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Deployment"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="BatchScript">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="WindowsBased"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/org#User">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#VendorLicense">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/policy#OptionalPolicy"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Template">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MyOpenStackInstance">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OpenStackNovaInstance"/>
+    </rdfs:subClassOf>
+    <infra:identity rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >novaabc</infra:identity>
+    <infra:secret rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >novapasswd</infra:secret>
+  </owl:Class>
+  <owl:Class rdf:about="#RootNode">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#AntiCollocation">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/policy#OptionalPolicy"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#Security">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/policy#MandatoryPolicy"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Stop">
+    <rdfs:subClassOf rdf:resource="#LifeCycleInterface"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEHighMemory">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEInstanceType"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ChefServer">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Chef"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Create">
+    <rdfs:subClassOf rdf:resource="#LifeCycleInterface"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Python">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Runtime"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#AWS">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#AuxiliaryTypes"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#SLA">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/policy#OptionalPolicy"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEHighCPU">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEInstanceType"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Application">
+    <rdfs:subClassOf rdf:resource="#RootNode"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ESB">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Middleware"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#Policy">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEStandard">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEInstanceType"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="SQLServer">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="DBMS"/>
+    </rdfs:subClassOf>
+    <infra:databse_hosted_on_dbms>
+      <owl:Class rdf:ID="Windows"/>
+    </infra:databse_hosted_on_dbms>
+  </owl:Class>
+  <owl:Class rdf:about="#Runtime">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="SoftwareComponent"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Tier">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Infrastructure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#AuxiliaryTypes">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="WebApp">
+    <rdfs:subClassOf rdf:resource="#Application"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#EC2ComputeOptimized">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/provider#EC2InstanceType"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#GCEInstanceType">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#InstanceType"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#EC2MemoryOptimized">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/provider#EC2InstanceType"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Infrastructure">
+    <rdfs:subClassOf rdf:resource="#RootNode"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#NovaInstanceType">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://techlabs.accenture.com/provider#InstanceType"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#OptionalPolicy">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#MandatoryPolicy">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+  </owl:Class>
+  <owl:Class rdf:about="#SoftwareComponent">
+    <rdfs:subClassOf rdf:resource="#Platform"/>
+  </owl:Class>
+  <owl:Class rdf:about="#DBMS">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Middleware"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Middleware">
+    <rdfs:subClassOf rdf:resource="#SoftwareComponent"/>
+  </owl:Class>
+  <owl:Class rdf:about="#WindowsBased">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Implementation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#MySQLDatabase">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Database"/>
+    </rdfs:subClassOf>
+    <infra:db_port rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3306</infra:db_port>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#EC2GeneralPurpose">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/provider#EC2InstanceType"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Network">
+    <rdfs:subClassOf rdf:resource="#Infrastructure"/>
+  </owl:Class>
+  <owl:Class rdf:about="#RootInterface">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Implementation">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="RootArtifacts"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Chef">
+    <rdfs:subClassOf rdf:resource="#LinuxBased"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AWSASG">
+    <rdfs:subClassOf rdf:resource="#Tier"/>
+  </owl:Class>
+  <owl:Class rdf:ID="WebServer">
+    <rdfs:subClassOf rdf:resource="#Middleware"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Configure">
+    <rdfs:subClassOf rdf:resource="#LifeCycleInterface"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/provider#InstanceType">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/provider#AuxiliaryTypes"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Ubuntu">
+    <rdfs:subClassOf rdf:resource="#Debian"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OS">
+    <rdfs:subClassOf rdf:resource="#Platform"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Bash">
+    <rdfs:subClassOf rdf:resource="#LinuxBased"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OpenStackNovaInstance">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Compute"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#Collocation">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/policy#OptionalPolicy"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://techlabs.accenture.com/policy#CostMinimization">
+    <rdfs:subClassOf rdf:resource="http://techlabs.accenture.com/policy#OptionalPolicy"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Java">
+    <rdfs:subClassOf rdf:resource="#Runtime"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Image">
+    <rdfs:subClassOf rdf:resource="#Infrastructure"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Compute">
+    <rdfs:subClassOf rdf:resource="#Infrastructure"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OpenStack">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#CloudProvider"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#MySQL">
+    <rdfs:subClassOf rdf:resource="#DBMS"/>
+    <infra:port rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3306</infra:port>
+  </owl:Class>
+  <owl:Class rdf:about="#Windows">
+    <rdfs:subClassOf rdf:resource="#OS"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PHP">
+    <rdfs:subClassOf rdf:resource="#Runtime"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AWSEC2">
+    <rdfs:subClassOf rdf:resource="#AWS"/>
+  </owl:Class>
+  <owl:Class rdf:about="#CloudProvider">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Deployment">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#RootArtifacts"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Database">
+    <rdfs:subClassOf rdf:resource="#Application"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Linux">
+    <rdfs:subClassOf rdf:resource="#OS"/>
+  </owl:Class>
+  <owl:Class rdf:about="#RootArtifacts">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AppServer">
+    <rdfs:subClassOf rdf:resource="#Middleware"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Fedora">
+    <rdfs:subClassOf rdf:resource="#Linux"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MyAWSEC2Instance">
+    <rdfs:subClassOf rdf:resource="#AWSEC2Instance"/>
+    <infra:secret rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mysecret</infra:secret>
+    <infra:identity rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >myidentity</infra:identity>
+  </owl:Class>
+  <rdf:Property rdf:ID="deployment_artifact">
+    <rdfs:domain rdf:resource="#Application"/>
+    <rdfs:range rdf:resource="#Deployment"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="vm_hosted_on_tier">
+    <rdfs:subPropertyOf>
+      <rdf:Property rdf:ID="hosted_on"/>
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="#Compute"/>
+    <rdfs:range rdf:resource="#Tier"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="scripts_runs_on_windows">
+    <rdfs:range rdf:resource="#Windows"/>
+    <rdfs:domain rdf:resource="#WindowsBased"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="software_hosted_on_os">
+    <rdfs:domain rdf:resource="#SoftwareComponent"/>
+    <rdfs:range rdf:resource="#OS"/>
+    <rdfs:subPropertyOf rdf:resource="#hosted_on"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://techlabs.accenture.com/policy#org">
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/org#Organization"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="availabilityZone">
+    <rdfs:domain rdf:resource="#AWSEC2Instance"/>
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/provider#AvailabilityZone"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="instanceType">
+    <rdfs:domain rdf:resource="#Compute"/>
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/provider#InstanceType"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://techlabs.accenture.com/org#has_user">
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/org#User"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/org#Organization"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="interface">
+    <rdfs:range rdf:resource="#LifeCycleInterface"/>
+    <rdfs:domain rdf:resource="#RootNode"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://techlabs.accenture.com/org#has_org">
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/org#Organization"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/org#User"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="databse_hosted_on_dbms">
+    <rdfs:range rdf:resource="#DBMS"/>
+    <rdfs:domain rdf:resource="#Database"/>
+    <rdfs:subPropertyOf rdf:resource="#hosted_on"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="webapp_hosted_on_webserver">
+    <rdfs:range rdf:resource="#WebServer"/>
+    <rdfs:domain rdf:resource="#WebApp"/>
+    <rdfs:subPropertyOf rdf:resource="#hosted_on"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="has_policy">
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+    <rdfs:domain rdf:resource="#Template"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://techlabs.accenture.com/policy#env">
+    <rdfs:range rdf:resource="#Env"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="scripts_runs_on_linux">
+    <rdfs:range rdf:resource="#Linux"/>
+    <rdfs:domain rdf:resource="#LinuxBased"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="novaInstanceType">
+    <rdfs:domain rdf:resource="#OpenStackNovaInstance"/>
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/provider#NovaInstanceType"/>
+    <rdfs:subPropertyOf rdf:resource="#instanceType"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="ec2InstanceType">
+    <rdfs:subPropertyOf rdf:resource="#instanceType"/>
+    <rdfs:domain rdf:resource="#AWSEC2Instance"/>
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/provider#EC2InstanceType"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="bizservice">
+    <rdfs:range rdf:resource="#Application"/>
+    <rdfs:domain rdf:resource="#Template"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://techlabs.accenture.com/policy#user">
+    <rdfs:range rdf:resource="http://techlabs.accenture.com/org#User"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="os_hosted_on_vm">
+    <rdfs:range rdf:resource="#Compute"/>
+    <rdfs:domain rdf:resource="#OS"/>
+    <rdfs:subPropertyOf rdf:resource="#hosted_on"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://techlabs.accenture.com/policy#app">
+    <rdfs:range rdf:resource="#Application"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+  </rdf:Property>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/policy#vendor">
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="availability">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <infra:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >99.9</infra:availability>
+    <rdfs:domain rdf:resource="#Compute"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="file_ext">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Deployment"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="db_password">
+    <rdfs:domain rdf:resource="#Database"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/provider#azName">
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/provider#AvailabilityZone"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/policy#policy_path">
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="template_vendor">
+    <rdfs:domain rdf:resource="#Template"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/org#has_role">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/org#User"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="db_port">
+    <rdfs:domain rdf:resource="#Database"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="identity">
+    <rdfs:domain rdf:resource="#AWSEC2Instance"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="url">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#RootArtifacts"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="maps_to_scripts">
+    <rdfs:range rdf:resource="#Implementation"/>
+    <rdfs:domain rdf:resource="#LifeCycleInterface"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/policy#type">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#Policy"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/provider#instancePrice">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/provider#InstanceType"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="current_instances">
+    <rdfs:domain rdf:resource="#Tier"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="cpu">
+    <rdfs:domain rdf:resource="#Compute"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="ip_address">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Compute"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/policy#availability">
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#SLA"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="db_name">
+    <rdfs:domain rdf:resource="#Database"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="db_user">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Database"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="template_user">
+    <rdfs:domain rdf:resource="#Template"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/util#target_prop">
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/util#Mapping"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/provider#ramCapacity">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/provider#InstanceType"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="secret">
+    <rdfs:domain rdf:resource="#AWSEC2Instance"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="template_org">
+    <rdfs:domain rdf:resource="#Template"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="target_folder">
+    <rdfs:domain rdf:resource="#Deployment"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="cpu_usage">
+    <rdfs:domain rdf:resource="#Compute"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/util#source_prop">
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/util#Mapping"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/provider#cpuCapacity">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/provider#InstanceType"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="version">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Platform"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="template_env">
+    <rdfs:domain rdf:resource="#Template"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="recipes">
+    <rdfs:domain rdf:resource="#Chef"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="server_url">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#ChefServer"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://techlabs.accenture.com/policy#license_number">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="http://techlabs.accenture.com/policy#VendorLicense"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="disk">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="#Compute"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="validation_name">
+    <rdfs:domain rdf:resource="#ChefServer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="validation_key">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#ChefServer"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="ram">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="#Compute"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="upper_bound">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="#Tier"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="port">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="#DBMS"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="root_password">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#DBMS"/>
+  </owl:DatatypeProperty>
+  <provider:GCEStandard rdf:about="http://techlabs.accenture.com/provider#n1-standard-1">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3750</provider:ramCapacity>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.07</provider:instancePrice>
+  </provider:GCEStandard>
+  <infra:Env rdf:ID="Staging"/>
+  <infra:Template rdf:ID="DefaultSugarCRM">
+    <infra:template_env rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Prod</infra:template_env>
+    <infra:has_policy>
+      <policy:AntiCollocation rdf:about="http://techlabs.accenture.com/policy#prodAntiCollocation">
+        <policy:env>
+          <infra:Env rdf:ID="Prod"/>
+        </policy:env>
+      </policy:AntiCollocation>
+    </infra:has_policy>
+    <infra:has_policy>
+      <policy:Security rdf:about="http://techlabs.accenture.com/policy#Security_1">
+        <policy:type rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >mandatory</policy:type>
+        <policy:app>
+          <infra:WebApp rdf:ID="SugarCRM"/>
+        </policy:app>
+      </policy:Security>
+    </infra:has_policy>
+    <infra:has_policy>
+      <policy:SLA rdf:ID="DefaultSLA">
+        <policy:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >99</policy:availability>
+      </policy:SLA>
+    </infra:has_policy>
+    <infra:bizservice rdf:resource="#SugarCRM"/>
+  </infra:Template>
+  <provider:EC2ComputeOptimized rdf:about="http://techlabs.accenture.com/provider#c3.large">
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.105</provider:instancePrice>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3750</provider:ramCapacity>
+  </provider:EC2ComputeOptimized>
+  <provider:GCEStandard rdf:about="http://techlabs.accenture.com/provider#n1-standard-2">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >7500</provider:ramCapacity>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.14</provider:instancePrice>
+  </provider:GCEStandard>
+  <provider:EC2InstanceType rdf:about="http://techlabs.accenture.com/provider#m1.large">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >7500</provider:ramCapacity>
+  </provider:EC2InstanceType>
+  <provider:GCEHighCPU rdf:about="http://techlabs.accenture.com/provider#n1-highcpu-2">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1800</provider:ramCapacity>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.088</provider:instancePrice>
+  </provider:GCEHighCPU>
+  <provider:NovaInstanceType rdf:ID="Nova.m1.small">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2048</provider:ramCapacity>
+  </provider:NovaInstanceType>
+  <infra:Database rdf:ID="MySQLDatabase1">
+    <infra:databse_hosted_on_dbms>
+      <infra:MySQLForMMS rdf:ID="MySQLForMMS_1">
+        <infra:software_hosted_on_os>
+          <infra:Ubuntu rdf:ID="Ubuntu_1"/>
+        </infra:software_hosted_on_os>
+      </infra:MySQLForMMS>
+    </infra:databse_hosted_on_dbms>
+  </infra:Database>
+  <infra:MMS_DB_Schema rdf:ID="MMS_TPGW_Schema">
+    <infra:file_ext rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sql</infra:file_ext>
+    <infra:url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >file://c/mms/tpgw.sql</infra:url>
+    <infra:target_folder rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >/tmp</infra:target_folder>
+  </infra:MMS_DB_Schema>
+  <infra:Env rdf:ID="Dev"/>
+  <provider:NovaInstanceType rdf:ID="Nova.m1.large">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >8192</provider:ramCapacity>
+  </provider:NovaInstanceType>
+  <provider:EC2InstanceType rdf:about="http://techlabs.accenture.com/provider#m1.medium">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3750</provider:ramCapacity>
+  </provider:EC2InstanceType>
+  <policy:Regulation rdf:about="http://techlabs.accenture.com/policy#Regulation_1"/>
+  <infra:Template rdf:ID="QianLabsTest">
+    <infra:template_env rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Test</infra:template_env>
+    <infra:template_org rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Labs</infra:template_org>
+    <infra:template_user rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Qian</infra:template_user>
+    <infra:has_policy>
+      <policy:SLA rdf:about="http://techlabs.accenture.com/policy#QianSLA">
+        <policy:user>
+          <org:User rdf:about="http://techlabs.accenture.com/org#Qian">
+            <org:has_role rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >admin</org:has_role>
+            <org:has_org>
+              <org:ACN rdf:about="http://techlabs.accenture.com/org#Labs">
+                <org:has_user rdf:resource="http://techlabs.accenture.com/org#Qian"/>
+                <org:has_user>
+                  <org:User rdf:about="http://techlabs.accenture.com/org#Qing">
+                    <org:has_role rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >normal</org:has_role>
+                    <org:has_org rdf:resource="http://techlabs.accenture.com/org#Labs"/>
+                  </org:User>
+                </org:has_user>
+              </org:ACN>
+            </org:has_org>
+          </org:User>
+        </policy:user>
+        <policy:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >99.99</policy:availability>
+        <policy:type rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >optional</policy:type>
+      </policy:SLA>
+    </infra:has_policy>
+    <infra:has_policy>
+      <policy:CostMinimization rdf:about="http://techlabs.accenture.com/policy#QianCost">
+        <policy:user rdf:resource="http://techlabs.accenture.com/org#Qian"/>
+        <policy:type rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >optional</policy:type>
+      </policy:CostMinimization>
+    </infra:has_policy>
+    <infra:has_policy>
+      <policy:Collocation rdf:about="http://techlabs.accenture.com/policy#LabsTestCollocation">
+        <policy:org rdf:resource="http://techlabs.accenture.com/org#Labs"/>
+        <policy:env>
+          <infra:Env rdf:ID="Test"/>
+        </policy:env>
+      </policy:Collocation>
+    </infra:has_policy>
+    <infra:has_policy rdf:resource="http://techlabs.accenture.com/policy#Security_1"/>
+    <infra:bizservice rdf:resource="#SugarCRM"/>
+  </infra:Template>
+  <provider:EC2GeneralPurpose rdf:about="http://techlabs.accenture.com/provider#t2.medium">
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.052</provider:instancePrice>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</provider:cpuCapacity>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >4096</provider:ramCapacity>
+  </provider:EC2GeneralPurpose>
+  <provider:NovaInstanceType rdf:ID="Nova.m1.medium">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >4096</provider:ramCapacity>
+  </provider:NovaInstanceType>
+  <provider:GCESharedCore rdf:about="http://techlabs.accenture.com/provider#g1-small">
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.035</provider:instancePrice>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1700</provider:ramCapacity>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1</provider:cpuCapacity>
+  </provider:GCESharedCore>
+  <provider:EC2GeneralPurpose rdf:about="http://techlabs.accenture.com/provider#m3.large">
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</provider:cpuCapacity>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >7500</provider:ramCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.14</provider:instancePrice>
+  </provider:EC2GeneralPurpose>
+  <provider:EC2GeneralPurpose rdf:about="http://techlabs.accenture.com/provider#t2.micro">
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.013</provider:instancePrice>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1024</provider:ramCapacity>
+  </provider:EC2GeneralPurpose>
+  <provider:EC2InstanceType rdf:about="http://techlabs.accenture.com/provider#t1.micro">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >613</provider:ramCapacity>
+  </provider:EC2InstanceType>
+  <provider:NovaInstanceType rdf:ID="Nova.m1.tiny">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >512</provider:ramCapacity>
+  </provider:NovaInstanceType>
+  <infra:MyAWSEC2Instance rdf:ID="MyAWSEC2Instance_1">
+    <infra:vm_hosted_on_tier>
+      <infra:AWSASG rdf:ID="AWSASG_1">
+        <infra:current_instances rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >2</infra:current_instances>
+        <infra:upper_bound rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >2</infra:upper_bound>
+      </infra:AWSASG>
+    </infra:vm_hosted_on_tier>
+    <infra:ram rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1024</infra:ram>
+    <infra:instanceType>
+      <provider:EC2InstanceType rdf:about="http://techlabs.accenture.com/provider#m1.small">
+        <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1700</provider:ramCapacity>
+      </provider:EC2InstanceType>
+    </infra:instanceType>
+    <infra:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >99.9</infra:availability>
+    <infra:cpu rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</infra:cpu>
+    <infra:availabilityZone>
+      <provider:AvailabilityZone rdf:about="http://techlabs.accenture.com/provider#us-east-1d">
+        <provider:azName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >us-east-1d</provider:azName>
+      </provider:AvailabilityZone>
+    </infra:availabilityZone>
+    <infra:cpu_usage rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >80.1</infra:cpu_usage>
+  </infra:MyAWSEC2Instance>
+  <provider:GCESharedCore rdf:about="http://techlabs.accenture.com/provider#f1-micro">
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.013</provider:instancePrice>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >600</provider:ramCapacity>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1</provider:cpuCapacity>
+  </provider:GCESharedCore>
+  <provider:AvailabilityZone rdf:about="http://techlabs.accenture.com/provider#us-west-1a">
+    <provider:azName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >us-west-1a</provider:azName>
+  </provider:AvailabilityZone>
+  <provider:EC2MemoryOptimized rdf:about="http://techlabs.accenture.com/provider#r3.large">
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.175</provider:instancePrice>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >6500</provider:ramCapacity>
+  </provider:EC2MemoryOptimized>
+  <provider:EC2GeneralPurpose rdf:about="http://techlabs.accenture.com/provider#t2.small">
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.026</provider:instancePrice>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2048</provider:ramCapacity>
+  </provider:EC2GeneralPurpose>
+  <provider:AvailabilityZone rdf:about="http://techlabs.accenture.com/provider#us-east-1a">
+    <provider:azName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >us-east-1a</provider:azName>
+  </provider:AvailabilityZone>
+  <infra:MyOpenStackInstance rdf:ID="MyOpenStackInstance_1">
+    <infra:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >99.99</infra:availability>
+  </infra:MyOpenStackInstance>
+  <infra:MyAWSEC2Instance rdf:ID="MyAWSEC2Instance_2">
+    <infra:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >99.9</infra:availability>
+    <infra:vm_hosted_on_tier rdf:resource="#AWSASG_1"/>
+  </infra:MyAWSEC2Instance>
+  <infra:Template rdf:ID="QingLabsProd">
+    <infra:has_policy>
+      <policy:VendorLicense rdf:about="http://techlabs.accenture.com/policy#LabsMySQLLicence">
+        <policy:org rdf:resource="http://techlabs.accenture.com/org#Labs"/>
+        <policy:vendor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >MySQL</policy:vendor>
+        <policy:license_number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</policy:license_number>
+      </policy:VendorLicense>
+    </infra:has_policy>
+    <infra:has_policy rdf:resource="http://techlabs.accenture.com/policy#prodAntiCollocation"/>
+    <infra:template_env rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Prod</infra:template_env>
+    <infra:bizservice rdf:resource="#SugarCRM"/>
+    <infra:has_policy>
+      <policy:SLA rdf:about="http://techlabs.accenture.com/policy#QingSLA">
+        <policy:availability rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >99.9</policy:availability>
+        <policy:type rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >optional</policy:type>
+        <policy:user rdf:resource="http://techlabs.accenture.com/org#Qing"/>
+      </policy:SLA>
+    </infra:has_policy>
+    <infra:template_org rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Labs</infra:template_org>
+    <infra:has_policy rdf:resource="http://techlabs.accenture.com/policy#Security_1"/>
+    <infra:template_vendor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >MySQL</infra:template_vendor>
+    <infra:template_user rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Qing</infra:template_user>
+  </infra:Template>
+  <provider:GCEHighMemory rdf:about="http://techlabs.accenture.com/provider#n1-highmem-2">
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >13000</provider:ramCapacity>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >2</provider:cpuCapacity>
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.164</provider:instancePrice>
+  </provider:GCEHighMemory>
+  <provider:EC2GeneralPurpose rdf:about="http://techlabs.accenture.com/provider#m3.medium">
+    <provider:instancePrice rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >0.07</provider:instancePrice>
+    <provider:cpuCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1</provider:cpuCapacity>
+    <provider:ramCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3750</provider:ramCapacity>
+  </provider:EC2GeneralPurpose>
+  <org:User rdf:about="http://techlabs.accenture.com/org#Teresa">
+    <org:has_role rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >normal</org:has_role>
+    <org:has_org>
+      <org:ACN rdf:about="http://techlabs.accenture.com/org#CIO">
+        <org:has_user rdf:resource="http://techlabs.accenture.com/org#Teresa"/>
+      </org:ACN>
+    </org:has_org>
+  </org:User>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

@@ -27,7 +27,7 @@ public class RDFLoader extends LD4SDataResource{
 		
 		Model model = ModelFactory.createDefaultModel();
 		
-		model.read(new File("/Users/kunaltaneja/tools/ld4s/ld4sensors/ld4s/sensor_metadata.rdf").toURL().toString(), "RDF/XML");
+		model.read(new File("/Users/Kunal/Documents/sensor_metadata.rdf").toURL().toString(), "RDF/XML");
 		System.out.println(model);
 		
 		
@@ -43,18 +43,6 @@ public class RDFLoader extends LD4SDataResource{
 			+ " OPTIONAL { ?member <http://spitfire-project.eu/ontology/ns/name> ?name. }"
 			+ "" + 
 			"      }";
-		
-		
-		queryString = 
-				"SELECT ?sensor ?name ?type" +
-				" WHERE {" + 
-				"<" + "http://192.168.1.65:8080/ld4s/device/VM_Qian-Demo_gui" + ">" + " <http://spitfire-project.eu/ontology/ns/has_sensor> ?sensor.\n"
-				+ " ?sensor <http://spitfire-project.eu/ontology/ns/uom>  ?uom. \n"
-				+ " ?uom <http://spitfire-project.eu/ontology/ns/hasMember>  ?member. \n"
-				+ " ?member <http://spitfire-project.eu/ontology/ns/type> ?type. \n"
-				+ " OPTIONAL { ?member <http://spitfire-project.eu/ontology/ns/name> ?name. }"
-				+ "" + 
-				"      } LIMIT 10";
 		
 		Query query = QueryFactory.create(queryString);
 		//loader.load

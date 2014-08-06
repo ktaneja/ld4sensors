@@ -77,6 +77,9 @@ public abstract class LD4SObject{
 	public abstract Context getLink_criteria();
 	public abstract void setLink_criteria(String link_criteria, String localhost)throws Exception ;
 
+	public LD4SObject(){
+		
+	}
 	public LD4SObject(JSONObject json) throws JSONException{
 		if (json.has("base_datetime")){
 			this.setBase_datetime(LD4SDataResource.removeBrackets(

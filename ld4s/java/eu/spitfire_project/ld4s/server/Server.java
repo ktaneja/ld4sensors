@@ -8,6 +8,8 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
+import com.accenture.lsd.device.LsdDevice;
+import com.accenture.lsd.device.LsdDeviceResource;
 import com.accenture.sensordata.api.DeviceObservationDataResource;
 
 import eu.spitfire_project.ld4s.cache.FrontSideCache;
@@ -334,9 +336,8 @@ public class Server extends Application{
 				router.attach("/actuator/decision", ActuatorDecisionResource.class);
 				router.attach("/actuator/decision/", ActuatorDecisionResource.class);
 				
-				//router.attach("/postdata", DeviceObservationDataResource.class);
-				//router.attach("/postdata/", DeviceObservationDataResource.class);
-				router.attach("/postdata/{device_id}", DeviceObservationDataResource.class);
+				router.attach("/postdata/{deviceID}", DeviceObservationDataResource.class);
+				router.attach("/lsddevice/{deviceID}", LsdDeviceResource.class);
 		
 
 		return router;

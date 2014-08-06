@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
@@ -140,7 +141,7 @@ public abstract class LD4SDataResource extends ServerResource{
 
 
 	protected void initResource2NamedGraph(String baseHost){
-		String base = baseHost+"graph/";
+		String base = "http://eqiq.techlabs.accenture.com/lsd/"+"graph/";
 		resource2namedGraph = new HashMap<String, String>();
 		
 		/**datlink resources are the only resource among the 
@@ -195,10 +196,11 @@ public abstract class LD4SDataResource extends ServerResource{
 			initResource2NamedGraph(Server.getHostName());
 			//initResource2NamedGraph("http://10.1.175.81:8080/ld4s/");
 		}
+		Map<String, Object> a = getRequest().getAttributes();
 		this.resourceId = ((String) getRequest().getAttributes().get("resource_id"));
 		this.timestamp = (String) getRequest().getAttributes().get("timestamp");
 		this.uristr = this.getRequest().getResourceRef().toString();
-		this.generalNamedModel = Server.getHostName()+"graph/";
+		this.generalNamedModel = "http://eqiq.techlabs.accenture.com/lsd/"+"graph/";
 		this.namedModel = getNamedModel(this.uristr);
 		if (this.namedModel == null){
 			this.namedModel = generalNamedModel ;

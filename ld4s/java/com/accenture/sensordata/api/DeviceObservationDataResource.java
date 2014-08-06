@@ -7,6 +7,7 @@ import org.restlet.representation.Representation;
 
 import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
 import com.accenture.techlabs.sensordata.dao.SensorDataDAO;
+import com.accenture.techlabs.sensordata.model.DeviceObservationData;
 import com.google.gson.Gson;
 
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;

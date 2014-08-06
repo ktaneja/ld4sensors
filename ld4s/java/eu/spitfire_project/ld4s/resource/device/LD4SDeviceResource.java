@@ -39,8 +39,7 @@ public class LD4SDeviceResource extends LD4SDataResource {
 	 */
 	protected Resource makeOVLinkedData() throws Exception {
 		Resource resource = makeOVData();
-		//set the linking criteria
-		this.context = ov.getLink_criteria();
+		
 		resource = addLinkedData(resource, Domain.ALL, this.context);
 		return resource;
 	}

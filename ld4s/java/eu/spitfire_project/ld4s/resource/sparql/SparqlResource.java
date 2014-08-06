@@ -9,6 +9,7 @@ import org.restlet.representation.StringRepresentation;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -67,6 +68,7 @@ public class SparqlResource extends LD4SDataResource{
 				}
 				
 				answer = sparqlExec(querystr, type);
+				
 				if (querystr.startsWith(SparqlType.UPDATE.toString())){
 					sparqlUpdateExec(querystr);
 					answer = "SPARQL Update successfully executed.";

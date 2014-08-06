@@ -21,6 +21,7 @@ import org.restlet.representation.Representation;
 
 
 
+
 import com.accenture.techlabs.sensordata.dao.SensorDataDAO;
 import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
 import com.accenture.techlabs.sensordata.model.DeviceDataType;
@@ -264,8 +265,6 @@ public class DeviceResource extends LD4SDeviceResource implements LD4SApiInterfa
 	 */
 	@Override
 	public Representation post(JSONObject obj){
-		System.out.println("Working Directory = " +
-	              System.getProperty("user.dir"));
 		Representation ret = null;
 		
 		rdfData = ModelFactory.createDefaultModel();

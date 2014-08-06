@@ -75,6 +75,9 @@
         <dependent-module archiveName="metrics-core-3.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ld4s/cassandralib/metrics-core-3.0.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="org.json.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ld4sensors/lib/org.json.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/ld4s/build/classes"/>
         <property name="context-root" value="ld4s"/>
     </wb-module>

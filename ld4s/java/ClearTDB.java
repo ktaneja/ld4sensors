@@ -24,19 +24,18 @@ public class ClearTDB extends LD4SDataResource{
 		
 		Model model = ModelFactory.createDefaultModel();
 		
-		model.read(new File("/Users/kunaltaneja/tools/ld4s/ld4sensors/ld4s/sensor_metadata.rdf").toURL().toString(), "RDF/XML");
+		model.read(new File("/Users/Kunal/Documents/workspace/ld4s/sensor.rdf").toURL().toString(), "RDF/XML");
 		System.out.println(model);
 		
 		initTDB();
 		this.dataset.begin(ReadWrite.WRITE) ;
-		dataset.addNamedModel("192.168.1.65:8080/ld4s/graph/", model);
+		dataset.addNamedModel("http://eqiq.techlabs.accenture.com/lsd/graph/", model);
 		dataset.commit() ;
 		
 	}
 	
 	protected void cleanTDB(){
 		initTDB();
-		TDB.sync(dataset);
 		this.dataset.begin(ReadWrite.WRITE) ;
 		Iterator<String> list = dataset.listNames();
 		List<String> names = new ArrayList<String>();
