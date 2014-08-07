@@ -107,7 +107,7 @@ public class TestRegisterDevice extends LD4STestHelper{
 	}
 	
 	
-	@Test
+	//@Test
 	public void testSelect() throws Exception {
 		String filters = "SELECT * " +
 				"FROM NAMED <http://10.1.175.81:8080/ld4s/graph/ov> " +

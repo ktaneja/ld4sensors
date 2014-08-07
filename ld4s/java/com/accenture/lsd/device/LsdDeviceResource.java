@@ -12,15 +12,7 @@ import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 
-
-
-
-
-
-
-
-
-
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import com.accenture.techlabs.sensordata.dao.SensorDataDAO;
 import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
@@ -36,11 +28,12 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import eu.spitfire_project.ld4s.lod_cloud.Context.Domain;
 import eu.spitfire_project.ld4s.resource.LD4SApiInterface;
 import eu.spitfire_project.ld4s.server.Server;
+import eu.spitfire_project.ld4s.vocabulary.EQIQVocab;
 
 /**
  * Resource representing an observation value.
  *
- * @author Myriam Leggieri.
+ * @author Kunal Taneja.
  *
  */
 public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiInterface{
@@ -109,33 +102,32 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 		
 		rdfData = ModelFactory.createDefaultModel();
 		super.initModel(rdfData,"spitfire.rdf");
-		logger.fine(resourceName + " LD4S: Now updating.");
+		logger.fine(resourceName + " LSD: Now updating.");
 		try {
-			
-			//String uuid = registerDevice();
-			obj.append("uuid","123");
 			this.device = new LsdDevice(obj, Server.getHostName());
 			if(resourceId == null)
 				resourceId = device.getName();
+			String uuid = registerDevice();
+			obj.append("uuid", uuid);
+			
 			rdfData = createDeviceResource().getModel();
 
-			// create a new resource in the database only if the preferred resource hosting server is
-			// the LD4S one
-			getDataTypesOfDevice();
+			
 			if (resourceId != null || !this.device.isStoredRemotely(Server.getHostName())){
-				
-				
 				if (update(rdfData, this.namedModel)){
-					setStatus(Status.SUCCESS_OK);
+					setStatus(Status.SUCCESS_CREATED);
 					JSONObject response = new JSONObject();
-					response.append("uuid", "123");
+					response.append("uuid", uuid);
 					ret = new JsonRepresentation(response); 
+					setLocationRef("/ld4s/lsddevice/" + resourceId);
+					
 				}else{
 					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
 				}
-			}else{
-				setStatus(Status.SUCCESS_OK);	 
-				ret = serializeAccordingToReqMediaType(rdfData);
+			}else{	 
+				setStatus(Status.SUCCESS_CREATED);
+				
+
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -155,8 +147,8 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 
 	
 
-	private String registerDevice() {
-		DeviceDataType dataType = getDataTypesOfDevice();
+	private String registerDevice() throws UnsupportedEncodingException {
+		DeviceDataType dataType = getDataTypesOfDevice(EQIQVocab.NS + resourceId);
 		SensorDataDAO sensorDAO = SensorDAOFactory.getSensorDAO(SensorDAOFactory.SENSOR_TIMESERIES);
 		
 		String uuid = getUniqueIdentifier();
@@ -171,55 +163,10 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 		return uuid.toString();
 	}
 	
-	private DeviceDataType getDataTypesOfDevice() {
-		String resourceURI = "http://" + Server.getHostName() + "device/" + resourceId;
-		
-		String queryString = 
-				"SELECT ?sensor ?name ?type " +
-				" WHERE {" + 
-				"<" + resourceURI + ">" + " <http://spitfire-project.eu/ontology/ns/has_sensor> ?sensor.\n"
-				+ " ?sensor <http://spitfire-project.eu/ontology/ns/uom>  ?uom. \n"
-				+ " ?uom <http://spitfire-project.eu/ontology/ns/hasMember>  ?member. \n"
-				+ " ?member <http://spitfire-project.eu/ontology/ns/type> ?type. \n"
-				+ " OPTIONAL { ?member <http://spitfire-project.eu/ontology/ns/name> ?name. }"
-				+ "" + 
-				"      } LIMIT 10";
-		queryString = 
-				"SELECT  ?name ?type " +
-				" WHERE {" + 
-				"<http://eqiq.techlabs.accenture.com/sensor#VM_Qian-Demo_gui> ?name ?type"
-				+ "" + 
-				"      } LIMIT 10";
-		try {
-			queryString = URLDecoder.decode(queryString, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 
 
-		Object answer = sparqlExec(queryString, SparqlType.SELECT);
-		Model m = ((ResultSet)answer).getResourceModel();
-		QueryExecution qe = QueryExecutionFactory.create(queryString, m);
-		ResultSet results = qe.execSelect();
-		DeviceDataType dataType = new DeviceDataType();
-		while(results.hasNext()){
-			QuerySolution qs = results.next();
-			String sensor = qs.get("sensor").asResource().getLocalName();
-			String name = null;
-			if(qs.get("name") != null)
-				name = qs.get("name").asResource().getLocalName(); 
-			Type type = getType(qs.get("type").asResource().getLocalName());
-			dataType.addMember(sensor, name, type);
-		}
-		return dataType;
-	}
-
-
-	private Type getType(String xsdType) {
-		
-		return Type.DOUBLE;
-	}
+	
 
 
 	// DELETE req: resource stored locally

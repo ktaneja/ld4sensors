@@ -1,11 +1,25 @@
 package com.accenture.lsd.device;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import com.accenture.techlabs.sensordata.dao.CassandraSensorDataDAO;
+import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
+import com.accenture.techlabs.sensordata.model.DeviceDataType;
+import com.accenture.techlabs.sensordata.model.DeviceDataType.Type;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
+import eu.spitfire_project.ld4s.resource.LD4SDataResource.SparqlType;
 import eu.spitfire_project.ld4s.vocabulary.EQIQVocab;
 
 /**
@@ -114,6 +128,9 @@ public class LsdDeviceBaseResource extends LD4SDataResource {
 			}			
 		}
 		
+		resource.addProperty(EQIQVocab.data_access_url, Integer.toString(SensorDAOFactory.SENSOR_TIMESERIES));
+		
+		
 		String loc = device.getLocation();
 		if (loc != null && loc.trim().compareTo("")!=0){
 			//Create Location Resource and set
@@ -132,13 +149,55 @@ public class LsdDeviceBaseResource extends LD4SDataResource {
 		}
 		
 		
-		
-		
 		resource = crossResourcesAnnotation(device, resource);
 		return resource;
 	}
 
 
+	public DeviceDataType getDataTypesOfDevice(String resourceURI) throws UnsupportedEncodingException {	
+		String queryString = 
+				"SELECT ?sensor ?stype ?uom ?datatype" +
+				" WHERE {" + 
+				"<"+ resourceURI +">" + " <" + EQIQVocab.hasSensors + "> " + " ?sensor. \n" + 
+				"?sensor"+ " <" + EQIQVocab.observesReading + "> " + "?reading. \n" + 
+				"?reading <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  ?stype. \n" +
+				"?reading" + " <" + EQIQVocab.hasUOM + "> " +  "?uom. \n" +
+				"?p   <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <" + EQIQVocab.unitType + ">. \n" +
+				"?p   <http://www.w3.org/2000/01/rdf-schema#domain> ?uom. \n"  +
+				"?p   <http://www.w3.org/2000/01/rdf-schema#range> ?datatype. \n" 
+				+ "" + 
+				"      }";
+		queryString = URLDecoder.decode(queryString, "utf-8");
+
+
+		Object answer = sparqlExec(queryString, SparqlType.SELECT);
+		Model m = ((ResultSet)answer).getResourceModel();
+		QueryExecution qe = QueryExecutionFactory.create(queryString, m);
+		ResultSet results = qe.execSelect();
+		
+		DeviceDataType dataType = new DeviceDataType();
+		while(results.hasNext()){
+			QuerySolution qs = results.next();
+			String sensor = qs.get("sensor").asResource().getLocalName();
+			String name = null;
+			if(qs.get("stype") != null)
+				name = qs.get("stype").asResource().getLocalName(); 
+			Type type = getType(qs.get("datatype").asResource().getLocalName());
+			dataType.addMember(sensor, name, type);
+		}
+		return dataType;
+	}
+	
+	private Type getType(String xsdType) {
+		if(xsdType.toLowerCase().endsWith("double"))
+			return Type.DOUBLE;
+		else if(xsdType.toLowerCase().endsWith("integer"))
+			return Type.INT;
+		else if(xsdType.toLowerCase().endsWith("string"))
+			return Type.TEXT;
+		else
+			throw new NotImplementedException();
+	}
 
 
 }

@@ -2,8 +2,11 @@ package com.accenture.sensordata.api;
 
 import org.json.JSONObject;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 import com.accenture.techlabs.sensordata.dao.SensorDAOFactory;
 import com.accenture.techlabs.sensordata.dao.SensorDataDAO;
@@ -17,35 +20,46 @@ public class DeviceObservationDataResource extends LD4SDataResource implements L
 
 	@Override
 	public Representation get() {
-		// TODO Auto-generated method stub
-		return null;
+		String from = getQuery().getValues("from");
+		String to = getQuery().getValues("to");
+		String device = getQuery().getValues("device");
+		if(from == null || to == null){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return new JsonRepresentation("Query Parameter 'from' and/or 'to' missing");
+		}
+		SensorDataDAO dao = SensorDAOFactory.getSensorDAO(SensorDAOFactory.SENSOR_TIMESERIES);
+		String data = dao.getData(device, from, to);
+		
+		return new StringRepresentation(data,MediaType.TEXT_CSV);
 	}
 
 	@Override
 	public Representation put(Form obj) {
-		// TODO Auto-generated method stub
-		return null;
+		setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+		return new JsonRepresentation("Media Type Not Supported");
 	}
 
 	@Override
 	public Representation put(JSONObject obj) {
-		// TODO Auto-generated method stub
-		return null;
+		setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+		return new JsonRepresentation("Media Type Not Supported");
 	}
 
 	@Override
 	public Representation post(Form obj) {
-		// TODO Auto-generated method stub
-		return null;
+		setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+		return new JsonRepresentation("Media Type Not Supported");
 	}
 
 	@Override
 	public Representation post(JSONObject obj) {
 		Gson gson = new Gson();
 		DeviceObservationData obsdata  = gson.fromJson(obj.toString(), DeviceObservationData.class);
-		SensorDAOFactory daofactory = new SensorDAOFactory();
 		SensorDataDAO dao = SensorDAOFactory.getSensorDAO(SensorDAOFactory.SENSOR_TIMESERIES);
-		//dao.addData(obj.get("sensorUUID"), SensorDataDAO);
+		dao.addData(obsdata);
+		
+		setStatus(Status.SUCCESS_CREATED);
+		setLocationRef("/ld4s/postdata");
 		return new JsonRepresentation("Success");
 	}
 

@@ -14,6 +14,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 import eu.spitfire_project.ld4s.resource.LD4SDataResource;
+import eu.spitfire_project.ld4s.vocabulary.EQIQVocab;
 
 
 public class RDFLoader extends LD4SDataResource{
@@ -22,8 +23,6 @@ public class RDFLoader extends LD4SDataResource{
 		// Create a model and read into it from file 
 		// "data.ttl" assumed to be Turtle.
 		RDFLoader loader = new RDFLoader();
-		
-		
 		
 		Model model = ModelFactory.createDefaultModel();
 		

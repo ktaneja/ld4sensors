@@ -24,7 +24,7 @@ public class ClearTDB extends LD4SDataResource{
 		
 		Model model = ModelFactory.createDefaultModel();
 		
-		model.read(new File("/Users/Kunal/Documents/workspace/ld4s/sensor.rdf").toURL().toString(), "RDF/XML");
+		model.read(new File("sensor.rdf").toURL().toString(), "RDF/XML");
 		System.out.println(model);
 		
 		initTDB();
