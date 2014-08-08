@@ -153,6 +153,57 @@ public class LsdDeviceBaseResource extends LD4SDataResource {
 		return resource;
 	}
 
+	public static void main(String[] args) throws UnsupportedEncodingException {
+		LsdDeviceBaseResource r = new LsdDeviceBaseResource();
+		System.out.println(r.getDataTypesOfDevice(EQIQVocab.NS + "VM_Qian-Demo_gui"));
+		//System.out.println(r.getUUID(EQIQVocab.NS + "VM_Qian-Demo_gui"));
+	}
+	
+	public String getUUID(String resourceURI){
+		String queryString = 
+				"SELECT ?uuid" +
+				" WHERE {" + 
+				"<"+ resourceURI +">" + " <" + EQIQVocab.deviceID + "> " + " ?uuid"
+				+ "" + 
+				"      }";
+		Object answer = sparqlExec(queryString, SparqlType.SELECT);
+		Model m = ((ResultSet)answer).getResourceModel();
+		QueryExecution qe = QueryExecutionFactory.create(queryString, m);
+		ResultSet results = qe.execSelect();
+		
+		
+		String url=null;
+		while(results.hasNext()){
+			QuerySolution qs = results.next();
+			url = qs.get("uuid").toString();
+		}
+		return url;
+	}
+	
+	public int getDataAccessURL(String resourceURI){
+		String queryString = 
+				"SELECT ?url" +
+				" WHERE {" + 
+				"<"+ resourceURI +">" + " <" + EQIQVocab.data_access_url + "> " + " ?url. \n"
+				+ "" + 
+				"      }";
+
+
+		Object answer = sparqlExec(queryString, SparqlType.SELECT);
+		Model m = ((ResultSet)answer).getResourceModel();
+		QueryExecution qe = QueryExecutionFactory.create(queryString, m);
+		ResultSet results = qe.execSelect();
+		
+		
+		String url=null;
+		while(results.hasNext()){
+			QuerySolution qs = results.next();
+			url = qs.get("url").toString();
+		}
+		if(url == null)
+			return -1;
+		return Integer.parseInt(url);
+	}
 
 	public DeviceDataType getDataTypesOfDevice(String resourceURI) throws UnsupportedEncodingException {	
 		String queryString = 

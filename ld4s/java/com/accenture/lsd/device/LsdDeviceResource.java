@@ -4,6 +4,7 @@ package com.accenture.lsd.device;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +68,7 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 			if (query != -1){
 				uristr = this.uristr.substring(0,query-1);
 			}
-			rdfData = retrieve(this.uristr, this.namedModel);
+			rdfData = retrieve(EQIQVocab.NS + resourceId, this.namedModel);
 			//how it is: for now, if links are requested, then search for new ones 
 			//and filter out all the stored ones.
 			if (!this.context.isEmpty()){
@@ -78,7 +79,9 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 			ret = serializeAccordingToReqMediaType(rdfData);
 		}
 		catch (Exception e) {
-			setStatusError("Error creating " + resourceName + "  LD4S.", e);
+			e.printStackTrace();
+			logger.log(Level.SEVERE, e.getMessage(), e);
+			setStatusError("Error creating " + resourceName + "  LD4S. " + e.getStackTrace(), e);
 			ret = null;
 		}
 
@@ -99,16 +102,30 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 	@Override
 	public Representation post(JSONObject obj){
 		Representation ret = null;
+		String id = getUUID(EQIQVocab.NS + resourceId);
+		
+		int urlID = getDataAccessURL(EQIQVocab.NS + resourceId);
+		int urID = getDataAccessURL(EQIQVocab.NS + "xyz");
+		
+		if(id != null){
+			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			logger.log(Level.INFO, "Resource " + resourceId + " exists with ID " + id);
+			return new JsonRepresentation("Resource " + resourceId + "exists with ID " + id);
+		}
 		
 		rdfData = ModelFactory.createDefaultModel();
 		super.initModel(rdfData,"spitfire.rdf");
 		logger.fine(resourceName + " LSD: Now updating.");
 		try {
+			String uuid = getUniqueIdentifier();
+			//obj.append("uuid", uuid);
+			obj.putOnce("uuid", uuid);
+			
 			this.device = new LsdDevice(obj, Server.getHostName());
 			if(resourceId == null)
 				resourceId = device.getName();
-			String uuid = registerDevice();
-			obj.append("uuid", uuid);
+			registerDevice();
+			
 			
 			rdfData = createDeviceResource().getModel();
 
@@ -117,7 +134,7 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 				if (update(rdfData, this.namedModel)){
 					setStatus(Status.SUCCESS_CREATED);
 					JSONObject response = new JSONObject();
-					response.append("uuid", uuid);
+					response.putOnce("uuid", uuid);
 					ret = new JsonRepresentation(response); 
 					setLocationRef("/ld4s/lsddevice/" + resourceId);
 					
@@ -147,14 +164,10 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 
 	
 
-	private String registerDevice() throws UnsupportedEncodingException {
+	private void registerDevice() throws UnsupportedEncodingException {
 		DeviceDataType dataType = getDataTypesOfDevice(EQIQVocab.NS + resourceId);
 		SensorDataDAO sensorDAO = SensorDAOFactory.getSensorDAO(SensorDAOFactory.SENSOR_TIMESERIES);
-		
-		String uuid = getUniqueIdentifier();
 		sensorDAO.createTable(resourceId, dataType);
-		
-		return uuid;
 	}
 
 
@@ -196,7 +209,6 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 
 	@Override
 	public Representation put(Form obj) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -207,8 +219,52 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 
 	@Override
 	public Representation put(JSONObject obj) {
-		// TODO Auto-generated method stub
-		return null;
+		Representation ret = null;
+		String id = getUUID(EQIQVocab.NS + resourceId);
+		if(id == null){
+			setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			logger.log(Level.INFO, "Resource " + resourceId + " does not exist ");
+			return new JsonRepresentation("Resource " + resourceId + "does not exist");
+		}
+		
+		rdfData = ModelFactory.createDefaultModel();
+		super.initModel(rdfData,"spitfire.rdf");
+		logger.fine(resourceName + " LSD: Now updating.");
+		try {
+			
+			this.device = new LsdDevice(obj, Server.getHostName());
+			if(resourceId == null)
+				resourceId = device.getName();
+			rdfData = createDeviceResource().getModel();
+			
+			if (resourceId != null || !this.device.isStoredRemotely(Server.getHostName())){
+				if (update(rdfData, this.namedModel)){
+					setStatus(Status.SUCCESS_CREATED);
+					JSONObject response = new JSONObject();
+					ret = new JsonRepresentation(response); 
+					setLocationRef("/ld4s/lsddevice/" + resourceId);
+					
+				}else{
+					setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to update in the Trple DB");
+				}
+			}else{	 
+				setStatus(Status.SUCCESS_CREATED);
+				
+
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+		}  catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			setStatus(Status.SERVER_ERROR_INTERNAL, "Unable to instantiate the requested resource\n"
+					+e.getMessage());
+			return null;
+		}
+		return ret;
 	}
 
 

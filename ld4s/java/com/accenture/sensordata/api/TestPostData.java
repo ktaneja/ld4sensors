@@ -15,6 +15,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 import com.accenture.lsd.device.LsdDevice;
+import com.accenture.lsd.device.LsdDeviceResource;
 import com.accenture.techlabs.sensordata.model.DeviceDataType;
 import com.accenture.techlabs.sensordata.model.DeviceObservationData;
 import com.accenture.techlabs.sensordata.model.DeviceDataType.Type;
@@ -25,14 +26,15 @@ import eu.spitfire_project.ld4s.vocabulary.EQIQVocab;
 
 public class TestPostData {
 	@Test
-	public void testRegisterDevice() throws IOException, JSONException{
+	public void testPostVMData() throws IOException, JSONException{
 		//System.out.println(Runtime.getRuntime().exec("hostname"));
 		ClientResource cr;
 		Representation resp;
 		Status status;
-		JSONObject json = createJson();
+		//JSONObject json = createJson();
+		JSONObject json = VSphereDataAgent.getDataFromLastHour();
 		
-		String local_uri = "http://localhost:8080/ld4s/postdata/123";//localhost:8080/ld4s/postdata/123
+		String local_uri = "http://localhost:8080/ld4s/postdata/VM_Qian-Demo_gui";//localhost:8080/ld4s/postdata/123
 		
 				 
 		 cr = new ClientResource(local_uri);
@@ -56,17 +58,18 @@ public class TestPostData {
 		Gson gson = new Gson();
 		DateTime time = DateTime.now();
 		
-		DeviceObservationData data = new DeviceObservationData("vm_qiandemo_gui", "123");
+		DeviceObservationData data = new DeviceObservationData("vm_qiandemo_gui", "da4cc105-309a-447d-9fc7-b5b6067cbfe9");
 		SensorObservationData sData = data.new SensorObservationData("vcenter_1");
-		DeviceDataType type = new DeviceDataType();
-		type.addMember("vcenter_1", "cpureading", Type.DOUBLE);
+		
+		/*DeviceDataType type = new DeviceDataType();
+		type .addMember("vcenter_1", "cpureading", Type.DOUBLE);
 		type.addMember("vcenter_1", "diskreading", Type.INT);
 		type.addMember("vcenter_1", "memoryreading", Type.DOUBLE);
-		data.setDataType(type);
+		data.setDataType(type);*/
 		List<Object> obs = new ArrayList<Object>();
-		obs.add(55);
-		obs.add(1);
-		obs.add(99);
+		obs.add(50);
+		obs.add(0);
+		obs.add(9);
 		sData.addSensorEntry(time, obs);
 		
 		time = DateTime.now();

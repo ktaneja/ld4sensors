@@ -338,9 +338,11 @@ public class Server extends Application{
 				
 				router.attach("/postdata/", DeviceObservationDataResource.class);
 				router.attach("/postdata", DeviceObservationDataResource.class);
-				router.attach("/postdata/{deviceID}", DeviceObservationDataResource.class);
+				router.attach("/postdata/{resource_id}", DeviceObservationDataResource.class);
 				
-				router.attach("/lsddevice/{deviceID}", LsdDeviceResource.class);
+				router.attach("/lsddevice/{resource_id}", LsdDeviceResource.class);
+				router.attach("/lsddevice", LsdDeviceResource.class);
+				router.attach("/lsddevice/", LsdDeviceResource.class);
 		
 
 		return router;

@@ -96,6 +96,10 @@ public class LsdDevice extends LD4SObject  implements Serializable{
 		if(json.has("name")){
 			this.setName(json.getString("name"));
 		}
+		if(json.has("location")){
+			this.setLocation(json.getString("location"));
+		}
+
 		if(json.has("uuid")){
 			this.setUUID(json.getString("uuid"));
 		}

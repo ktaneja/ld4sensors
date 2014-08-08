@@ -25,7 +25,6 @@ public class TestSparqlEndpoint extends LD4STestHelper{
 	@Test
 	public void testSelect() throws Exception {
 		String filters = "SELECT ?y " +
-				//"FROM NAMED <10.1.175.98:8080/ld4s/graph/> " +
 				"WHERE {" +
 //					"<http://localhost:8182/ld4s/link/http%3a%2f%2flocalhost%3a8182%2fld4s%2fov%2fx12_red+dress>" +
 						"<http://eqiq.techlabs.accenture.com/sensor#VM_Qian-Demo_gui> ?y ?z" 
