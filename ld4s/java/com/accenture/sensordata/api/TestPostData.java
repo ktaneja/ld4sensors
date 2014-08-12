@@ -32,7 +32,8 @@ public class TestPostData {
 		Representation resp;
 		Status status;
 		//JSONObject json = createJson();
-		JSONObject json = VSphereDataAgent.getDataFromLastHour();
+		String uuid= "9c086605-c9de-4d8e-8701-0b9a55bdb34c";
+		JSONObject json = VSphereDataAgent.getDataFromLastHour(uuid);
 		
 		String local_uri = "http://localhost:8080/ld4s/postdata/VM_Qian-Demo_gui";//localhost:8080/ld4s/postdata/123
 		
@@ -58,7 +59,7 @@ public class TestPostData {
 		Gson gson = new Gson();
 		DateTime time = DateTime.now();
 		
-		DeviceObservationData data = new DeviceObservationData("vm_qiandemo_gui", "da4cc105-309a-447d-9fc7-b5b6067cbfe9");
+		DeviceObservationData data = new DeviceObservationData("vm_qiandemo_gui", "aa12f414-c303-4e7f-990e-060a9edfa8f1");
 		SensorObservationData sData = data.new SensorObservationData("vcenter_1");
 		
 		/*DeviceDataType type = new DeviceDataType();

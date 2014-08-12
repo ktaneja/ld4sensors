@@ -56,7 +56,7 @@ public class VSphereDataAgent {
 		
 	}
 	
-	public static JSONObject getDataFromLastHour(){
+	public static JSONObject getDataFromLastHour(String uuid){
 		VSphereDataAgent vSphereMetrics = new VSphereDataAgent();
 		// list all metrics 
 		// ?? there are repeated metric IDs listed: e.g. 1-4
@@ -170,7 +170,7 @@ public class VSphereDataAgent {
 			si.getServerConnection().logout();
 			
 			
-			DeviceObservationData data = new DeviceObservationData("vm_qiandemo_gui", "da4cc105-309a-447d-9fc7-b5b6067cbfe9");
+			DeviceObservationData data = new DeviceObservationData("vm_qiandemo_gui", uuid);
 			SensorObservationData sData = data.new SensorObservationData("vcenter_1");
 			
 			for (Long time : observations.keySet()) {

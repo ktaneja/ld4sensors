@@ -124,7 +124,7 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 			this.device = new LsdDevice(obj, Server.getHostName());
 			if(resourceId == null)
 				resourceId = device.getName();
-			registerDevice();
+			
 			
 			
 			rdfData = createDeviceResource().getModel();
@@ -132,6 +132,8 @@ public class LsdDeviceResource extends LsdDeviceBaseResource implements LD4SApiI
 			
 			if (resourceId != null || !this.device.isStoredRemotely(Server.getHostName())){
 				if (update(rdfData, this.namedModel)){
+					registerDevice();
+					
 					setStatus(Status.SUCCESS_CREATED);
 					JSONObject response = new JSONObject();
 					response.putOnce("uuid", uuid);
