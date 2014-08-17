@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONObject;
 
@@ -31,6 +33,10 @@ public class VSphereDataAgent {
 	private static final int CPU_USAGE_COUNTER_ID = 2; // 1 : Usage (cpu) in Percent (rate)
 	private static final int DISK_USAGE_COUNTER_ID = 125; 
 	private static final int MEMORY_USAGE_COUNTER_ID = 24;
+	
+	private static final int CPU_IDLE_COUNTER_ID = 13;
+	
+	private static Set<Integer> counters = new HashSet<>();
 
 	
 	public static final int SAMPLE_PERIOD_HOUR = 20;
@@ -60,7 +66,7 @@ public class VSphereDataAgent {
 		VSphereDataAgent vSphereMetrics = new VSphereDataAgent();
 		// list all metrics 
 		// ?? there are repeated metric IDs listed: e.g. 1-4
-		
+		counters = new HashSet<>();
 		
 		String url = "https://" + ACN_vCenter + "/sdk/vimService";
 
@@ -117,9 +123,10 @@ public class VSphereDataAgent {
 			for(int i=0; i<queryAvailablePerfMetric.length; i++){
 				PerfMetricId perfMetricId = queryAvailablePerfMetric[i];
 				int counterID = perfMetricId.getCounterId();
-				if (MEMORY_USAGE_COUNTER_ID == counterID || DISK_USAGE_COUNTER_ID == counterID ||
-						CPU_USAGE_COUNTER_ID == counterID) {
+				if (!counters.contains(counterID) && (MEMORY_USAGE_COUNTER_ID == counterID || DISK_USAGE_COUNTER_ID == counterID ||
+						CPU_USAGE_COUNTER_ID == counterID || CPU_IDLE_COUNTER_ID == counterID)) {
 					list.add(perfMetricId);
+					counters.add(counterID);
 				}
 				
 			}
@@ -193,7 +200,7 @@ public class VSphereDataAgent {
 	}
 	
 	public static void main(String[] args){
-		
+		getDataFromLastHour(null);
 		
 	}
 	
